@@ -5,7 +5,8 @@
       "Bash(rm:*)",
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(timeout 20s npm run dev)"
     ],
     "deny": []
   },

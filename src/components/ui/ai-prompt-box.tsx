@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -28,10 +30,12 @@ const styles = `
   }
 `;
 
-// Inject styles into document
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
+// Inject styles into document (client-side only)
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement("style");
+  styleSheet.innerText = styles;
+  document.head.appendChild(styleSheet);
+}
 
 // Textarea Component
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -526,8 +530,10 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
   }, []);
 
   React.useEffect(() => {
-    document.addEventListener("paste", handlePaste);
-    return () => document.removeEventListener("paste", handlePaste);
+    if (typeof document !== 'undefined') {
+      document.addEventListener("paste", handlePaste);
+      return () => document.removeEventListener("paste", handlePaste);
+    }
   }, [handlePaste]);
 
   const handleSubmit = () => {

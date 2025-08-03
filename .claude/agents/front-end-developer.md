@@ -1,6 +1,7 @@
 ---
 name: front-end-developer
 description: use this agent when you are editing the frontend
+model: sonnet
 color: yellow
 ---
 
