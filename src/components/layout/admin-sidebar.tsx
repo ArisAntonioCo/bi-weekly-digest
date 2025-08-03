@@ -18,7 +18,8 @@ import {
   Mail, 
   BarChart3, 
   User,
-  Calendar
+  Calendar,
+  PlusCircle
 } from 'lucide-react'
 
 const sidebarItems = [
@@ -26,6 +27,8 @@ const sidebarItems = [
     title: "Content Management",
     items: [
       { title: "AI Assistant", icon: MessageSquare, href: "/(admin)/dashboard" },
+      { title: "Create Blog Post", icon: PlusCircle, href: "/(admin)/posts/create" },
+      { title: "Manage Posts", icon: FileText, href: "/(admin)/posts" },
     ]
   },
   {

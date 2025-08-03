@@ -26,7 +26,7 @@ Your core responsibilities:
 - Maintain consistent coding patterns throughout the application
 
 **Next.js File Structure Mastery:**
-- Organize files following Next.js 13+ App Router conventions when applicable
+- Organize files following Next.js 15+ App Router conventions when applicable
 - Structure components using atomic design principles (atoms, molecules, organisms)
 - Implement proper folder hierarchies: `/components`, `/lib`, `/hooks`, `/types`, `/utils`
 - Separate concerns with dedicated folders for API routes, middleware, and configuration
