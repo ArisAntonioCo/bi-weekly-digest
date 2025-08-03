@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link'
 import { 
   Sidebar, 
   SidebarContent, 
@@ -26,24 +27,24 @@ const sidebarItems = [
   {
     title: "Content Management",
     items: [
-      { title: "AI Assistant", icon: MessageSquare, href: "/(admin)/dashboard" },
-      { title: "Create Blog Post", icon: PlusCircle, href: "/(admin)/posts/create" },
-      { title: "Manage Posts", icon: FileText, href: "/(admin)/posts" },
+      { title: "AI Assistant", icon: MessageSquare, href: "/dashboard" },
+      { title: "Create Blog Post", icon: PlusCircle, href: "/posts/create" },
+      { title: "Manage Posts", icon: FileText, href: "/posts" },
     ]
   },
   {
     title: "Newsletter",
     items: [
-      { title: "Configuration", icon: Settings, href: "/(admin)/newsletter/config" },
-      { title: "Send Newsletter", icon: Mail, href: "/(admin)/newsletter/send" },
-      { title: "Schedule", icon: Calendar, href: "/(admin)/newsletter/schedule" },
+      { title: "Configuration", icon: Settings, href: "/newsletter/config" },
+      { title: "Send Newsletter", icon: Mail, href: "/newsletter/send" },
+      { title: "Schedule", icon: Calendar, href: "/newsletter/schedule" },
     ]
   },
   {
     title: "Analytics",
     items: [
-      { title: "Performance", icon: BarChart3, href: "/(admin)/analytics" },
-      { title: "Subscribers", icon: User, href: "/(admin)/subscribers" },
+      { title: "Performance", icon: BarChart3, href: "/analytics" },
+      { title: "Subscribers", icon: User, href: "/subscribers" },
     ]
   }
 ]
@@ -79,10 +80,10 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
                       isActive={currentPath === item.href}
                       asChild
                     >
-                      <a href={item.href}>
+                      <Link href={item.href}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

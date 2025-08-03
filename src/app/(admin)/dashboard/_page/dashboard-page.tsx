@@ -20,7 +20,7 @@ export function DashboardPage() {
     }])
   }, [])
 
-  const handleSendMessage = async (content: string, files?: File[]) => {
+  const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       content,

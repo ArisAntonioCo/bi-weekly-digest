@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login, signup } from "@/app/(auth)/login/actions"
+import { login } from "@/app/(auth)/login/actions"
 import { Loader2 } from "lucide-react"
 
 export function LoginForm() {
