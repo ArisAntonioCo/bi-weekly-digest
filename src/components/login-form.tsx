@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,12 +12,13 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { login, signup } from "@/app/(auth)/login/actions"
+import { Loader2 } from "lucide-react"
 
 export function LoginForm() {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle login logic here
-  }
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
+  const [isLoading, setIsLoading] = useState(false)
 
   return (
     <Card className="w-full max-w-md">
@@ -26,38 +29,56 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-            />
+        {error && (
+          <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-md">
+            {error}
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Button
-                variant="link"
-                size="sm"
-                className="px-0 font-normal"
-                type="button"
-              >
-                Forgot password?
-              </Button>
+        )}
+        <form className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+                disabled={isLoading}
+              />
             </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              required
-            />
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                required
+                disabled={isLoading}
+              />
+            </div>
           </div>
-          <Button type="submit" className="w-full">
-            Sign In
+          <div className="pt-2">
+            <Button 
+            type="submit" 
+            className={`w-full transition-all duration-200 ${isLoading ? 'cursor-not-allowed opacity-80' : 'cursor-pointer hover:scale-[1.02]'}`}
+            formAction={async (formData) => {
+              setIsLoading(true)
+              await login(formData)
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span>Signing in...</span>
+              </div>
+            ) : (
+              "Sign In"
+            )}
           </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
