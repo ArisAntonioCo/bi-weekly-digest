@@ -1,10 +1,10 @@
 # Project To-Do List
 
 ## Setup
-- [ ] Initialize Next.js 15 with TypeScript and App Router
-- [ ] Install dependencies: `@supabase/supabase-js`, `@supabase/auth-helpers-nextjs`, `resend`, `openai`
-- [ ] Create `.env.local` file with required variables
-- [ ] Set up project structure
+- [x] Initialize Next.js 15 with TypeScript and App Router
+- [x] Install dependencies: `@supabase/supabase-js`, `@supabase/auth-helpers-nextjs`, `resend`, `openai`
+- [x] Create `.env.local` file with required variables
+- [x] Set up project structure
 
 ## Supabase Setup
 - [ ] Create Supabase project

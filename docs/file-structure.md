@@ -4,7 +4,7 @@
 bi-weekly-digest/
 ├── app/                       # Next.js 15 App Router
 │   ├── api/
-│   │   ├── auth/
+│   │   ├── (auth)/
 │   │   │   ├── login/
 │   │   │   └── logout/
 │   │   ├── config/
