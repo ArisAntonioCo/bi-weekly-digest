@@ -7,13 +7,13 @@
 - [x] Set up project structure
 
 ## Supabase Setup
-- [ ] Create Supabase project
-- [ ] Create database tables:
-  - [ ] `configurations` (id, system_prompt, updated_at)
-  - [ ] `blogs` (id, title, content, created_at)
-  - [ ] `recipients` (id, email, subscribed)
-- [ ] Enable Supabase Auth with email/password
-- [ ] Set up Row Level Security (admin only)
+- [x] Create Supabase project
+- [x] Create database tables:
+  - [x] `configurations` (id, system_prompt, updated_at)
+  - [x] `blogs` (id, title, content, created_at)
+  - [x] `recipients` (id, email, subscribed)
+- [x] Enable Supabase Auth with email/password
+- [x] Set up Row Level Security (admin only)
 
 ## API Routes
 - [ ] `/api/auth/login` - Admin login
@@ -24,10 +24,10 @@
 - [ ] `/api/newsletter/cron` - Biweekly cron
 
 ## Pages
-- [ ] `/auth/login` - Admin login page
-- [ ] `/admin/dashboard` - Main admin interface
+- [x] `/auth/login` - Admin login page
+- [x] `/admin/dashboard` - Main admin interface
 - [ ] `/blogs` - Public blog listing
-- [ ] Middleware for auth protection
+- [x] Middleware for auth protection
 
 ## Components
 - [ ] `ConfigEditor` - Edit system prompt
