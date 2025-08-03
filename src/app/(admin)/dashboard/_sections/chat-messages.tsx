@@ -63,14 +63,14 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeHighlight, rehypeRaw]}
                         components={{
-                          h1: ({ children }) => <h1 className="text-base md:text-lg font-bold mb-1 mt-2 first:mt-0">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-sm md:text-base font-semibold mb-1 mt-2 first:mt-0">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-xs md:text-sm font-semibold mb-1 mt-1 first:mt-0">{children}</h3>,
-                          h4: ({ children }) => <h4 className="text-xs md:text-sm font-medium mb-1 mt-1 first:mt-0">{children}</h4>,
-                          p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-                          ul: ({ children }) => <ul className="list-disc list-inside mb-1 space-y-0.5">{children}</ul>,
-                          ol: ({ children }) => <ol className="list-decimal list-inside mb-1 space-y-0.5">{children}</ol>,
-                          li: ({ children }) => <li className="leading-snug">{children}</li>,
+                          h1: ({ children }) => <h1 className="text-base md:text-lg font-bold mb-3 mt-4 first:mt-0">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-sm md:text-base font-semibold mb-2 mt-3 first:mt-0">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-xs md:text-sm font-semibold mb-2 mt-3 first:mt-0">{children}</h3>,
+                          h4: ({ children }) => <h4 className="text-xs md:text-sm font-medium mb-2 mt-2 first:mt-0">{children}</h4>,
+                          p: ({ children }) => <p className="mb-3 last:mb-0 leading-relaxed">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc mb-3 space-y-1 pl-6 ml-2">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal mb-3 space-y-1 pl-6 ml-2">{children}</ol>,
+                          li: ({ children }) => <li className="leading-relaxed pl-1">{children}</li>,
                           code: ({ children, className, ...props }) => {
                             const match = /language-(\w+)/.exec(className || '')
                             const isInline = !match
@@ -80,9 +80,9 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
                               <code className="block bg-muted-foreground/10 p-2 rounded text-xs font-mono overflow-x-auto" {...props}>{children}</code>
                             )
                           },
-                          pre: ({ children }) => <pre className="bg-muted-foreground/10 p-2 rounded overflow-x-auto mb-1">{children}</pre>,
-                          blockquote: ({ children }) => <blockquote className="border-l-4 border-muted-foreground/30 pl-3 mb-1 italic">{children}</blockquote>,
-                          table: ({ children }) => <table className="w-full border-collapse border border-muted-foreground/30 mb-1">{children}</table>,
+                          pre: ({ children }) => <pre className="bg-muted-foreground/10 p-3 rounded overflow-x-auto mb-3">{children}</pre>,
+                          blockquote: ({ children }) => <blockquote className="border-l-4 border-muted-foreground/30 pl-4 mb-3 italic bg-muted-foreground/5 py-2">{children}</blockquote>,
+                          table: ({ children }) => <table className="w-full border-collapse border border-muted-foreground/30 mb-3">{children}</table>,
                           thead: ({ children }) => <thead className="bg-muted-foreground/10">{children}</thead>,
                           tbody: ({ children }) => <tbody>{children}</tbody>,
                           tr: ({ children }) => <tr className="border-b border-muted-foreground/20">{children}</tr>,
