@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent } from '@/components/ui/card'
+import { TypingIndicator } from '@/components/ui/typing-indicator'
 import { MessageSquare, User } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -49,13 +50,13 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
               </div>
             )}
             <Card
-              className={`max-w-[90%] md:max-w-[85%] min-w-0 w-fit ${
+              className={`max-w-[90%] md:max-w-[85%] min-w-0 w-fit py-0 ${
                 message.sender === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+                  ? 'bg-primary text-primary-foreground rounded-2xl'
+                  : 'bg-muted rounded-2xl'
               }`}
             >
-              <CardContent className="p-2 md:p-3">
+              <CardContent className="px-3 py-1.5 md:px-3 md:py-2">
                 <div className="text-xs md:text-sm">
                   {message.sender === 'assistant' ? (
                     <div className="prose prose-xs md:prose-sm max-w-none dark:prose-invert prose-compact">
@@ -99,9 +100,6 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
                     <p>{message.content}</p>
                   )}
                 </div>
-                <p className="mt-1 md:mt-2 text-xs opacity-70">
-                  {message.timestamp.toLocaleTimeString()}
-                </p>
               </CardContent>
             </Card>
             {message.sender === 'user' && (
@@ -116,13 +114,9 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
             <div className="flex h-6 w-6 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-primary-foreground mt-1 flex-shrink-0">
               <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
             </div>
-            <Card className="bg-muted">
-              <CardContent className="p-2 md:p-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60" />
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60" style={{ animationDelay: '0.2s' }} />
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60" style={{ animationDelay: '0.4s' }} />
-                </div>
+            <Card className="bg-muted rounded-2xl py-0">
+              <CardContent className="px-3 py-1.5 md:px-3 md:py-2">
+                <TypingIndicator />
               </CardContent>
             </Card>
           </div>
