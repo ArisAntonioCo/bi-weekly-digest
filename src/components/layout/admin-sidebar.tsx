@@ -1,6 +1,8 @@
 "use client"
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { 
   Sidebar, 
   SidebarContent, 
@@ -11,6 +13,7 @@ import {
   SidebarMenuButton, 
   SidebarMenuItem, 
   SidebarHeader,
+  SidebarFooter,
 } from '@/components/ui/sidebar'
 import { 
   MessageSquare, 
@@ -19,8 +22,11 @@ import {
   Mail, 
   BarChart3, 
   User,
-  Calendar
+  Calendar,
+  LogOut,
+  Loader2
 } from 'lucide-react'
+import { logout } from '@/app/(auth)/login/actions'
 
 const sidebarItems = [
   {
@@ -51,6 +57,19 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ currentPath }: AdminSidebarProps) {
+  const router = useRouter()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout error:', error)
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -89,6 +108,28 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
+      <SidebarFooter className="border-t">
+        <div className="p-2">
+          <SidebarMenuButton
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="w-full justify-start hover:bg-destructive/10 hover:text-destructive transition-colors"
+          >
+            {isLoggingOut ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Logging out...</span>
+              </>
+            ) : (
+              <>
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </>
+            )}
+          </SidebarMenuButton>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }
