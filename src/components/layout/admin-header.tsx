@@ -10,12 +10,15 @@ export function AdminHeader() {
       <SidebarTrigger />
       <div className="flex flex-1 items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold">AI Content Assistant</h1>
-          <p className="text-sm text-muted-foreground">Create and manage your bi-weekly digest content</p>
+          <h1 className="text-base md:text-lg font-semibold">AI Content Assistant</h1>
+          <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Create and manage your bi-weekly digest content</p>
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="hidden sm:flex">
           <Settings className="h-4 w-4 mr-2" />
           Settings
+        </Button>
+        <Button variant="outline" size="sm" className="sm:hidden">
+          <Settings className="h-4 w-4" />
         </Button>
       </div>
     </header>

@@ -34,39 +34,39 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
   }, [messages])
 
   return (
-    <div className="flex-1 overflow-auto p-4 min-h-0">
-      <div className="mx-auto max-w-4xl space-y-3">
+    <div className="flex-1 overflow-auto p-2 md:p-4 min-h-0">
+      <div className="mx-auto max-w-4xl space-y-2 md:space-y-3">
         {isClient && messages.map((message) => (
           <div
             key={message.id}
-            className={`flex items-start gap-3 ${
+            className={`flex items-start gap-2 md:gap-3 ${
               message.sender === 'user' ? 'justify-end' : 'justify-start'
             }`}
           >
             {message.sender === 'assistant' && (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground mt-1 flex-shrink-0">
-                <MessageSquare className="h-4 w-4" />
+              <div className="flex h-6 w-6 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-primary-foreground mt-1 flex-shrink-0">
+                <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
               </div>
             )}
             <Card
-              className={`max-w-[85%] min-w-0 w-fit ${
+              className={`max-w-[90%] md:max-w-[85%] min-w-0 w-fit ${
                 message.sender === 'user'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted'
               }`}
             >
-              <CardContent className="p-3">
-                <div className="text-sm">
+              <CardContent className="p-2 md:p-3">
+                <div className="text-xs md:text-sm">
                   {message.sender === 'assistant' ? (
-                    <div className="prose prose-sm max-w-none dark:prose-invert prose-compact">
+                    <div className="prose prose-xs md:prose-sm max-w-none dark:prose-invert prose-compact">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeHighlight, rehypeRaw]}
                         components={{
-                          h1: ({ children }) => <h1 className="text-lg font-bold mb-1 mt-2 first:mt-0">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-base font-semibold mb-1 mt-2 first:mt-0">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 mt-1 first:mt-0">{children}</h3>,
-                          h4: ({ children }) => <h4 className="text-sm font-medium mb-1 mt-1 first:mt-0">{children}</h4>,
+                          h1: ({ children }) => <h1 className="text-base md:text-lg font-bold mb-1 mt-2 first:mt-0">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-sm md:text-base font-semibold mb-1 mt-2 first:mt-0">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-xs md:text-sm font-semibold mb-1 mt-1 first:mt-0">{children}</h3>,
+                          h4: ({ children }) => <h4 className="text-xs md:text-sm font-medium mb-1 mt-1 first:mt-0">{children}</h4>,
                           p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
                           ul: ({ children }) => <ul className="list-disc list-inside mb-1 space-y-0.5">{children}</ul>,
                           ol: ({ children }) => <ol className="list-decimal list-inside mb-1 space-y-0.5">{children}</ol>,
@@ -99,25 +99,25 @@ export function ChatMessages({ messages, isLoading, isClient }: ChatMessagesProp
                     <p>{message.content}</p>
                   )}
                 </div>
-                <p className="mt-2 text-xs opacity-70">
+                <p className="mt-1 md:mt-2 text-xs opacity-70">
                   {message.timestamp.toLocaleTimeString()}
                 </p>
               </CardContent>
             </Card>
             {message.sender === 'user' && (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted mt-1 flex-shrink-0">
-                <User className="h-4 w-4" />
+              <div className="flex h-6 w-6 md:h-8 md:w-8 items-center justify-center rounded-full bg-muted mt-1 flex-shrink-0">
+                <User className="h-3 w-3 md:h-4 md:w-4" />
               </div>
             )}
           </div>
         ))}
         {isClient && isLoading && (
-          <div className="flex items-start gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground mt-1 flex-shrink-0">
-              <MessageSquare className="h-4 w-4" />
+          <div className="flex items-start gap-2 md:gap-3">
+            <div className="flex h-6 w-6 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-primary-foreground mt-1 flex-shrink-0">
+              <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
             </div>
             <Card className="bg-muted">
-              <CardContent className="p-4">
+              <CardContent className="p-2 md:p-4">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60" />
                   <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60" style={{ animationDelay: '0.2s' }} />

@@ -57,13 +57,13 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-4 flex-shrink-0" style={{ height: '64px', minHeight: '64px', maxHeight: '64px' }}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <FileText className="h-4 w-4" />
+        <div className="flex items-center gap-2 px-4 h-16 min-h-16 max-h-16 flex-shrink-0">
+          <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <FileText className="h-3 w-3 md:h-4 md:w-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold">BI-Weekly Digest</span>
-            <span className="text-xs text-muted-foreground">Content Manager</span>
+            <span className="text-xs md:text-sm font-semibold">BI-Weekly Digest</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Content Manager</span>
           </div>
         </div>
       </SidebarHeader>

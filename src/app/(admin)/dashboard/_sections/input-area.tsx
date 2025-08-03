@@ -9,7 +9,7 @@ interface InputAreaProps {
 
 export function InputArea({ onSend, isLoading }: InputAreaProps) {
   return (
-    <div className="border-t bg-background p-4 flex-shrink-0">
+    <div className="border-t bg-background p-2 md:p-4 flex-shrink-0">
       <div className="mx-auto max-w-4xl">
         <PromptInputBox
           onSend={onSend}
