@@ -30,16 +30,44 @@ export function DashboardPage() {
     setMessages(prev => [...prev, userMessage])
     setIsLoading(true)
 
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `I understand you want to work on: "${content}". I can help you with content creation, newsletter configuration, and digest management. What specific task would you like to start with?`,
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(msg => ({
+            role: msg.sender,
+            content: msg.content
+          }))
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get response')
+      }
+
+      const data = await response.json()
+      
+      if (data.message) {
+        setMessages(prev => [...prev, {
+          ...data.message,
+          timestamp: new Date(data.message.timestamp)
+        }])
+      }
+    } catch (error) {
+      console.error('Chat error:', error)
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: 'Sorry, I encountered an error processing your request. Please try again.',
         sender: 'assistant',
         timestamp: new Date()
       }
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   return (
