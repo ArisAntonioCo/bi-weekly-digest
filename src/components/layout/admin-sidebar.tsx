@@ -18,7 +18,6 @@ import {
   Mail, 
   BarChart3, 
   User,
-  PlusCircle,
   Calendar
 } from 'lucide-react'
 
@@ -26,24 +25,22 @@ const sidebarItems = [
   {
     title: "Content Management",
     items: [
-      { title: "AI Chat", icon: MessageSquare, href: "/admin/dashboard", isActive: true },
-      { title: "Create Blog Post", icon: PlusCircle, href: "/admin/posts/create" },
-      { title: "Manage Posts", icon: FileText, href: "/admin/posts" },
+      { title: "AI Assistant", icon: MessageSquare, href: "/(admin)/dashboard" },
     ]
   },
   {
     title: "Newsletter",
     items: [
-      { title: "Configuration", icon: Settings, href: "/admin/newsletter/config" },
-      { title: "Send Newsletter", icon: Mail, href: "/admin/newsletter/send" },
-      { title: "Schedule", icon: Calendar, href: "/admin/newsletter/schedule" },
+      { title: "Configuration", icon: Settings, href: "/(admin)/newsletter/config" },
+      { title: "Send Newsletter", icon: Mail, href: "/(admin)/newsletter/send" },
+      { title: "Schedule", icon: Calendar, href: "/(admin)/newsletter/schedule" },
     ]
   },
   {
     title: "Analytics",
     items: [
-      { title: "Performance", icon: BarChart3, href: "/admin/analytics" },
-      { title: "Subscribers", icon: User, href: "/admin/subscribers" },
+      { title: "Performance", icon: BarChart3, href: "/(admin)/analytics" },
+      { title: "Subscribers", icon: User, href: "/(admin)/subscribers" },
     ]
   }
 ]
@@ -76,7 +73,7 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
                 {section.items.map((item, itemIndex) => (
                   <SidebarMenuItem key={itemIndex}>
                     <SidebarMenuButton 
-                      isActive={currentPath === item.href || item.isActive}
+                      isActive={currentPath === item.href}
                       asChild
                     >
                       <a href={item.href}>

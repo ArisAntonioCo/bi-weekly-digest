@@ -37,15 +37,7 @@ bi-weekly-digest/
 │   │   │   │   │   ├── types.ts
 │   │   │   │   │   └── index.ts    # Barrel exports
 │   │   │   │   └── page.tsx        # Imports only from _sections
-│   │   │   ├── posts/
-│   │   │   │   ├── _sections/      # Posts list UI components
-│   │   │   │   │   └── posts-section.tsx
-│   │   │   │   ├── create/
-│   │   │   │   │   ├── _sections/  # Create post UI components
-│   │   │   │   │   │   └── create-post-section.tsx
-│   │   │   │   │   └── page.tsx    # Single import
-│   │   │   │   └── page.tsx        # Single import
-│   │   │   └── ...other-admin-pages/
+│   │   │   └── ...other-admin-pages/ # Future admin pages
 │   │   ├── api/
 │   │   │   ├── (auth)/
 │   │   │   │   ├── login/
@@ -95,7 +87,7 @@ bi-weekly-digest/
 ## File Naming Conventions
 
 ### Components
-- **Page sections**: `{purpose}-section.tsx` (e.g., `posts-section.tsx`, `create-post-section.tsx`)
+- **Page sections**: `{purpose}-section.tsx` (e.g., `dashboard-section.tsx`, `newsletter-section.tsx`)
 - **UI components**: kebab-case (e.g., `admin-header.tsx`, `chat-messages.tsx`)
 - **Layout components**: `{area}-{type}.tsx` (e.g., `admin-sidebar.tsx`)
 
