@@ -18,11 +18,11 @@
       "args": [
         "-y",
         "@supabase/mcp-server-supabase@latest",
-        "--project-ref="
+        "--project-ref=heohenctlunmbbqikvrz"
       ],
       "env": {
-        "SUPABASE_ACCESS_TOKEN": ""
-       }
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
     },
     "sequential-thinking": {
       "command": "npx",
