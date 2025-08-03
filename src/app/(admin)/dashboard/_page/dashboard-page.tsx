@@ -71,7 +71,7 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex h-full w-full flex-col min-h-0">
       <ChatMessages 
         messages={messages} 
         isLoading={isLoading} 

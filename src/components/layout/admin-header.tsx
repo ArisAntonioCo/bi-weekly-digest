@@ -6,7 +6,7 @@ import { Settings } from 'lucide-react'
 
 export function AdminHeader() {
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
+    <header className="flex items-center gap-4 border-b bg-background px-4 py-4 flex-shrink-0">
       <SidebarTrigger />
       <div className="flex flex-1 items-center justify-between">
         <div>

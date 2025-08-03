@@ -15,12 +15,12 @@ export default function AdminLayout({
       <SidebarProvider>
         <div className="flex h-screen w-full">
           <AdminSidebar />
-          <SidebarInset className="flex flex-col w-full">
+          <div className="flex flex-col w-full min-h-0">
             <AdminHeader />
-            <div className="flex flex-1 flex-col w-full">
+            <SidebarInset className="flex flex-1 flex-col w-full min-h-0 overflow-hidden">
               {children}
-            </div>
-          </SidebarInset>
+            </SidebarInset>
+          </div>
         </div>
       </SidebarProvider>
     </div>
