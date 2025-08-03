@@ -6,6 +6,7 @@
       "args": ["-y", "@upstash/context7-mcp"]
     },
     "puppeteer": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
@@ -25,6 +26,7 @@
       }
     },
     "sequential-thinking": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
