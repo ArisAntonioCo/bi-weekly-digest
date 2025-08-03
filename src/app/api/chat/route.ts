@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     if (isSystemPromptUpdate) {
       // Extract the new prompt from the message
-      const promptMatch = lastMessage.content.match(/["']([^"']+)["']|:\s*(.+)/s)
+      const promptMatch = lastMessage.content.match(/["']([^"']+)["']|:\s*([\s\S]+)/)
       if (promptMatch) {
         const newPrompt = promptMatch[1] || promptMatch[2]?.trim()
         
@@ -112,7 +112,7 @@ Use the web search tool to find the latest information when answering questions 
           model: 'gpt-4o-mini',
           instructions: instructions,
           input: lastMessage.content,
-          tools: [{ type: 'web_search' }],
+          tools: [{ type: 'web_search_preview' }],
         })
 
         return NextResponse.json({
@@ -152,9 +152,9 @@ Additionally, you can help the user update your system prompt. If they ask to up
           }
         })
       }
-    } catch (apiError: any) {
+    } catch (apiError: unknown) {
       // Fallback to chat completions if Responses API fails
-      console.log('Responses API failed, falling back to Chat Completions:', apiError.message)
+      console.log('Responses API failed, falling back to Chat Completions:', apiError instanceof Error ? apiError.message : 'Unknown error')
       
       const enhancedSystemPrompt = `${systemPrompt}
 
