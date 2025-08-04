@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 import { 
   Settings, 
   MessageSquare, 
@@ -24,7 +26,8 @@ interface PageConfig {
   badge?: string
   action?: {
     label: string
-    href: string
+    href?: string
+    onClick?: string
     icon: React.ComponentType<{ className?: string }>
   }
 }
@@ -36,9 +39,9 @@ const pageConfigs: Record<string, PageConfig> = {
     icon: MessageSquare,
     badge: 'Active',
     action: {
-      label: 'Configure',
-      href: '/newsletter/config',
-      icon: Settings
+      label: 'Email AI Analysis',
+      onClick: 'emailAnalysis',
+      icon: Mail
     }
   },
   '/blogs': {
@@ -98,8 +101,34 @@ const defaultConfig: PageConfig = {
 
 export function AdminHeader() {
   const pathname = usePathname()
+  const [isEmailingAnalysis, setIsEmailingAnalysis] = useState(false)
   const config = pageConfigs[pathname] || defaultConfig
   const IconComponent = config.icon
+
+  const handleEmailAnalysis = async () => {
+    setIsEmailingAnalysis(true)
+    
+    try {
+      const response = await fetch('/api/email-prompt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const result = await response.json()
+      
+      if (response.ok) {
+        toast.success('AI analysis has been generated and emailed successfully to kulaizke@gmail.com!')
+      } else {
+        toast.error(`Failed to email analysis: ${result.error}`)
+      }
+    } catch (error) {
+      toast.error('Failed to email analysis. Please try again.')
+    } finally {
+      setIsEmailingAnalysis(false)
+    }
+  }
 
   return (
     <header className="flex items-center gap-4 border-b bg-background px-4 py-4 flex-shrink-0">
@@ -125,12 +154,25 @@ export function AdminHeader() {
         </div>
         
         {config.action ? (
-          <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
-            <Link href={config.action.href}>
-              <config.action.icon className="h-4 w-4 mr-2" />
-              {config.action.label}
-            </Link>
-          </Button>
+          config.action.onClick === 'emailAnalysis' ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hidden sm:flex gap-2" 
+              onClick={handleEmailAnalysis}
+              disabled={isEmailingAnalysis}
+            >
+              <config.action.icon className="h-4 w-4" />
+              {isEmailingAnalysis ? 'Generating & Sending...' : config.action.label}
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
+              <Link href={config.action.href || '#'}>
+                <config.action.icon className="h-4 w-4 mr-2" />
+                {config.action.label}
+              </Link>
+            </Button>
+          )
         ) : (
           <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
             <Link href="/newsletter/config">
@@ -140,15 +182,28 @@ export function AdminHeader() {
           </Button>
         )}
         
-        <Button variant="outline" size="sm" className="sm:hidden" asChild>
-          <Link href={config.action?.href || "/newsletter/config"}>
-            {config.action?.icon ? (
-              <config.action.icon className="h-4 w-4" />
-            ) : (
-              <Settings className="h-4 w-4" />
-            )}
-          </Link>
-        </Button>
+        {/* Mobile version */}
+        {config.action && config.action.onClick === 'emailAnalysis' ? (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="sm:hidden" 
+            onClick={handleEmailAnalysis}
+            disabled={isEmailingAnalysis}
+          >
+            <config.action.icon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" className="sm:hidden" asChild>
+            <Link href={config.action?.href || "/newsletter/config"}>
+              {config.action?.icon ? (
+                <config.action.icon className="h-4 w-4" />
+              ) : (
+                <Settings className="h-4 w-4" />
+              )}
+            </Link>
+          </Button>
+        )}
       </div>
     </header>
   )
