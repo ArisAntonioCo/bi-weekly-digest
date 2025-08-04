@@ -7,8 +7,9 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Users, Mail, MailX, Trash2, ToggleLeft } from 'lucide-react'
+import { Users, Mail, Trash2, ToggleLeft, Send } from 'lucide-react'
 import { format } from 'date-fns'
+import { toast } from 'sonner'
 
 interface Subscriber {
   id: string
@@ -31,6 +32,7 @@ export function SubscribersList({
   onDeleteSubscriber 
 }: SubscribersListProps) {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null)
 
   const handleToggleSubscription = async (subscriber: Subscriber) => {
     setActionLoading(subscriber.id)
@@ -44,8 +46,32 @@ export function SubscribersList({
     setActionLoading(null)
   }
 
-  const activeSubscribers = subscribers.filter(s => s.subscribed).length
-  const inactiveSubscribers = subscribers.filter(s => !s.subscribed).length
+  const handleSendEmail = async (subscriber: Subscriber) => {
+    setSendingEmail(subscriber.id)
+    
+    try {
+      const response = await fetch('/api/email-subscriber', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: subscriber.email }),
+      })
+
+      const result = await response.json()
+      
+      if (response.ok) {
+        toast.success(result.message || `AI analysis sent to ${subscriber.email}!`)
+      } else {
+        toast.error(`Failed to send email: ${result.error}`)
+      }
+    } catch {
+      toast.error('Failed to send email. Please try again.')
+    } finally {
+      setSendingEmail(null)
+    }
+  }
+
 
   if (loading) {
     return (
@@ -95,7 +121,7 @@ export function SubscribersList({
                     <TableHead className="min-w-[200px]">Email Address</TableHead>
                     <TableHead className="min-w-[100px]">Status</TableHead>
                     <TableHead className="min-w-[120px] hidden sm:table-cell">Added</TableHead>
-                    <TableHead className="text-right min-w-[180px]">Actions</TableHead>
+                    <TableHead className="text-right min-w-[220px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
               <TableBody>
@@ -125,8 +151,23 @@ export function SubscribersList({
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => handleSendEmail(subscriber)}
+                          disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
+                          className="text-xs px-2 py-1 h-7"
+                          title="Send AI Analysis"
+                        >
+                          {sendingEmail === subscriber.id ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                          ) : (
+                            <Send className="h-3 w-3" />
+                          )}
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleToggleSubscription(subscriber)}
-                          disabled={actionLoading === subscriber.id}
+                          disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
                           className="text-xs px-2 py-1 h-7"
                         >
                           {actionLoading === subscriber.id ? (
@@ -146,7 +187,7 @@ export function SubscribersList({
                               variant="outline"
                               size="sm"
                               className="text-destructive hover:text-destructive hover:bg-destructive/10 px-2 py-1 h-7"
-                              disabled={actionLoading === subscriber.id}
+                              disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>

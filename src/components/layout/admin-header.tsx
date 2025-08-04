@@ -123,7 +123,7 @@ export function AdminHeader() {
       } else {
         toast.error(`Failed to email analysis: ${result.error}`)
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to email analysis. Please try again.')
     } finally {
       setIsEmailingAnalysis(false)
