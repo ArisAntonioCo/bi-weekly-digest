@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     // Check authentication
     const supabase = await createClient()
@@ -15,6 +15,14 @@ export async function POST() {
     
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get the email from request body
+    const body = await request.json()
+    const { email } = body
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
     // Get the system prompt from configurations
@@ -206,7 +214,7 @@ ${aiResponse}
     // Send email using Resend
     const emailResult = await resend.emails.send({
       from: 'Bi-Weekly Digest <noreply@updates.fitzsixto.com>',
-      to: 'kulaizke@gmail.com',
+      to: email,
       subject: 'AI Analysis Report - Bi-Weekly Digest',
       html: `<!DOCTYPE html>
 <html>
@@ -389,7 +397,7 @@ ${aiResponse}
 
     return NextResponse.json({
       success: true,
-      message: 'System prompt has been emailed successfully!',
+      message: `AI analysis has been emailed successfully to ${email}!`,
       emailId: emailResult.data?.id
     })
 
