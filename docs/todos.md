@@ -46,11 +46,6 @@
 
 ## 🚧 In Progress
 
-### Content Management
-- [ ] `BlogEditor` component - Create/edit blog posts
-- [ ] Rich text editor integration
-- [ ] Blog content preview
-
 ## 📋 Planned Features
 
 ### Blog System

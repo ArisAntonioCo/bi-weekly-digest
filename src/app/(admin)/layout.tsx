@@ -17,8 +17,8 @@ export default function AdminLayout({
           <AdminSidebar />
           <div className="flex flex-col w-full min-h-0">
             <AdminHeader />
-            <SidebarInset className="flex flex-1 flex-col w-full min-h-0 overflow-hidden">
-              <div className="flex flex-1 flex-col h-full">
+            <SidebarInset className="flex flex-1 flex-col w-full min-h-0 scrollable-content">
+              <div className="flex flex-1 flex-col h-full overflow-y-auto">
                 {children}
               </div>
             </SidebarInset>

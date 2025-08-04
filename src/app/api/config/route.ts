@@ -28,7 +28,7 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     
@@ -44,11 +44,17 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'System prompt is required' }, { status: 400 })
     }
 
+    // Get existing configuration first
+    const { data: existing } = await supabase
+      .from('configurations')
+      .select('id')
+      .single()
+
     // Update or insert configuration
     const { data, error } = await supabase
       .from('configurations')
       .upsert({
-        id: '00000000-0000-0000-0000-000000000001', // Fixed ID for single configuration
+        id: existing?.id || '00000000-0000-0000-0000-000000000001',
         system_prompt,
         updated_at: new Date().toISOString()
       })

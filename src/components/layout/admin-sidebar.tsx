@@ -24,7 +24,8 @@ import {
   User,
   Calendar,
   LogOut,
-  Loader2
+  Loader2,
+  BookOpen
 } from 'lucide-react'
 import { logout } from '@/app/(auth)/login/actions'
 
@@ -33,6 +34,7 @@ const sidebarItems = [
     title: "Content Management",
     items: [
       { title: "AI Assistant", icon: MessageSquare, href: "/dashboard" },
+      { title: "Blogs", icon: BookOpen, href: "/blogs" },
     ]
   },
   {
