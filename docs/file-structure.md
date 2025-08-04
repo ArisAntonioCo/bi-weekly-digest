@@ -31,62 +31,95 @@ bi-weekly-digest/
 │   ├── app/
 │   │   ├── (admin)/                 # Admin route group
 │   │   │   ├── layout.tsx          # Admin layout with sidebar
-│   │   │   ├── dashboard/
-│   │   │   │   ├── _page/          # Main page component
-│   │   │   │   │   ├── dashboard-page.tsx
-│   │   │   │   │   └── index.ts    # Barrel exports
-│   │   │   │   ├── _sections/      # UI components
-│   │   │   │   │   ├── chat-messages.tsx
-│   │   │   │   │   ├── input-area.tsx
-│   │   │   │   │   ├── types.ts
-│   │   │   │   │   └── index.ts    # Barrel exports
-│   │   │   │   └── page.tsx        # Imports only from _page
-│   │   │   ├── posts/              # Future posts pages
-│   │   │   │   └── create/
-│   │   │   └── ...other-admin-pages/ # Future admin pages
+│   │   │   └── dashboard/
+│   │   │       ├── _page/          # Main page component
+│   │   │       │   ├── dashboard-page.tsx
+│   │   │       │   └── index.ts    # Barrel exports
+│   │   │       ├── _sections/      # UI components
+│   │   │       │   ├── chat-messages.tsx
+│   │   │       │   ├── input-area.tsx
+│   │   │       │   ├── types.ts
+│   │   │       │   └── index.ts    # Barrel exports
+│   │   │       └── page.tsx        # Imports only from _page
+│   │   ├── (auth)/                 # Auth route group
+│   │   │   ├── layout.tsx          # Auth layout
+│   │   │   ├── login/
+│   │   │   │   ├── actions/        # Server actions
+│   │   │   │   │   └── index.ts
+│   │   │   │   └── page.tsx
+│   │   │   └── signup/             # Future signup page
 │   │   ├── api/
-│   │   │   ├── (auth)/
-│   │   │   │   ├── login/
-│   │   │   │   └── logout/
-│   │   │   ├── config/
-│   │   │   ├── blogs/
-│   │   │   └── newsletter/
-│   │   │       ├── send/
-│   │   │       └── cron/
-│   │   ├── auth/
-│   │   │   └── login/
-│   │   │       └── page.tsx
-│   │   ├── blogs/
-│   │   │   └── page.tsx
-│   │   ├── layout.tsx
-│   │   └── page.tsx
+│   │   │   ├── chat/               # AI chat endpoint
+│   │   │   │   └── route.ts
+│   │   │   └── config/             # Configuration endpoints
+│   │   │       └── route.ts
+│   │   ├── auth/                   # Supabase auth routes
+│   │   │   ├── callback/
+│   │   │   │   └── route.ts
+│   │   │   └── confirm/
+│   │   │       └── route.ts
+│   │   ├── favicon.ico
+│   │   ├── globals.css             # Global styles & Tailwind
+│   │   ├── layout.tsx              # Root layout
+│   │   └── page.tsx                # Landing page
 │   │
 │   ├── components/
-│   │   ├── ui/                     # Reusable UI components
+│   │   ├── ui/                     # shadcn/ui components (40+ components)
+│   │   │   ├── accordion.tsx
+│   │   │   ├── ai-prompt-box.tsx   # Custom AI prompt component
 │   │   │   ├── button.tsx
 │   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── input.tsx
 │   │   │   ├── sidebar.tsx
-│   │   │   └── ai-prompt-box.tsx
-│   │   └── layout/                 # Layout-specific components
-│   │       ├── admin-sidebar.tsx
-│   │       ├── admin-header.tsx
-│   │       └── index.ts            # Barrel exports
+│   │   │   ├── typing-indicator.tsx # Custom typing animation
+│   │   │   └── ... (38 more components)
+│   │   ├── layout/                 # Layout-specific components
+│   │   │   ├── admin-header.tsx
+│   │   │   ├── admin-sidebar.tsx
+│   │   │   └── index.ts            # Barrel exports
+│   │   └── login-form.tsx          # Auth form component
+│   │
+│   ├── hooks/
+│   │   └── use-mobile.ts           # Responsive hook
 │   │
 │   ├── lib/
-│   │   ├── supabase.ts
-│   │   ├── openai.ts
-│   │   └── resend.ts
+│   │   ├── openai.ts               # OpenAI client
+│   │   ├── resend.ts               # Resend client (planned)
+│   │   ├── supabase.ts             # Supabase types
+│   │   └── utils.ts                # Utility functions & cn()
 │   │
-│   └── middleware.ts               # Auth protection
+│   ├── utils/
+│   │   └── supabase/               # Supabase utilities
+│   │       ├── client.ts           # Client-side Supabase
+│   │       ├── middleware.ts       # Auth middleware
+│   │       ├── route-handler.ts    # Route handler utils
+│   │       └── server.ts           # Server-side Supabase
+│   │
+│   └── middleware.ts               # Next.js middleware for auth
+│
+├── public/                         # Static assets
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
 │
 ├── docs/                           # Project documentation
 │   ├── file-structure.md
 │   ├── tech-stack.md
-│   └── integration-flow.md
+│   ├── integration-flow.md
+│   └── todos.md
 │
-├── .env.local
-├── .env.example
-├── package.json
+├── components.json                 # shadcn/ui configuration
+├── eslint.config.mjs              # ESLint configuration
+├── next.config.ts                 # Next.js configuration
+├── postcss.config.mjs             # PostCSS configuration
+├── tailwind.config.ts             # Tailwind configuration
+├── tsconfig.json                  # TypeScript configuration
+├── package.json                   # Dependencies & scripts
+├── package-lock.json
 └── README.md
 ```
 
