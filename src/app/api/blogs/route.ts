@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
 
@@ -6,7 +6,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient()
     
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateBlogsFromSystemPrompt(supabase: any, systemPrompt: string) {
+async function generateBlogsFromSystemPrompt(supabase: Awaited<ReturnType<typeof createClient>>, systemPrompt: string) {
   try {
     // Analyze the system prompt to determine content theme
     const themeAnalysis = await openai.chat.completions.create({

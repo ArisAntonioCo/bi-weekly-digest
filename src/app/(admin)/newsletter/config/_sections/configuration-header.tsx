@@ -13,7 +13,7 @@ export function ConfigurationHeader() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">AI Configuration</h1>
           <p className="text-muted-foreground">
-            Configure Kyle's AI assistant behavior and expertise
+            Configure Kyle&apos;s AI assistant behavior and expertise
           </p>
         </div>
       </div>
@@ -31,7 +31,7 @@ export function ConfigurationHeader() {
       
       <div className="bg-muted/50 rounded-lg p-4 border">
         <p className="text-sm text-muted-foreground">
-          The system prompt defines how Kyle's AI assistant behaves, what expertise it demonstrates, 
+          The system prompt defines how Kyle&apos;s AI assistant behaves, what expertise it demonstrates, 
           and what type of content it generates. Changes here will automatically update the blog content 
           and chat behavior to reflect the new configuration.
         </p>

@@ -1,7 +1,6 @@
 "use client"
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { 
   Sidebar, 
@@ -59,7 +58,6 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ currentPath }: AdminSidebarProps) {
-  const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {

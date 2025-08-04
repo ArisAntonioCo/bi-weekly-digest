@@ -149,7 +149,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
                 System Prompt Configuration
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Define Kyle's AI assistant behavior and expertise domain
+                Define Kyle&apos;s AI assistant behavior and expertise domain
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
               <Separator orientation="vertical" className="h-4" />
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <User className="h-4 w-4" />
-                Kyle's AI Assistant
+                Kyle&apos;s AI Assistant
               </div>
             </div>
           )}
@@ -234,7 +234,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
                     message: 'System prompt must be at least 10 characters'
                   }
                 })}
-                placeholder="Enter the system prompt that defines Kyle's AI assistant behavior, expertise, and response style..."
+                placeholder="Enter the system prompt that defines Kyle&apos;s AI assistant behavior, expertise, and response style..."
                 className="min-h-[300px] resize-y font-mono text-sm leading-relaxed"
                 disabled={saving}
               />
@@ -254,7 +254,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
           <Alert>
             <Sparkles className="h-4 w-4" />
             <AlertDescription>
-              Changes to the system prompt will automatically update the AI's behavior in chat conversations 
+              Changes to the system prompt will automatically update the AI&apos;s behavior in chat conversations 
               and regenerate blog content to match the new configuration theme.
             </AlertDescription>
           </Alert>
