@@ -44,17 +44,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'System prompt is required' }, { status: 400 })
     }
 
-    // Get existing configuration first
-    const { data: existing } = await supabase
+    // First, get the existing configuration to use its ID
+    const { data: existingConfig } = await supabase
       .from('configurations')
       .select('id')
       .single()
-
+    
+    const configId = existingConfig?.id || 'ac8bb385-2456-4efe-9c51-599222760dbf'
+    
     // Update or insert configuration
     const { data, error } = await supabase
       .from('configurations')
       .upsert({
-        id: existing?.id || '00000000-0000-0000-0000-000000000001',
+        id: configId,
         system_prompt,
         updated_at: new Date().toISOString()
       })
