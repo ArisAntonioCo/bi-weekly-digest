@@ -56,23 +56,19 @@ Dashboard → Content Creation → Supabase DB
 
 ## Planned Features
 
-### 1. Blog Content Management
-- Create/edit blog posts through dashboard
-- Store content in Supabase `blogs` table
-- Rich text editor for content creation
 
-### 2. Public Blog Display
+### 1. Public Blog Display
 - Public-facing blog page at `/blogs`
 - Display published content from database
 - SEO optimization and responsive design
 
-### 3. Newsletter System
+### 2. Newsletter System
 - Subscriber management in `recipients` table
 - Biweekly cron job via Vercel Cron
 - Email template generation with OpenAI
 - Newsletter delivery through Resend API
 
-### 4. Analytics & Monitoring
+### 3. Analytics & Monitoring
 - Track newsletter opens and clicks
 - Monitor AI usage and costs
 - Dashboard analytics for content performance
