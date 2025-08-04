@@ -40,7 +40,6 @@ const sidebarItems = [
     title: "Newsletter",
     items: [
       { title: "Configuration", icon: Settings, href: "/newsletter/config" },
-      { title: "Send Newsletter", icon: Mail, href: "/newsletter/send" },
       { title: "Schedule", icon: Calendar, href: "/newsletter/schedule" },
     ]
   },
