@@ -88,7 +88,7 @@ const pageConfigs: Record<string, PageConfig> = {
     title: 'Subscriber Management',
     description: 'Manage newsletter recipients and preferences',
     icon: User,
-    badge: 'Active Users'
+    badge: 'Newsletter List'
   }
 }
 
