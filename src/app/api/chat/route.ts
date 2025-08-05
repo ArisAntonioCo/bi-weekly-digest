@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { messages } = await request.json()
+    const { messages, files } = await request.json()
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Invalid messages format' }, { status: 400 })
@@ -162,17 +162,27 @@ Please refine the system prompt based on this request.`
 
     const systemPrompt = config?.system_prompt || 'You are an AI assistant that helps create engaging bi-weekly digest content.'
 
+    // Parse input modes and content
+    const parseInputMode = (content: string) => {
+      if (content.startsWith('[Think: ') && content.endsWith(']')) {
+        return { mode: 'think', content: content.slice(8, -1) }
+      }
+      return { mode: 'normal', content }
+    }
+
+    const { mode, content } = parseInputMode(lastMessage?.content || '')
+    
     // Check if the message requires real-time data or web search
-    const needsWebSearch = lastMessage?.content && (
-      lastMessage.content.toLowerCase().includes('latest') ||
-      lastMessage.content.toLowerCase().includes('news') ||
-      lastMessage.content.toLowerCase().includes('current') ||
-      lastMessage.content.toLowerCase().includes('today') ||
-      lastMessage.content.toLowerCase().includes('stock price') ||
-      lastMessage.content.toLowerCase().includes('market') ||
-      lastMessage.content.toLowerCase().includes('earnings') ||
-      lastMessage.content.toLowerCase().includes('recent')
-    )
+    const needsWebSearch = (content && (
+      content.toLowerCase().includes('latest') ||
+      content.toLowerCase().includes('news') ||
+      content.toLowerCase().includes('current') ||
+      content.toLowerCase().includes('today') ||
+      content.toLowerCase().includes('stock price') ||
+      content.toLowerCase().includes('market') ||
+      content.toLowerCase().includes('earnings') ||
+      content.toLowerCase().includes('recent')
+    ))
 
     try {
       // Use the Responses API with web search tool when needed
@@ -195,7 +205,7 @@ Use the web search tool to find the latest information when answering questions 
           model: 'gpt-4o-mini',
           temperature: 0.45,
           instructions: instructions,
-          input: lastMessage.content,
+          input: content,
           tools: [{ type: 'web_search_preview' }],
         })
 
@@ -208,14 +218,41 @@ Use the web search tool to find the latest information when answering questions 
           }
         })
       } else {
-        // Use regular chat completions for non-web-search queries
-        const enhancedSystemPrompt = `${systemPrompt}
+        // Handle different input modes
+        let enhancedSystemPrompt = `${systemPrompt}
 
 Additionally, you can help the user update your system prompt. If they ask to update, change, or modify the system prompt, acknowledge their request and explain that they need to provide the new prompt in quotes or after a colon.`
+        
+        if (mode === 'think') {
+          enhancedSystemPrompt += `\n\nIMPORTANT: The user has activated "Think" mode. This requires deep, analytical thinking with enhanced processing time and thoroughness. Please:
 
+1. **Deep Analysis**: Provide comprehensive, step-by-step reasoning with detailed explanations
+2. **Multiple Perspectives**: Consider various angles, potential alternatives, and edge cases
+3. **Structured Thinking**: Break down complex problems into logical components
+4. **Evidence-Based**: Support conclusions with reasoning and examples where applicable
+5. **Comprehensive Coverage**: Be thorough and exhaustive in your analysis
+6. **Show Your Work**: Explain your thought process, assumptions, and decision-making steps
+7. **Consider Implications**: Think about consequences, trade-offs, and broader impacts
+
+Take your time to think deeply about this request and provide a thoughtful, well-reasoned response that demonstrates enhanced analytical processing.`
+        }
+        
+        // Handle files if present
+        if (files && files.length > 0) {
+          enhancedSystemPrompt += `\n\nNote: The user has uploaded ${files.length} file(s). Currently, file analysis is not fully implemented, but acknowledge the files and provide relevant assistance based on the text content.`
+        }
+
+        // Update the last message to use cleaned content
+        const processedMessages = messages.map((msg, index) => {
+          if (index === messages.length - 1) {
+            return { ...msg, content }
+          }
+          return msg
+        })
+        
         const messagesWithSystem = [
           { role: 'system' as const, content: enhancedSystemPrompt },
-          ...messages
+          ...processedMessages
         ]
 
         const completion = await openai.chat.completions.create({
@@ -240,15 +277,38 @@ Additionally, you can help the user update your system prompt. If they ask to up
       // Fallback to chat completions if Responses API fails
       console.log('Responses API failed, falling back to Chat Completions:', apiError instanceof Error ? apiError.message : 'Unknown error')
       
-      const enhancedSystemPrompt = `${systemPrompt}
+      let enhancedSystemPrompt = `${systemPrompt}
 
 Additionally, you can help the user update your system prompt. If they ask to update, change, or modify the system prompt, acknowledge their request and explain that they need to provide the new prompt in quotes or after a colon.
 
 Note: Real-time web search is currently unavailable. I'll provide the best information based on my training data.`
 
+      // Apply thinking mode enhancements even in fallback
+      if (mode === 'think') {
+        enhancedSystemPrompt += `\n\nIMPORTANT: The user has activated "Think" mode. This requires deep, analytical thinking with enhanced processing time and thoroughness. Please:
+
+1. **Deep Analysis**: Provide comprehensive, step-by-step reasoning with detailed explanations
+2. **Multiple Perspectives**: Consider various angles, potential alternatives, and edge cases
+3. **Structured Thinking**: Break down complex problems into logical components
+4. **Evidence-Based**: Support conclusions with reasoning and examples where applicable
+5. **Comprehensive Coverage**: Be thorough and exhaustive in your analysis
+6. **Show Your Work**: Explain your thought process, assumptions, and decision-making steps
+7. **Consider Implications**: Think about consequences, trade-offs, and broader impacts
+
+Take your time to think deeply about this request and provide a thoughtful, well-reasoned response that demonstrates enhanced analytical processing.`
+      }
+
+      // Update the last message to use cleaned content for fallback
+      const processedMessages = messages.map((msg, index) => {
+        if (index === messages.length - 1) {
+          return { ...msg, content }
+        }
+        return msg
+      })
+      
       const messagesWithSystem = [
         { role: 'system' as const, content: enhancedSystemPrompt },
-        ...messages
+        ...processedMessages
       ]
 
       const completion = await openai.chat.completions.create({
