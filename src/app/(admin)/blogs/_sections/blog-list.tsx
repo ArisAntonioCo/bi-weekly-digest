@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { CalendarDays, TrendingUp, AlertTriangle } from 'lucide-react'
+import { CalendarDays, TrendingUp, AlertTriangle, BarChart3, LineChart, PieChart, Activity } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
@@ -127,36 +127,158 @@ export function BlogList({ blogs }: BlogListProps) {
                       code: ({ children }) => (
                         <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
                       ),
-                      pre: ({ children }) => (
-                        <pre className="bg-muted p-3 rounded-lg overflow-x-auto mb-3">
-                          {children}
-                        </pre>
-                      ),
-                      table: ({ children }) => (
-                        <div className="overflow-x-auto mb-4">
-                          <table className="w-full border-collapse border border-border">
+                      pre: ({ children }) => {
+                        // Check if this is an ASCII table/chart
+                        const content = String(children?.props?.children || children || '');
+                        const isAsciiTable = content.includes('|') && 
+                                           (content.includes('-') || content.includes('Year') || 
+                                            content.includes('Revenue') || content.includes('Growth') || 
+                                            content.includes('Multiple') || content.includes('MOIC'));
+                        
+                        if (isAsciiTable) {
+                          // Parse the ASCII table and create a proper table
+                          const lines = content.trim().split('\n').filter(line => line.trim() && line.includes('|'));
+                          
+                          // Try to extract headers from the first non-separator line
+                          const headerLine = lines.find(line => !line.includes('---') && line.includes('|'));
+                          const headers = headerLine ? 
+                            headerLine.split('|').map(h => h.trim()).filter(h => h) : 
+                            ['Column 1', 'Column 2', 'Column 3', 'Column 4'];
+                          
+                          // Extract data rows
+                          const dataLines = lines.filter(line => 
+                            !line.includes('---') && 
+                            line !== headerLine &&
+                            line.split('|').filter(c => c.trim()).length > 1
+                          );
+                          
+                          if (dataLines.length > 0) {
+                            return (
+                              <div className="my-4 overflow-x-auto">
+                                <div className="inline-block min-w-full align-middle">
+                                  <div className="overflow-hidden border border-border rounded-lg">
+                                    <table className="min-w-full divide-y divide-border">
+                                      <thead className="bg-muted/50">
+                                        <tr>
+                                          {headers.map((header, idx) => (
+                                            <th key={idx} className="px-4 py-3 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                                              {header}
+                                            </th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                      <tbody className="bg-background divide-y divide-border">
+                                        {dataLines.map((line, rowIdx) => {
+                                          const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
+                                          return (
+                                            <tr key={rowIdx} className="hover:bg-muted/30 transition-colors">
+                                              {cells.map((cell, cellIdx) => (
+                                                <td key={cellIdx} className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
+                                                  {cell}
+                                                </td>
+                                              ))}
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                        }
+                        
+                        // Regular code block
+                        return (
+                          <pre className="bg-muted p-3 rounded-lg overflow-x-auto mb-3 font-mono text-xs">
                             {children}
-                          </table>
+                          </pre>
+                        );
+                      },
+                      table: ({ children }) => (
+                        <div className="my-4 overflow-x-auto">
+                          <div className="inline-block min-w-full align-middle">
+                            <div className="overflow-hidden border border-border rounded-lg shadow-sm">
+                              <table className="min-w-full divide-y divide-border">
+                                {children}
+                              </table>
+                            </div>
+                          </div>
                         </div>
                       ),
                       thead: ({ children }) => (
-                        <thead className="bg-muted">{children}</thead>
+                        <thead className="bg-muted/50">{children}</thead>
                       ),
-                      tbody: ({ children }) => <tbody>{children}</tbody>,
+                      tbody: ({ children }) => (
+                        <tbody className="bg-background divide-y divide-border">{children}</tbody>
+                      ),
                       tr: ({ children }) => (
-                        <tr className="border-b border-border">{children}</tr>
+                        <tr className="hover:bg-muted/30 transition-colors">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="text-left p-2 font-semibold text-sm border-r border-border last:border-r-0">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-foreground uppercase tracking-wider border-r border-border last:border-r-0">
                           {children}
                         </th>
                       ),
                       td: ({ children }) => (
-                        <td className="p-2 text-sm border-r border-border last:border-r-0">
+                        <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap border-r border-border last:border-r-0">
                           {children}
                         </td>
                       ),
                       hr: () => <hr className="my-4 border-border" />,
+                      img: ({ alt, src }) => {
+                        // Check if this is a chart placeholder
+                        const altLower = alt?.toLowerCase() || '';
+                        const srcLower = src?.toLowerCase() || '';
+                        const isChart = altLower.includes('chart') || 
+                                       altLower.includes('projection') ||
+                                       altLower.includes('graph') ||
+                                       altLower.includes('moic') ||
+                                       srcLower.includes('chart');
+                        
+                        if (isChart) {
+                          // Determine the appropriate chart icon based on the alt text
+                          let ChartIcon = BarChart3;
+                          let chartType = 'Chart Visualization';
+                          
+                          if (altLower.includes('line') || altLower.includes('projection') || altLower.includes('growth')) {
+                            ChartIcon = LineChart;
+                            chartType = 'Line Chart';
+                          } else if (altLower.includes('pie') || altLower.includes('allocation') || altLower.includes('portfolio')) {
+                            ChartIcon = PieChart;
+                            chartType = 'Pie Chart';
+                          } else if (altLower.includes('performance') || altLower.includes('metrics')) {
+                            ChartIcon = Activity;
+                            chartType = 'Performance Metrics';
+                          } else if (altLower.includes('trend')) {
+                            ChartIcon = TrendingUp;
+                            chartType = 'Trend Analysis';
+                          }
+                          
+                          // Show a nice chart placeholder instead of broken image
+                          return (
+                            <span className="block my-4 p-8 bg-gradient-to-br from-muted/20 to-muted/40 border border-border rounded-lg flex flex-col items-center justify-center">
+                              <ChartIcon className="h-14 w-14 text-muted-foreground/40 mb-3" />
+                              <span className="block text-sm text-muted-foreground font-semibold">{alt || chartType}</span>
+                              <span className="block text-xs text-muted-foreground/60 mt-1">Interactive chart would display here</span>
+                            </span>
+                          );
+                        }
+                        
+                        // For other images, try to render them normally but hide if broken
+                        return (
+                          <img 
+                            src={src} 
+                            alt={alt} 
+                            className="max-w-full h-auto rounded-lg"
+                            onError={(e) => {
+                              // Hide broken images
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        );
+                      },
                     }}
                   >
                     {blog.content}
