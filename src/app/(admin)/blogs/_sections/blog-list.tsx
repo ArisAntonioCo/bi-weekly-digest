@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { CalendarDays, TrendingUp, AlertTriangle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 import { format } from 'date-fns'
 
 interface Blog {
@@ -82,31 +84,84 @@ export function BlogList({ blogs }: BlogListProps) {
               <CardContent className="pt-0">
                 <div className="prose prose-sm max-w-none dark:prose-invert">
                   <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
                     components={{
-                      h1: ({ children }) => <h1 className="text-lg font-semibold mb-2">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-base font-semibold mb-2 mt-4">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 mt-3">{children}</h3>,
-                      p: ({ children }) => <p className="text-sm leading-relaxed mb-2">{children}</p>,
-                      ul: ({ children }) => <ul className="text-sm space-y-1 mb-2 ml-4">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-sm space-y-1 mb-2 ml-4">{children}</ol>,
-                      li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                      strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-                      code: ({ children }) => (
-                        <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">{children}</code>
+                      h1: ({ children }) => <h1 className="text-xl font-bold mb-4 mt-6 text-foreground">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-lg font-bold mb-3 mt-5 text-foreground">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-base font-bold mb-2 mt-4 text-foreground">{children}</h3>,
+                      h4: ({ children }) => <h4 className="text-sm font-bold mb-2 mt-3 text-foreground">{children}</h4>,
+                      h5: ({ children }) => <h5 className="text-sm font-semibold mb-2 mt-3 text-foreground">{children}</h5>,
+                      h6: ({ children }) => <h6 className="text-sm font-semibold mb-2 mt-2 text-foreground">{children}</h6>,
+                      p: ({ children }) => {
+                        // Check if this paragraph is actually a header-like text (no actual markdown header but should be)
+                        const text = String(children);
+                        if (text && typeof text === 'string' && 
+                            (text === 'Narrative Summary' || 
+                             text === 'AI Leverage' || 
+                             text === 'Risk Vectors' || 
+                             text === 'Valuation vs History' ||
+                             text === 'Expert POV Overlay' ||
+                             text === '3-Year MOIC Range' ||
+                             text === 'Classification' ||
+                             text.includes('3-Year MOIC') ||
+                             text.includes('Core Features') ||
+                             text.includes('Analysis'))) {
+                          return <h2 className="text-lg font-bold mb-3 mt-5 text-foreground">{children}</h2>;
+                        }
+                        return <p className="text-sm leading-relaxed mb-3 text-muted-foreground">{children}</p>;
+                      },
+                      ul: ({ children }) => <ul className="text-sm space-y-1 mb-3 ml-5 list-disc">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-sm space-y-1 mb-3 ml-5 list-decimal">{children}</ol>,
+                      li: ({ children }) => (
+                        <li className="leading-relaxed text-muted-foreground mb-1">
+                          {children}
+                        </li>
                       ),
+                      strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+                      em: ({ children }) => <em className="italic">{children}</em>,
+                      blockquote: ({ children }) => (
+                        <blockquote className="border-l-4 border-primary/20 pl-4 py-2 mb-3 italic text-muted-foreground">
+                          {children}
+                        </blockquote>
+                      ),
+                      code: ({ children }) => (
+                        <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
+                      ),
+                      pre: ({ children }) => (
+                        <pre className="bg-muted p-3 rounded-lg overflow-x-auto mb-3">
+                          {children}
+                        </pre>
+                      ),
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto mb-4">
+                          <table className="w-full border-collapse border border-border">
+                            {children}
+                          </table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className="bg-muted">{children}</thead>
+                      ),
+                      tbody: ({ children }) => <tbody>{children}</tbody>,
+                      tr: ({ children }) => (
+                        <tr className="border-b border-border">{children}</tr>
+                      ),
+                      th: ({ children }) => (
+                        <th className="text-left p-2 font-semibold text-sm border-r border-border last:border-r-0">
+                          {children}
+                        </th>
+                      ),
+                      td: ({ children }) => (
+                        <td className="p-2 text-sm border-r border-border last:border-r-0">
+                          {children}
+                        </td>
+                      ),
+                      hr: () => <hr className="my-4 border-border" />,
                     }}
                   >
-                    {blog.content.slice(0, 800) + (blog.content.length > 800 ? '...' : '')}
+                    {blog.content}
                   </ReactMarkdown>
                 </div>
-                
-                {blog.content.length > 800 && (
-                  <div className="mt-3 pt-3 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      Content truncated for preview. Full analysis available via API.
-                    </p>
-                  </div>
-                )}
               </CardContent>
             </Card>
           )

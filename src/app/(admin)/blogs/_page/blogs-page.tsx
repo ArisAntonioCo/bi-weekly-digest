@@ -13,6 +13,7 @@ interface Blog {
 
 export function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
+  const [systemPromptSummary, setSystemPromptSummary] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,6 +26,7 @@ export function BlogsPage() {
         }
         const data = await response.json()
         setBlogs(data.blogs || [])
+        setSystemPromptSummary(data.systemPromptSummary || '')
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
@@ -72,7 +74,7 @@ export function BlogsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="space-y-8">
-        <BlogHeader />
+        <BlogHeader systemPromptSummary={systemPromptSummary} />
         <BlogList blogs={blogs} />
       </div>
     </div>
