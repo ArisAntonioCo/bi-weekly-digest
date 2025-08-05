@@ -129,7 +129,14 @@ export function BlogList({ blogs }: BlogListProps) {
                       ),
                       pre: ({ children }) => {
                         // Check if this is an ASCII table/chart
-                        const content = String(children?.props?.children || children || '');
+                        // Safely extract text content from children
+                        let content = '';
+                        if (typeof children === 'string') {
+                          content = children;
+                        } else if (children && typeof children === 'object' && 'props' in children) {
+                          const childProps = children as { props?: { children?: unknown } };
+                          content = String(childProps.props?.children || '');
+                        }
                         const isAsciiTable = content.includes('|') && 
                                            (content.includes('-') || content.includes('Year') || 
                                             content.includes('Revenue') || content.includes('Growth') || 
@@ -230,7 +237,8 @@ export function BlogList({ blogs }: BlogListProps) {
                       img: ({ alt, src }) => {
                         // Check if this is a chart placeholder
                         const altLower = alt?.toLowerCase() || '';
-                        const srcLower = src?.toLowerCase() || '';
+                        // src can be string or Blob, only process if it's a string
+                        const srcLower = typeof src === 'string' ? src.toLowerCase() : '';
                         const isChart = altLower.includes('chart') || 
                                        altLower.includes('projection') ||
                                        altLower.includes('graph') ||
@@ -268,6 +276,7 @@ export function BlogList({ blogs }: BlogListProps) {
                         
                         // For other images, try to render them normally but hide if broken
                         return (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img 
                             src={src} 
                             alt={alt} 

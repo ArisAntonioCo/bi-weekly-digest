@@ -77,12 +77,6 @@ export async function POST() {
     }
 
     const analysisType = getAnalysisType(aiResponse)
-    const currentDate = new Date()
-    const formattedDate = currentDate.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
-    })
 
     // Enhanced markdown to HTML conversion
     const convertMarkdownToHtml = (markdown: string) => {
@@ -108,8 +102,6 @@ export async function POST() {
       })
       
       // Handle tables (simple pipe-separated tables)
-      const tableRows: string[] = []
-      let inTable = false
       let isFirstRow = true
       
       html = html.replace(/^\|(.*)\|$/gm, (match) => {
@@ -120,7 +112,6 @@ export async function POST() {
           return '<!--separator-->' // Mark separator for removal
         }
         
-        inTable = true
         const cellTag = isFirstRow ? 'th' : 'td'
         const cellStyle = isFirstRow 
           ? 'padding: 12px 16px; border: 1px solid #e5e7eb; background-color: #f9fafb; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151;'
