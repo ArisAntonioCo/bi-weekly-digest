@@ -33,7 +33,7 @@ const sidebarItems = [
     title: "Content Management",
     items: [
       { title: "AI Assistant", icon: MessageSquare, href: "/dashboard" },
-      { title: "Blogs", icon: BookOpen, href: "/blogs" },
+      { title: "Blog", icon: BookOpen, href: "/blogs" },
     ]
   },
   {
