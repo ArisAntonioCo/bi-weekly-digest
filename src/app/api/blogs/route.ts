@@ -49,9 +49,10 @@ export async function GET() {
 
 async function generateBlogsFromSystemPrompt(supabase: Awaited<ReturnType<typeof createClient>>, systemPrompt: string) {
   try {
-    // Analyze the system prompt to determine content theme
+    // Analyze the system prompt to determine Apple investment content
     const themeAnalysis = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
+      temperature: 0.45,
       messages: [
         {
           role: 'system',
@@ -62,7 +63,6 @@ async function generateBlogsFromSystemPrompt(supabase: Awaited<ReturnType<typeof
           content: systemPrompt
         }
       ],
-      temperature: 0.3,
     })
 
     const analysis = JSON.parse(themeAnalysis.choices[0].message.content || '{}')
@@ -71,14 +71,11 @@ async function generateBlogsFromSystemPrompt(supabase: Awaited<ReturnType<typeof
     const blogPromises = analysis.suggestedBlogTitles?.slice(0, 3).map(async (title: string) => {
       const content = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
+        temperature: 0.45,
         messages: [
           {
             role: 'system',
-            content: `You are an expert content creator. Based on the following system prompt context, create engaging blog content that aligns with the theme and expertise described. Write in a professional, informative style suitable for the domain.
-
-System Context: ${systemPrompt}
-
-Create a comprehensive blog post that demonstrates the expertise and approach described in the system prompt.`
+            content: systemPrompt
           },
           {
             role: 'user',
@@ -93,8 +90,7 @@ Structure it with:
 Make it informative and engaging, around 600-800 words.`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 1500,
+        max_tokens: 2000,
       })
 
       return {

@@ -9,11 +9,11 @@ const openai = new OpenAI({
 
 export async function POST() {
   try {
-    // Check authentication
+    // Check authentication and user permissions
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
-    if (!user) {
+    if (!user || user.email !== 'kyle@zaigo.ai') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -32,11 +32,12 @@ export async function POST() {
     let aiResponse = ''
     
     try {
-      // Try to use the Responses API with web search for current data
+      // Use Responses API with focused Apple analysis
       const response = await openai.responses.create({
         model: 'gpt-4o-mini',
+        temperature: 0.45,
         instructions: config.system_prompt,
-        input: 'Based on your expertise and current market conditions, provide your top investment recommendations or analysis. Include specific companies, MOICs, or market insights. Use web search to get the latest stock prices and market data. Be detailed and actionable.',
+        input: 'Use web search to get the latest market data and provide your analysis.',
         tools: [{ type: 'web_search_preview' }],
       })
       
@@ -44,9 +45,10 @@ export async function POST() {
     } catch {
       console.log('Responses API failed, falling back to Chat Completions')
       
-      // Fallback to regular chat completions
+      // Fallback to regular chat completions with Apple focus
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
+        temperature: 0.45,
         messages: [
           { 
             role: 'system', 
@@ -54,11 +56,10 @@ export async function POST() {
           },
           {
             role: 'user',
-            content: 'Based on your expertise and current market conditions, provide your top investment recommendations or analysis. Include specific companies, MOICs, or market insights. Be detailed and actionable. Note: Real-time data is not available, so provide analysis based on your training data.'
+            content: 'Provide your analysis based on your expertise and current market conditions.'
           }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        max_tokens: 4000,
       })
       
       aiResponse = completion.choices[0].message.content || 'No response generated'
