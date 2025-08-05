@@ -56,7 +56,7 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -67,24 +67,28 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
                   })}
                   type="email"
                   placeholder="Enter email address..."
-                  className="pl-10"
+                  className="pl-10 h-11 text-base"
                   disabled={adding}
                 />
               </div>
               {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                <p className="text-sm text-destructive mt-2">{errors.email.message}</p>
               )}
             </div>
-            <Button type="submit" disabled={adding} className="min-w-[120px] sm:w-auto w-full">
+            <Button 
+              type="submit" 
+              disabled={adding} 
+              className="min-w-[140px] sm:w-auto w-full h-11 text-base font-medium"
+            >
               {adding ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  Adding...
+                  <span>Adding...</span>
                 </>
               ) : (
                 <>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Add Subscriber
+                  <span>Add Subscriber</span>
                 </>
               )}
             </Button>

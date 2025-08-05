@@ -113,53 +113,158 @@ export function SubscribersList({
             <p className="text-muted-foreground">Add your first subscriber using the form above.</p>
           </div>
         ) : (
-          <div className="rounded-md border overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[200px]">Email Address</TableHead>
-                    <TableHead className="min-w-[100px]">Status</TableHead>
-                    <TableHead className="min-w-[120px] hidden sm:table-cell">Added</TableHead>
-                    <TableHead className="text-right min-w-[220px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-              <TableBody>
-                {subscribers.map((subscriber) => (
-                  <TableRow key={subscriber.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-md border overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[200px]">Email Address</TableHead>
+                      <TableHead className="min-w-[100px]">Status</TableHead>
+                      <TableHead className="min-w-[120px]">Added</TableHead>
+                      <TableHead className="text-right min-w-[200px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {subscribers.map((subscriber) => (
+                      <TableRow key={subscriber.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Mail className="h-4 w-4 text-primary" />
+                            </div>
+                            <span className="truncate">{subscriber.email}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={subscriber.subscribed ? "default" : "secondary"}
+                            className={subscriber.subscribed ? "bg-green-100 text-green-800 border-green-200" : "bg-orange-100 text-orange-800 border-orange-200"}
+                          >
+                            {subscriber.subscribed ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {format(new Date(subscriber.created_at), 'MMM d, yyyy')}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSendEmail(subscriber)}
+                              disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
+                              className="h-8 px-3"
+                              title="Send AI Analysis"
+                            >
+                              {sendingEmail === subscriber.id ? (
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                              ) : (
+                                <>
+                                  <Send className="h-3 w-3 mr-1" />
+                                  Send
+                                </>
+                              )}
+                            </Button>
+                            
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleToggleSubscription(subscriber)}
+                              disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
+                              className="h-8 px-3"
+                            >
+                              {actionLoading === subscriber.id ? (
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
+                              ) : (
+                                <>
+                                  <ToggleLeft className="h-3 w-3 mr-1" />
+                                  {subscriber.subscribed ? 'Unsubscribe' : 'Subscribe'}
+                                </>
+                              )}
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3"
+                                  disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Subscriber</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete {subscriber.email} from your subscribers list? 
+                                    This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteSubscriber(subscriber.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Delete Subscriber
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+              {subscribers.map((subscriber) => (
+                <Card key={subscriber.id} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <Mail className="h-4 w-4 text-primary" />
                         </div>
-                        {subscriber.email}
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-sm truncate">{subscriber.email}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Added {format(new Date(subscriber.created_at), 'MMM d, yyyy')}
+                          </div>
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell>
                       <Badge 
                         variant={subscriber.subscribed ? "default" : "secondary"}
-                        className={subscriber.subscribed ? "bg-green-100 text-green-800 border-green-200" : "bg-orange-100 text-orange-800 border-orange-200"}
+                        className={`ml-2 ${subscriber.subscribed ? "bg-green-100 text-green-800 border-green-200" : "bg-orange-100 text-orange-800 border-orange-200"}`}
                       >
                         {subscriber.subscribed ? 'Active' : 'Inactive'}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground hidden sm:table-cell">
-                      {format(new Date(subscriber.created_at), 'MMM d, yyyy')}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 pt-2 border-t">
+                      <div className="grid grid-cols-2 gap-2">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleSendEmail(subscriber)}
                           disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
-                          className="text-xs px-2 py-1 h-7"
-                          title="Send AI Analysis"
+                          className="h-9 text-xs justify-center"
                         >
                           {sendingEmail === subscriber.id ? (
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
                           ) : (
-                            <Send className="h-3 w-3" />
+                            <>
+                              <Send className="h-3 w-3 mr-1" />
+                              Send Email
+                            </>
                           )}
                         </Button>
                         
@@ -168,57 +273,56 @@ export function SubscribersList({
                           size="sm"
                           onClick={() => handleToggleSubscription(subscriber)}
                           disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
-                          className="text-xs px-2 py-1 h-7"
+                          className="h-9 text-xs justify-center"
                         >
                           {actionLoading === subscriber.id ? (
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
                           ) : (
                             <>
                               <ToggleLeft className="h-3 w-3 mr-1" />
-                              <span className="hidden sm:inline">{subscriber.subscribed ? 'Unsubscribe' : 'Subscribe'}</span>
-                              <span className="sm:hidden">{subscriber.subscribed ? 'Off' : 'On'}</span>
+                              {subscriber.subscribed ? 'Unsubscribe' : 'Subscribe'}
                             </>
                           )}
                         </Button>
-                        
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10 px-2 py-1 h-7"
-                              disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Subscriber</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete {subscriber.email} from your subscribers list? 
-                                This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteSubscriber(subscriber.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete Subscriber
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-9 text-xs w-full justify-center"
+                            disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Delete Subscriber
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="mx-4 max-w-[calc(100vw-2rem)]">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Subscriber</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete {subscriber.email} from your subscribers list? 
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteSubscriber(subscriber.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto"
+                            >
+                              Delete Subscriber
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
-          </div>
+          </>
         )}
       </CardContent>
     </Card>

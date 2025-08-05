@@ -9,6 +9,7 @@ export function DashboardPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const [abortController, setAbortController] = useState<AbortController | null>(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -21,6 +22,14 @@ export function DashboardPage() {
   }, [])
 
   const handleSendMessage = async (content: string) => {
+    // If already loading, stop the current request
+    if (isLoading && abortController) {
+      abortController.abort()
+      setAbortController(null)
+      setIsLoading(false)
+      return
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
@@ -29,6 +38,10 @@ export function DashboardPage() {
     }
     setMessages(prev => [...prev, userMessage])
     setIsLoading(true)
+
+    // Create new AbortController for this request
+    const controller = new AbortController()
+    setAbortController(controller)
 
     try {
       const response = await fetch('/api/chat', {
@@ -42,6 +55,7 @@ export function DashboardPage() {
             content: msg.content
           }))
         }),
+        signal: controller.signal
       })
 
       if (!response.ok) {
@@ -57,15 +71,27 @@ export function DashboardPage() {
         }])
       }
     } catch (error) {
-      console.error('Chat error:', error)
-      const errorMessage: Message = {
-        id: Date.now().toString(),
-        content: 'Sorry, I encountered an error processing your request. Please try again.',
-        sender: 'assistant',
-        timestamp: new Date()
+      // Don't show error if request was aborted by user
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error('Chat error:', error)
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          content: 'Sorry, I encountered an error processing your request. Please try again.',
+          sender: 'assistant',
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, errorMessage])
       }
-      setMessages(prev => [...prev, errorMessage])
     } finally {
+      setIsLoading(false)
+      setAbortController(null)
+    }
+  }
+
+  const handleStopGeneration = () => {
+    if (abortController) {
+      abortController.abort()
+      setAbortController(null)
       setIsLoading(false)
     }
   }
@@ -79,7 +105,8 @@ export function DashboardPage() {
       />
       <InputArea 
         onSend={handleSendMessage} 
-        isLoading={isLoading} 
+        isLoading={isLoading}
+        onStop={handleStopGeneration}
       />
     </div>
   )
