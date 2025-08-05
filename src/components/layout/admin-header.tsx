@@ -68,26 +68,20 @@ const pageConfigs: Record<string, PageConfig> = {
   },
   '/newsletter/send': {
     title: 'Send Newsletter',
-    description: 'Compose and send bi-weekly digest',
+    description: 'Compose and send weekly digest',
     icon: Mail,
     badge: 'Draft'
   },
   '/newsletter/schedule': {
     title: 'Newsletter Schedule',
-    description: 'Automate bi-weekly newsletter delivery',
+    description: 'Automate weekly newsletter delivery',
     icon: Calendar,
     badge: 'Automated',
     action: {
       label: 'View Logs',
-      onClick: 'viewLogs',
+      href: '/newsletter/logs',
       icon: BarChart3
     }
-  },
-  '/analytics': {
-    title: 'Performance Analytics',
-    description: 'Track engagement and AI usage metrics',
-    icon: BarChart3,
-    badge: 'Live Data'
   },
   '/subscribers': {
     title: 'Subscriber Management',
@@ -98,7 +92,7 @@ const pageConfigs: Record<string, PageConfig> = {
 }
 
 const defaultConfig: PageConfig = {
-  title: 'BI-Weekly Digest',
+  title: 'Weekly Digest',
   description: 'Kyle\'s AI-powered content management system',
   icon: Settings,
   badge: 'Admin Panel'
@@ -133,10 +127,6 @@ export function AdminHeader() {
     } finally {
       setIsEmailingAnalysis(false)
     }
-  }
-
-  const handleViewLogs = () => {
-    toast.info('Cron job logs will be available after backend integration')
   }
 
   return (
@@ -174,16 +164,6 @@ export function AdminHeader() {
               <config.action.icon className="h-4 w-4" />
               {isEmailingAnalysis ? 'Generating & Sending...' : config.action.label}
             </Button>
-          ) : config.action.onClick === 'viewLogs' ? (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="hidden sm:flex gap-2" 
-              onClick={handleViewLogs}
-            >
-              <config.action.icon className="h-4 w-4" />
-              {config.action.label}
-            </Button>
           ) : (
             <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
               <Link href={config.action.href || '#'}>
@@ -209,15 +189,6 @@ export function AdminHeader() {
             className="sm:hidden" 
             onClick={handleEmailAnalysis}
             disabled={isEmailingAnalysis}
-          >
-            <config.action.icon className="h-4 w-4" />
-          </Button>
-        ) : config.action && config.action.onClick === 'viewLogs' ? (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="sm:hidden" 
-            onClick={handleViewLogs}
           >
             <config.action.icon className="h-4 w-4" />
           </Button>

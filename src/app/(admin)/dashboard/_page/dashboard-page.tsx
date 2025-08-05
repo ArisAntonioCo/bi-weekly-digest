@@ -15,7 +15,7 @@ export function DashboardPage() {
     setIsClient(true)
     setMessages([{
       id: '1',
-      content: 'Welcome to your BI-Weekly Digest dashboard! I can help you create and manage content, configure your newsletter settings, and analyze your digest performance. What would you like to work on today?',
+      content: 'Welcome to your Weekly Digest dashboard! I can help you create and manage content, configure your newsletter settings, and analyze your digest performance. What would you like to work on today?',
       sender: 'assistant',
       timestamp: new Date()
     }])

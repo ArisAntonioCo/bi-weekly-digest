@@ -37,8 +37,6 @@ export async function POST(request: Request) {
       }, { status: 500 })
     }
 
-    const currentDate = new Date()
-
     let aiResponse = ''
     
     try {
@@ -87,11 +85,6 @@ export async function POST(request: Request) {
     }
 
     const analysisType = getAnalysisType(aiResponse)
-    const formattedDate = currentDate.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
-    })
 
     // Enhanced markdown to HTML conversion
     const convertMarkdownToHtml = (markdown: string) => {
@@ -117,8 +110,6 @@ export async function POST(request: Request) {
       })
       
       // Handle tables (simple pipe-separated tables)
-      const tableRows: string[] = []
-      let inTable = false
       let isFirstRow = true
       
       html = html.replace(/^\|(.*)\|$/gm, (match) => {
@@ -129,7 +120,6 @@ export async function POST(request: Request) {
           return '<!--separator-->' // Mark separator for removal
         }
         
-        inTable = true
         const cellTag = isFirstRow ? 'th' : 'td'
         const cellStyle = isFirstRow 
           ? 'padding: 12px 16px; border: 1px solid #e5e7eb; background-color: #f9fafb; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151;'
@@ -254,14 +244,14 @@ ${aiResponse}
 ---
 
 *This analysis was generated using the current system prompt configuration.*
-*Bi-Weekly Digest - AI-Powered Content Assistant*
+*Weekly Digest - AI-Powered Content Assistant*
 `
 
     // Send email using Resend
     const emailResult = await resend.emails.send({
-      from: 'Bi-Weekly Digest <noreply@updates.fitzsixto.com>',
+      from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
       to: email,
-      subject: 'AI Analysis Report - Bi-Weekly Digest',
+      subject: 'AI Analysis Report - Weekly Digest',
       html: `<!DOCTYPE html>
 <html>
 <head>
@@ -345,7 +335,7 @@ ${aiResponse}
     <div class="container">
       <div class="header">
         <h1>AI Investment Analysis</h1>
-        <p>Your bi-weekly investment insights</p>
+        <p>Your weekly investment insights</p>
       </div>
       
       <div class="analysis-section">
@@ -356,7 +346,7 @@ ${aiResponse}
       
       <div class="footer">
         <p>This analysis was generated using AI-powered investment research</p>
-        <p class="footer-logo">Bi-Weekly Digest</p>
+        <p class="footer-logo">Weekly Digest</p>
       </div>
     </div>
   </div>

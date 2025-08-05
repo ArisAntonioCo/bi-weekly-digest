@@ -25,7 +25,7 @@ export function ScheduleForm({
   const [hour, setHour] = useState('9')
   const [dayOfMonth, setDayOfMonth] = useState('1')
   const [dayOfWeek, setDayOfWeek] = useState('1')
-  const [frequency, setFrequency] = useState('biweekly')
+  const [frequency, setFrequency] = useState('weekly')
   const [selectedTimezone, setSelectedTimezone] = useState('America/New_York')
 
   useEffect(() => {
@@ -99,14 +99,14 @@ export function ScheduleForm({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="daily">Every Day</SelectItem>
-              <SelectItem value="weekly">Once a Week</SelectItem>
-              <SelectItem value="biweekly">Every Two Weeks (Recommended)</SelectItem>
+              <SelectItem value="weekly">Once a Week (Recommended)</SelectItem>
+              <SelectItem value="biweekly">Every Two Weeks</SelectItem>
               <SelectItem value="monthly">Once a Month</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
-            {frequency === 'biweekly' && 'Perfect for consistent engagement without overwhelming subscribers'}
-            {frequency === 'weekly' && 'Great for active communities with frequent updates'}
+            {frequency === 'biweekly' && 'Good for less frequent updates and monthly summaries'}
+            {frequency === 'weekly' && 'Perfect for consistent engagement without overwhelming subscribers'}
             {frequency === 'daily' && 'Best for time-sensitive content and daily digests'}
             {frequency === 'monthly' && 'Ideal for monthly summaries and less frequent updates'}
           </p>

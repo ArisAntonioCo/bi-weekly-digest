@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         .select('*')
         .single()
       
-      const currentPrompt = existingConfig?.system_prompt || 'You are an AI assistant that helps create engaging bi-weekly digest content.'
+      const currentPrompt = existingConfig?.system_prompt || 'You are an AI assistant that helps create engaging weekly digest content.'
       const configId = existingConfig?.id || 'ac8bb385-2456-4efe-9c51-599222760dbf'
       
       // Use AI to intelligently refine the system prompt based on user's request
@@ -160,7 +160,7 @@ Please refine the system prompt based on this request.`
       .select('system_prompt')
       .single()
 
-    const systemPrompt = config?.system_prompt || 'You are an AI assistant that helps create engaging bi-weekly digest content.'
+    const systemPrompt = config?.system_prompt || 'You are an AI assistant that helps create engaging weekly digest content.'
 
     // Parse input modes and content
     const parseInputMode = (content: string) => {

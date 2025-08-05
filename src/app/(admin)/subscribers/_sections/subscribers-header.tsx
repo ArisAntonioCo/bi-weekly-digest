@@ -35,7 +35,7 @@ export function SubscribersHeader({ subscriberCount }: SubscribersHeaderProps) {
       
       <div className="bg-muted/50 rounded-lg p-4 border">
         <p className="text-sm text-muted-foreground">
-          Add and manage email subscribers for your bi-weekly digest newsletter. 
+          Add and manage email subscribers for your weekly digest newsletter. 
           All emails are validated and stored securely with subscription status tracking.
         </p>
       </div>
