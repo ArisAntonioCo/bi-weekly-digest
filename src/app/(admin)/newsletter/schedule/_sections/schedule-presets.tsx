@@ -120,7 +120,7 @@ export function SchedulePresets({ onSelectPreset, currentExpression }: ScheduleP
       <div className="bg-muted/50 rounded-lg p-3">
         <p className="text-xs text-muted-foreground">
           <strong>Tip:</strong> Choose bi-weekly schedules for consistent newsletter delivery. 
-          All times are in UTC and will be converted to your subscribers' local time zones.
+          All times are in UTC and will be converted to your subscribers&apos; local time zones.
         </p>
       </div>
     </div>

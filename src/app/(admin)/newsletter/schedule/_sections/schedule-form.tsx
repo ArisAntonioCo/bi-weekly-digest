@@ -17,7 +17,6 @@ interface ScheduleFormProps {
 }
 
 export function ScheduleForm({ 
-  cronExpression, 
   onCronChange, 
   isActive, 
   onActiveChange 
@@ -31,6 +30,7 @@ export function ScheduleForm({
 
   useEffect(() => {
     updateCronExpression()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frequency, minute, hour, dayOfWeek, dayOfMonth])
 
   const updateCronExpression = () => {
