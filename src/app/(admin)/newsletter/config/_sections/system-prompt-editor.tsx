@@ -142,23 +142,23 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="space-y-1">
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                System Prompt Configuration
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="break-words">System Prompt Configuration</span>
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Define Kyle&apos;s AI assistant behavior and expertise domain
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className={`${currentTheme.color} text-white border-0 flex items-center gap-1`}>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className={`${currentTheme.color} text-white border-0 flex items-center gap-1 text-xs sm:text-sm`}>
                 <ThemeIcon className="h-3 w-3" />
                 {currentTheme.theme}
               </Badge>
               {hasChanges && (
-                <Badge variant="destructive" className="animate-pulse">
+                <Badge variant="destructive" className="animate-pulse text-xs sm:text-sm">
                   Unsaved Changes
                 </Badge>
               )}
@@ -169,47 +169,48 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
         <CardContent className="space-y-6">
           {/* Current Status */}
           {config && (
-            <div className="flex items-center gap-4 p-3 bg-muted/50 rounded-lg">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                Last updated: {format(new Date(config.updated_at), 'PPp')}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="break-words">Last updated: {format(new Date(config.updated_at), 'PPp')}</span>
               </div>
-              <Separator orientation="vertical" className="h-4" />
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <User className="h-4 w-4" />
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                <User className="h-3 w-3 sm:h-4 sm:w-4" />
                 Kyle&apos;s AI Assistant
               </div>
             </div>
           )}
 
           {/* Form Controls */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setPreviewMode(!previewMode)}
+                className="text-xs sm:text-sm"
               >
                 {previewMode ? (
                   <>
-                    <EyeOff className="h-4 w-4 mr-2" />
+                    <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Edit Mode
                   </>
                 ) : (
                   <>
-                    <Eye className="h-4 w-4 mr-2" />
+                    <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Preview Mode
                   </>
                 )}
               </Button>
             </div>
             
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
               <span>{characterCount.toLocaleString()} characters</span>
               {characterCount > 5000 && (
-                <Badge variant="outline" className="text-orange-600 border-orange-200">
-                  Long prompt - may impact performance
+                <Badge variant="outline" className="text-orange-600 border-orange-200 text-xs">
+                  Long prompt
                 </Badge>
               )}
             </div>
@@ -252,29 +253,30 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
 
           {/* Impact Notice */}
           <Alert>
-            <Sparkles className="h-4 w-4" />
-            <AlertDescription>
+            <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
+            <AlertDescription className="text-xs sm:text-sm">
               Changes to the system prompt will automatically update the AI&apos;s behavior in chat conversations 
               and regenerate blog content to match the new configuration theme.
             </AlertDescription>
           </Alert>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t">
             <Button
               type="button"
               variant="outline"
               onClick={handleReset}
               disabled={!hasChanges || saving}
+              className="w-full sm:w-auto text-xs sm:text-sm"
             >
-              <RotateCcw className="h-4 w-4 mr-2" />
+              <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Reset Changes
             </Button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               {!hasChanges && !saving && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
                   Configuration saved
                 </div>
               )}
@@ -282,16 +284,16 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
               <Button
                 type="submit"
                 disabled={!hasChanges || saving}
-                className="min-w-[120px]"
+                className="w-full sm:w-auto sm:min-w-[120px] text-xs sm:text-sm"
               >
                 {saving ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-1 sm:mr-2" />
                     Saving...
                   </>
                 ) : (
                   <>
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Save Configuration
                   </>
                 )}
