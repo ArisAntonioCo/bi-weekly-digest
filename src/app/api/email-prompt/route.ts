@@ -108,24 +108,48 @@ export async function POST() {
       })
       
       // Handle tables (simple pipe-separated tables)
+      const tableRows: string[] = []
+      let inTable = false
+      let isFirstRow = true
+      
       html = html.replace(/^\|(.*)\|$/gm, (match) => {
         const cells = match.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
         const isHeaderSeparator = cells.every(cell => /^-+$/.test(cell.replace(/:/g, '')))
         
         if (isHeaderSeparator) {
-          return '' // Remove separator row
+          return '<!--separator-->' // Mark separator for removal
         }
         
+        inTable = true
+        const cellTag = isFirstRow ? 'th' : 'td'
+        const cellStyle = isFirstRow 
+          ? 'padding: 12px 16px; border: 1px solid #e5e7eb; background-color: #f9fafb; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151;'
+          : 'padding: 10px 16px; border: 1px solid #e5e7eb; font-size: 14px; color: #4b5563;'
+        
         const cellTags = cells.map(cell => 
-          `<td style="padding: 8px 12px; border: 1px solid #e5e7eb; font-size: 14px;">${cell}</td>`
+          `<${cellTag} style="${cellStyle}">${cell}</${cellTag}>`
         ).join('')
         
-        return `<tr>${cellTags}</tr>`
+        if (isFirstRow) {
+          isFirstRow = false
+          return `<thead><tr style="background-color: #f9fafb;">${cellTags}</tr></thead><tbody>`
+        }
+        
+        return `<tr style="background-color: white; border-bottom: 1px solid #e5e7eb;">${cellTags}</tr>`
       })
       
-      // Wrap table rows in table structure
-      html = html.replace(/(<tr>.*<\/tr>\s*)+/gs, (match) => {
-        return `<table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;">${match}</table>`
+      // Clean up separators and wrap tables
+      html = html.replace(/<!--separator-->/g, '')
+      
+      // Wrap table rows in proper table structure with enhanced styling
+      html = html.replace(/(<thead>.*<\/tbody>)/gs, (match) => {
+        return `
+          <div style="margin: 20px 0; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+              ${match}</tbody>
+            </table>
+          </div>
+        `
       })
       
       // Pre-process to handle inline lists and fix dash bullets
@@ -139,16 +163,16 @@ export async function POST() {
       })
       
       html = html
-        // Headers
-        .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px; margin-top: 16px; color: #374151;">$1</h3>')
-        .replace(/^## (.*$)/gim, '<h2 style="font-size: 20px; font-weight: 600; margin-bottom: 12px; margin-top: 20px; color: #1f2937;">$1</h2>')
-        .replace(/^# (.*$)/gim, '<h1 style="font-size: 24px; font-weight: bold; margin-bottom: 16px; margin-top: 24px; color: #111827;">$1</h1>')
+        // Headers - make them bold and properly sized
+        .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 16px; color: #111827;">$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2 style="font-size: 20px; font-weight: 700; margin-bottom: 12px; margin-top: 20px; color: #111827;">$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px; margin-top: 24px; color: #111827;">$1</h1>')
         
         // Links - handle markdown links [text](url)
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #111827; text-decoration: underline; font-weight: 600;">$1</a>')
         
         // Bold text - use negative lookahead to avoid matching italic markers
-        .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 600; color: #111827;">$1</strong>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 700; color: #111827;">$1</strong>')
         
         // Italic text - only match single asterisks not part of bold
         .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em style="font-style: italic;">$1</em>')
@@ -156,8 +180,8 @@ export async function POST() {
         // Code blocks
         .replace(/`([^`]+)`/g, '<code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: monospace;">$1</code>')
         
-        // Lists - handle ALL bullet formats including dashes
-        .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+        // Lists - handle ALL bullet formats including dashes, add bullet character
+        .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;"><span style="color: #374151;">•</span> $1</li>')
         .replace(/^\d+\.\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
       
       // Process the HTML to wrap list items in ul/ol tags
@@ -170,7 +194,7 @@ export async function POST() {
         
         if (line.includes('<li')) {
           if (!inList) {
-            processedLines.push('<ul style="margin-bottom: 16px; padding-left: 24px; list-style-type: disc;">')
+            processedLines.push('<ul style="margin-bottom: 16px; padding-left: 0; list-style-type: none;">')
             inList = true
           }
           processedLines.push(line)
@@ -272,56 +296,8 @@ ${aiResponse}
       font-size: 16px;
       opacity: 0.9;
     }
-    .metadata {
-      padding: 24px 32px;
-      background-color: #f9fafb;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .metadata-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .metadata-item {
-      text-align: center;
-    }
-    .metadata-label {
-      font-size: 12px;
-      color: #6b7280;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-    .metadata-value {
-      font-size: 14px;
-      color: #111827;
-      font-weight: 600;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 16px;
-      font-size: 12px;
-      font-weight: 600;
-      background-color: ${analysisType.color}20;
-      color: ${analysisType.color};
-    }
     .analysis-section {
       padding: 32px;
-    }
-    .analysis-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #e5e7eb;
-    }
-    .analysis-header h2 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 600;
-      color: #111827;
     }
     .content {
       color: #374151;
@@ -352,9 +328,6 @@ ${aiResponse}
       .analysis-section {
         padding: 24px;
       }
-      .metadata {
-        padding: 20px 24px;
-      }
     }
   </style>
 </head>
@@ -362,29 +335,11 @@ ${aiResponse}
   <div class="wrapper">
     <div class="container">
       <div class="header">
-        <h1>AI Analysis Report</h1>
+        <h1>AI Investment Analysis</h1>
         <p>Your bi-weekly investment insights</p>
       </div>
       
-      <div class="metadata">
-        <div class="metadata-grid">
-          <div class="metadata-item">
-            <div class="metadata-label">Generated</div>
-            <div class="metadata-value">${formattedDate}</div>
-          </div>
-          <div class="metadata-item">
-            <div class="metadata-label">Analysis Type</div>
-            <div class="metadata-value">
-              <span class="badge">${analysisType.type}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
       <div class="analysis-section">
-        <div class="analysis-header">
-          <h2>Latest Analysis</h2>
-        </div>
         <div class="content">
           ${markdownHtml}
         </div>
