@@ -18,26 +18,35 @@ export async function GET() {
 
     const systemPrompt = config?.system_prompt || 'You are an AI assistant that helps create engaging bi-weekly digest content.'
 
+    // Get a brief summary of the system prompt for the header
+    const systemPromptSummary = await getSystemPromptSummary(systemPrompt)
+
     // Check if we have existing blogs
     const { data: existingBlogs } = await supabase
       .from('blogs')
       .select('*')
       .order('created_at', { ascending: false })
 
-    // If no blogs exist or system prompt changed, generate new ones
+    // If no blogs exist, generate new one
     if (!existingBlogs || existingBlogs.length === 0) {
-      await generateBlogsFromSystemPrompt(supabase, systemPrompt)
+      await generateBlogFromSystemPrompt(supabase, systemPrompt)
       
-      // Fetch the newly created blogs
+      // Fetch the newly created blog
       const { data: newBlogs } = await supabase
         .from('blogs')
         .select('*')
         .order('created_at', { ascending: false })
 
-      return NextResponse.json({ blogs: newBlogs || [] })
+      return NextResponse.json({ 
+        blogs: newBlogs || [],
+        systemPromptSummary 
+      })
     }
 
-    return NextResponse.json({ blogs: existingBlogs })
+    return NextResponse.json({ 
+      blogs: existingBlogs,
+      systemPromptSummary 
+    })
   } catch (error) {
     console.error('Blogs API error:', error)
     return NextResponse.json(
@@ -47,77 +56,102 @@ export async function GET() {
   }
 }
 
-async function generateBlogsFromSystemPrompt(supabase: Awaited<ReturnType<typeof createClient>>, systemPrompt: string) {
+async function getSystemPromptSummary(systemPrompt: string) {
   try {
-    // Analyze the system prompt to determine Apple investment content
-    const themeAnalysis = await openai.chat.completions.create({
+    const summary = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      temperature: 0.45,
+      temperature: 0.3,
       messages: [
         {
           role: 'system',
-          content: 'Analyze the following system prompt and identify the main theme, domain, and key concepts. Respond with a JSON object containing: theme, domain, keyTopics (array), and suggestedBlogTitles (array of 3 titles).'
+          content: 'Create a brief, concise summary (1-2 sentences max) describing what this AI assistant specializes in based on the system prompt. Focus on the key expertise and domain.'
         },
         {
           role: 'user',
           content: systemPrompt
         }
       ],
+      max_tokens: 100,
     })
 
-    const analysis = JSON.parse(themeAnalysis.choices[0].message.content || '{}')
+    return summary.choices[0].message.content || 'AI-powered analysis and insights based on current system configuration.'
+  } catch (error) {
+    console.error('Error generating summary:', error)
+    return 'AI-powered analysis and insights based on current system configuration.'
+  }
+}
+
+async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof createClient>>, systemPrompt: string) {
+  try {
+    let aiResponse = ''
     
-    // Generate blog posts based on the theme
-    const blogPromises = analysis.suggestedBlogTitles?.slice(0, 3).map(async (title: string) => {
-      const content = await openai.chat.completions.create({
+    try {
+      // Use Responses API for dynamic content generation
+      const response = await openai.responses.create({
+        model: 'gpt-4o-mini',
+        temperature: 0.45,
+        instructions: systemPrompt,
+        input: 'Use web search to get the latest market data and provide your comprehensive analysis. Structure your response with clear sections and insights.',
+        tools: [{ type: 'web_search_preview' }],
+      })
+      
+      aiResponse = response.output_text || 'No response generated'
+    } catch {
+      console.log('Responses API failed, falling back to Chat Completions')
+      
+      // Fallback to regular chat completions
+      const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         temperature: 0.45,
         messages: [
-          {
-            role: 'system',
-            content: systemPrompt
+          { 
+            role: 'system', 
+            content: systemPrompt 
           },
           {
             role: 'user',
-            content: `Write a detailed blog post with the title: "${title}"
-
-Structure it with:
-1. Introduction
-2. Key insights/analysis
-3. Practical implications
-4. Conclusion
-
-Make it informative and engaging, around 600-800 words.`
+            content: 'Provide your comprehensive analysis based on your expertise and current market conditions. Structure your response with clear sections and insights.'
           }
         ],
         max_tokens: 8000,
       })
-
-      return {
-        title,
-        content: content.choices[0].message.content || '',
-      }
-    }) || []
-
-    const blogs = await Promise.all(blogPromises)
-
-    // Insert blogs into database
-    for (const blog of blogs) {
-      await supabase
-        .from('blogs')
-        .insert({
-          title: blog.title,
-          content: blog.content,
-        })
+      
+      aiResponse = completion.choices[0].message.content || 'No response generated'
     }
 
+    // Generate a title based on the content
+    const titleCompletion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      temperature: 0.3,
+      messages: [
+        {
+          role: 'system',
+          content: 'Generate a concise, engaging title for this analysis content. Maximum 60 characters.'
+        },
+        {
+          role: 'user',
+          content: aiResponse.substring(0, 500)
+        }
+      ],
+      max_tokens: 50,
+    })
+
+    const title = titleCompletion.choices[0].message.content || 'Investment Analysis Update'
+
+    // Insert blog into database
+    await supabase
+      .from('blogs')
+      .insert({
+        title,
+        content: aiResponse,
+      })
+
   } catch (error) {
-    console.error('Error generating blogs:', error)
+    console.error('Error generating blog:', error)
     // Create fallback content if AI generation fails
-    const fallbackBlogs = [
-      {
-        title: 'Welcome to Our Dynamic Blog',
-        content: `# Welcome to Our Dynamic Blog
+    const fallbackBlog = {
+      title: 'Welcome to Our Dynamic Blog',
+      content: `# Welcome to Our Dynamic Blog
 
 This blog is powered by AI and dynamically generates content based on our current system configuration.
 
@@ -134,16 +168,13 @@ Our blog system:
 Based on our system configuration, this blog focuses on providing insights and analysis that align with our AI assistant's current expertise and domain knowledge.
 
 Stay tuned for more dynamic content as our system evolves!`,
-      }
-    ]
-
-    for (const blog of fallbackBlogs) {
-      await supabase
-        .from('blogs')
-        .insert({
-          title: blog.title,
-          content: blog.content,
-        })
     }
+
+    await supabase
+      .from('blogs')
+      .insert({
+        title: fallbackBlog.title,
+        content: fallbackBlog.content,
+      })
   }
 }
