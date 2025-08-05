@@ -16,7 +16,14 @@ export async function GET() {
       .select('system_prompt')
       .single()
 
-    const systemPrompt = config?.system_prompt || 'You are an AI assistant that helps create engaging bi-weekly digest content.'
+    // Remove only the CONTENT RESTRICTION POLICY section if it exists
+    let systemPrompt = config?.system_prompt || ''
+    if (systemPrompt.includes('CONTENT RESTRICTION POLICY:')) {
+      const parts = systemPrompt.split('Core Analytical Framework:')
+      if (parts.length > 1) {
+        systemPrompt = 'Core Analytical Framework:' + parts[1]
+      }
+    }
 
     // Get a brief summary of the system prompt for the header
     const systemPromptSummary = await getSystemPromptSummary(systemPrompt)
@@ -91,7 +98,7 @@ async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof 
         model: 'gpt-4o-mini',
         temperature: 0.45,
         instructions: systemPrompt,
-        input: 'Use web search to get the latest market data and provide your comprehensive analysis. Structure your response with clear sections and insights.',
+        input: 'Generate comprehensive investment analysis content based on current market data.',
         tools: [{ type: 'web_search_preview' }],
       })
       
@@ -110,7 +117,7 @@ async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof 
           },
           {
             role: 'user',
-            content: 'Provide your comprehensive analysis based on your expertise and current market conditions. Structure your response with clear sections and insights.'
+            content: 'Generate comprehensive investment analysis content.'
           }
         ],
         max_tokens: 8000,
