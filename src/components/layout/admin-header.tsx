@@ -76,7 +76,12 @@ const pageConfigs: Record<string, PageConfig> = {
     title: 'Newsletter Schedule',
     description: 'Automate bi-weekly newsletter delivery',
     icon: Calendar,
-    badge: 'Automated'
+    badge: 'Automated',
+    action: {
+      label: 'View Logs',
+      onClick: 'viewLogs',
+      icon: BarChart3
+    }
   },
   '/analytics': {
     title: 'Performance Analytics',
@@ -130,6 +135,10 @@ export function AdminHeader() {
     }
   }
 
+  const handleViewLogs = () => {
+    toast.info('Cron job logs will be available after backend integration')
+  }
+
   return (
     <header className="flex items-center gap-4 border-b bg-background px-4 py-4 flex-shrink-0">
       <SidebarTrigger />
@@ -165,6 +174,16 @@ export function AdminHeader() {
               <config.action.icon className="h-4 w-4" />
               {isEmailingAnalysis ? 'Generating & Sending...' : config.action.label}
             </Button>
+          ) : config.action.onClick === 'viewLogs' ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hidden sm:flex gap-2" 
+              onClick={handleViewLogs}
+            >
+              <config.action.icon className="h-4 w-4" />
+              {config.action.label}
+            </Button>
           ) : (
             <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
               <Link href={config.action.href || '#'}>
@@ -190,6 +209,15 @@ export function AdminHeader() {
             className="sm:hidden" 
             onClick={handleEmailAnalysis}
             disabled={isEmailingAnalysis}
+          >
+            <config.action.icon className="h-4 w-4" />
+          </Button>
+        ) : config.action && config.action.onClick === 'viewLogs' ? (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="sm:hidden" 
+            onClick={handleViewLogs}
           >
             <config.action.icon className="h-4 w-4" />
           </Button>
