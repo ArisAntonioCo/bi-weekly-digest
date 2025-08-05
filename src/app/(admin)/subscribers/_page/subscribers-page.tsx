@@ -104,21 +104,22 @@ export function SubscribersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="space-y-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-6xl">
+      <div className="space-y-6 sm:space-y-8">
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-muted/50 rounded-lg p-4 border">
-              <div className="text-2xl font-bold text-primary">{subscribers.length}</div>
-              <div className="text-sm text-muted-foreground">Total Subscribers</div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Subscribers</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border">
+              <div className="text-xl sm:text-2xl font-bold text-primary">{subscribers.length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Total Subscribers</div>
             </div>
-            <div className="bg-muted/50 rounded-lg p-4 border">
-              <div className="text-2xl font-bold text-green-600">{subscribers.filter(s => s.subscribed).length}</div>
-              <div className="text-sm text-muted-foreground">Active Subscribers</div>
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">{subscribers.filter(s => s.subscribed).length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Active Subscribers</div>
             </div>
-            <div className="bg-muted/50 rounded-lg p-4 border">
-              <div className="text-2xl font-bold text-orange-600">{subscribers.filter(s => !s.subscribed).length}</div>
-              <div className="text-sm text-muted-foreground">Inactive Subscribers</div>
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border sm:col-span-2 lg:col-span-1">
+              <div className="text-xl sm:text-2xl font-bold text-orange-600">{subscribers.filter(s => !s.subscribed).length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Inactive Subscribers</div>
             </div>
           </div>
         </div>
