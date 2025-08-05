@@ -6,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Save, TestTube, Calendar, Clock, Globe } from 'lucide-react'
+import { Save, TestTube, Calendar, Clock, Globe, Loader2, Send } from 'lucide-react'
 import { COMMON_TIMEZONES, formatTimeWithTimezone } from '@/utils/timezone'
+import { toast } from 'sonner'
 
 interface ScheduleFormProps {
   cronExpression: string
@@ -27,11 +28,41 @@ export function ScheduleForm({
   const [dayOfWeek, setDayOfWeek] = useState('1')
   const [frequency, setFrequency] = useState('weekly')
   const [selectedTimezone, setSelectedTimezone] = useState('America/New_York')
+  const [isSaving, setIsSaving] = useState(false)
+  const [isTesting, setIsTesting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isTriggering, setIsTriggering] = useState(false)
+
+  useEffect(() => {
+    // Load existing schedule settings
+    loadScheduleSettings()
+  }, [])
 
   useEffect(() => {
     updateCronExpression()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frequency, minute, hour, dayOfWeek, dayOfMonth])
+
+  const loadScheduleSettings = async () => {
+    try {
+      const response = await fetch('/api/newsletter/schedule')
+      if (response.ok) {
+        const data = await response.json()
+        setMinute(data.minute?.toString() || '0')
+        setHour(data.hour?.toString() || '9')
+        setDayOfMonth(data.day_of_month?.toString() || '1')
+        setDayOfWeek(data.day_of_week?.toString() || '1')
+        setFrequency(data.frequency || 'weekly')
+        setSelectedTimezone(data.timezone || 'America/New_York')
+        onActiveChange(data.is_active || false)
+      }
+    } catch (error) {
+      console.error('Failed to load schedule settings:', error)
+      toast.error('Failed to load schedule settings')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const updateCronExpression = () => {
     let expression = ''
@@ -56,12 +87,90 @@ export function ScheduleForm({
     onCronChange(expression)
   }
 
-  const handleSave = () => {
-    console.log('Saving schedule configuration...')
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/newsletter/schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          is_active: isActive,
+          frequency,
+          hour: parseInt(hour),
+          minute: parseInt(minute),
+          day_of_week: frequency === 'weekly' || frequency === 'biweekly' ? parseInt(dayOfWeek) : null,
+          day_of_month: frequency === 'monthly' ? parseInt(dayOfMonth) : null,
+          timezone: selectedTimezone,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success('Schedule saved successfully!')
+      } else {
+        toast.error(data.error || 'Failed to save schedule')
+      }
+    } catch (error) {
+      console.error('Save error:', error)
+      toast.error('Failed to save schedule')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
-  const handleTest = () => {
-    console.log('Testing schedule...')
+  const handleTest = async () => {
+    setIsTesting(true)
+    try {
+      const response = await fetch('/api/newsletter/test', {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success(data.message || 'Test email sent successfully!')
+      } else {
+        toast.error(data.error || 'Failed to send test email')
+      }
+    } catch (error) {
+      console.error('Test error:', error)
+      toast.error('Failed to send test email')
+    } finally {
+      setIsTesting(false)
+    }
+  }
+
+  const handleManualTrigger = async () => {
+    setIsTriggering(true)
+    try {
+      const response = await fetch('/api/newsletter/trigger', {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success(data.message || 'Manual test sent successfully!')
+      } else {
+        toast.error(data.error || 'Failed to send manual test')
+      }
+    } catch (error) {
+      console.error('Manual trigger error:', error)
+      toast.error('Failed to send manual test')
+    } finally {
+      setIsTriggering(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
   return (
@@ -248,7 +357,7 @@ export function ScheduleForm({
       <div className="bg-muted/50 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium">Schedule Summary</p>
+            <p className="text-sm font-medium">Production Schedule</p>
             <div className="space-y-1 mt-1">
               <p className="text-sm text-muted-foreground">
                 {frequency === 'daily' && `Newsletters will be sent every day at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
@@ -266,20 +375,66 @@ export function ScheduleForm({
               variant="outline" 
               size="sm"
               onClick={handleTest}
+              disabled={isTesting || isSaving}
               className="flex items-center gap-2"
             >
-              <TestTube className="h-4 w-4" />
-              Test
+              {isTesting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <TestTube className="h-4 w-4" />
+              )}
+              {isTesting ? 'Sending...' : 'Test'}
             </Button>
             <Button 
               size="sm"
               onClick={handleSave}
-              disabled={!isActive}
+              disabled={isSaving || isTesting}
               className="flex items-center gap-2"
             >
-              <Save className="h-4 w-4" />
-              Save
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              {isSaving ? 'Saving...' : 'Save'}
             </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-900">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Testing Information</p>
+            <div className="space-y-2 mt-2">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                <strong>Automated Daily Test:</strong> A test email is automatically sent every day at 9:00 AM UTC to:
+              </p>
+              <ul className="text-xs text-blue-600 dark:text-blue-400 ml-4 list-disc">
+                <li>kulaizki@gmail.com</li>
+                <li>arisantonioco@gmail.com</li>
+              </ul>
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                This helps verify the newsletter system is working correctly without waiting for the weekly schedule.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Button 
+              variant="default"
+              size="sm"
+              onClick={handleManualTrigger}
+              disabled={isTriggering || isTesting || isSaving}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+            >
+              {isTriggering ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {isTriggering ? 'Sending...' : 'Send Now'}
+            </Button>
+            <span className="text-xs text-blue-600 dark:text-blue-400 text-center">Manual test</span>
           </div>
         </div>
       </div>
