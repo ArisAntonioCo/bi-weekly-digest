@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
+interface NewsletterSchedule {
+  id?: string
+  is_active: boolean
+  frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly'
+  hour: number
+  minute: number
+  day_of_week?: number | null
+  day_of_month?: number | null
+  timezone: string
+  last_sent_at?: string | null
+  next_scheduled_at?: string | null
+  updated_at?: string
+}
+
 export async function GET() {
   try {
     const supabase = await createClient()
@@ -154,7 +168,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function calculateNextScheduledDate(schedule: any, from: Date): Date {
+function calculateNextScheduledDate(schedule: Pick<NewsletterSchedule, 'frequency' | 'hour' | 'minute' | 'day_of_week' | 'day_of_month'>, from: Date): Date {
   const next = new Date(from)
   
   switch (schedule.frequency) {
@@ -164,13 +178,13 @@ function calculateNextScheduledDate(schedule: any, from: Date): Date {
     
     case 'weekly':
       // Find next occurrence of the specified day
-      const daysUntilTarget = (schedule.day_of_week - next.getDay() + 7) % 7 || 7
+      const daysUntilTarget = ((schedule.day_of_week ?? 1) - next.getDay() + 7) % 7 || 7
       next.setDate(next.getDate() + daysUntilTarget)
       break
     
     case 'biweekly':
       // Same as weekly but add 14 days instead
-      const daysUntilBiweekly = (schedule.day_of_week - next.getDay() + 7) % 7 || 7
+      const daysUntilBiweekly = ((schedule.day_of_week ?? 1) - next.getDay() + 7) % 7 || 7
       next.setDate(next.getDate() + daysUntilBiweekly)
       if (daysUntilBiweekly === 0) {
         next.setDate(next.getDate() + 14)
@@ -179,7 +193,7 @@ function calculateNextScheduledDate(schedule: any, from: Date): Date {
     
     case 'monthly':
       next.setMonth(next.getMonth() + 1)
-      next.setDate(schedule.day_of_month)
+      next.setDate(schedule.day_of_month ?? 1)
       break
   }
   

@@ -7,6 +7,19 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+interface NewsletterSchedule {
+  id: string
+  is_active: boolean
+  frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly'
+  hour: number
+  minute: number
+  day_of_week?: number
+  day_of_month?: number
+  timezone: string
+  last_sent_at: string | null
+  next_scheduled_at: string | null
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Verify this is a Vercel cron job or authorized request
@@ -169,7 +182,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function shouldSendNewsletter(schedule: any, now: Date): boolean {
+function shouldSendNewsletter(schedule: NewsletterSchedule, now: Date): boolean {
   // If never sent before, send now
   if (!schedule.last_sent_at) {
     return true
@@ -208,7 +221,7 @@ function shouldSendNewsletter(schedule: any, now: Date): boolean {
   }
 }
 
-function calculateNextScheduledDate(schedule: any, from: Date): Date {
+function calculateNextScheduledDate(schedule: NewsletterSchedule, from: Date): Date {
   const next = new Date(from)
   
   switch (schedule.frequency) {
@@ -226,7 +239,7 @@ function calculateNextScheduledDate(schedule: any, from: Date): Date {
     
     case 'monthly':
       next.setMonth(next.getMonth() + 1)
-      next.setDate(schedule.day_of_month)
+      next.setDate(schedule.day_of_month || 1)
       break
   }
   

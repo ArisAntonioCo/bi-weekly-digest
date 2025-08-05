@@ -36,6 +36,7 @@ export function ScheduleForm({
   useEffect(() => {
     // Load existing schedule settings
     loadScheduleSettings()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
