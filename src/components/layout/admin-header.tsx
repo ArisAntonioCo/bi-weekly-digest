@@ -83,12 +83,6 @@ const pageConfigs: Record<string, PageConfig> = {
       icon: BarChart3
     }
   },
-  '/analytics': {
-    title: 'Performance Analytics',
-    description: 'Track engagement and AI usage metrics',
-    icon: BarChart3,
-    badge: 'Live Data'
-  },
   '/subscribers': {
     title: 'Subscriber Management',
     description: 'Manage newsletter recipients and preferences',

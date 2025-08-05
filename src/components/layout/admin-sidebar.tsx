@@ -18,7 +18,6 @@ import {
   MessageSquare, 
   Settings, 
   FileText, 
-  BarChart3, 
   User,
   Calendar,
   LogOut,
@@ -40,12 +39,6 @@ const sidebarItems = [
     items: [
       { title: "Configuration", icon: Settings, href: "/newsletter/config" },
       { title: "Schedule", icon: Calendar, href: "/newsletter/schedule" },
-    ]
-  },
-  {
-    title: "Analytics",
-    items: [
-      { title: "Performance", icon: BarChart3, href: "/analytics" },
       { title: "Subscribers", icon: User, href: "/subscribers" },
     ]
   }
