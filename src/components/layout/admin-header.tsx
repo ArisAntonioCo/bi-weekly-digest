@@ -39,7 +39,7 @@ const pageConfigs: Record<string, PageConfig> = {
     icon: MessageSquare,
     badge: 'Active',
     action: {
-      label: 'Email AI Analysis',
+      label: 'Test AI Analysis',
       onClick: 'emailAnalysis',
       icon: Mail
     }
