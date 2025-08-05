@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Save, TestTube, Calendar, Clock } from 'lucide-react'
+import { Save, TestTube, Calendar, Clock, Globe } from 'lucide-react'
+import { COMMON_TIMEZONES, formatTimeWithTimezone } from '@/utils/timezone'
 
 interface ScheduleFormProps {
   cronExpression: string
@@ -26,6 +27,7 @@ export function ScheduleForm({
   const [dayOfMonth, setDayOfMonth] = useState('1')
   const [dayOfWeek, setDayOfWeek] = useState('1')
   const [frequency, setFrequency] = useState('biweekly')
+  const [selectedTimezone, setSelectedTimezone] = useState('America/New_York')
 
   useEffect(() => {
     updateCronExpression()
@@ -115,11 +117,11 @@ export function ScheduleForm({
             <Clock className="h-4 w-4" />
             What time should it be sent? (UTC)
           </Label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex gap-2">
             <div className="space-y-2">
               <Label htmlFor="hour" className="text-xs text-muted-foreground">Hour</Label>
               <Select value={hour} onValueChange={setHour}>
-                <SelectTrigger id="hour">
+                <SelectTrigger id="hour" className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,7 +156,7 @@ export function ScheduleForm({
             <div className="space-y-2">
               <Label htmlFor="minute" className="text-xs text-muted-foreground">Minute</Label>
               <Select value={minute} onValueChange={setMinute}>
-                <SelectTrigger id="minute">
+                <SelectTrigger id="minute" className="w-[100px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -168,6 +170,29 @@ export function ScheduleForm({
           </div>
           <p className="text-xs text-muted-foreground">
             Time shown is in UTC. Emails will be sent at this time regardless of subscriber timezone.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="timezone" className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            Your timezone (for reference only)
+          </Label>
+          <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
+            <SelectTrigger id="timezone">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {COMMON_TIMEZONES.map((tz) => (
+                <SelectItem key={tz.value} value={tz.value}>
+                  {tz.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Select your timezone to see when the newsletter will be sent in your local time.
+            The schedule always runs at the UTC time you specified.
           </p>
         </div>
 
@@ -224,12 +249,17 @@ export function ScheduleForm({
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <p className="text-sm font-medium">Schedule Summary</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {frequency === 'daily' && `Newsletters will be sent every day at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-              {frequency === 'weekly' && `Newsletters will be sent every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)]} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-              {frequency === 'biweekly' && `Newsletters will be sent every two weeks on ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)]} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-              {frequency === 'monthly' && `Newsletters will be sent on the ${dayOfMonth}${dayOfMonth === '1' ? 'st' : dayOfMonth === '2' ? 'nd' : dayOfMonth === '3' ? 'rd' : 'th'} of each month at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-            </p>
+            <div className="space-y-1 mt-1">
+              <p className="text-sm text-muted-foreground">
+                {frequency === 'daily' && `Newsletters will be sent every day at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
+                {frequency === 'weekly' && `Newsletters will be sent every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)]} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
+                {frequency === 'biweekly' && `Newsletters will be sent every two weeks on ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)]} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
+                {frequency === 'monthly' && `Newsletters will be sent on the ${dayOfMonth}${dayOfMonth === '1' ? 'st' : dayOfMonth === '2' ? 'nd' : dayOfMonth === '3' ? 'rd' : 'th'} of each month at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
+              </p>
+              <p className="text-xs text-muted-foreground/80">
+                {`(${formatTimeWithTimezone(parseInt(hour), parseInt(minute), selectedTimezone)} in your timezone)`}
+              </p>
+            </div>
           </div>
           <div className="flex gap-2">
             <Button 

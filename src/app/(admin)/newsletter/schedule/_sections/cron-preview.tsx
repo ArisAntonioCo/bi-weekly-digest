@@ -5,6 +5,9 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { CalendarCheck, Clock, Globe, Timer } from 'lucide-react'
 import { format, addDays, addWeeks, addMonths, setHours, setMinutes, startOfDay } from 'date-fns'
+import { TZDate } from '@date-fns/tz'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { COMMON_TIMEZONES } from '@/utils/timezone'
 
 interface CronPreviewProps {
   cronExpression: string
@@ -14,6 +17,7 @@ interface CronPreviewProps {
 export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
   const [nextRuns, setNextRuns] = useState<Date[]>([])
   const [timeUntilNext, setTimeUntilNext] = useState<string>('')
+  const [previewTimezone, setPreviewTimezone] = useState('America/New_York')
 
   useEffect(() => {
     const calculateNextRuns = () => {
@@ -106,12 +110,24 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
     }
   }, [cronExpression])
 
-  const formatLocalTime = (date: Date) => {
-    return format(date, 'MMM dd, yyyy HH:mm')
+  const formatLocalTime = (date: Date, timezone: string) => {
+    const tzDate = new TZDate(date.getTime(), timezone)
+    return format(tzDate, 'MMM dd, yyyy HH:mm')
   }
 
   const formatUTCTime = (date: Date) => {
     return date.toUTCString().replace('GMT', 'UTC')
+  }
+  
+  const getTimezoneAbbr = (timezone: string) => {
+    const tzDate = new TZDate(new Date().getTime(), timezone)
+    const formatted = tzDate.toString()
+    const match = formatted.match(/\(([^)]+)\)/)
+    if (match) {
+      const parts = match[1].split(' ')
+      return parts.map(p => p[0]).join('')
+    }
+    return ''
   }
 
   return (
@@ -132,7 +148,7 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
           <>
             <div className="text-2xl font-bold">{timeUntilNext}</div>
             <p className="text-sm text-muted-foreground">
-              {formatLocalTime(nextRuns[0])} (Local)
+              {format(nextRuns[0], 'MMM dd, yyyy HH:mm')} UTC
             </p>
           </>
         ) : (
@@ -143,9 +159,23 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
       <Separator />
 
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <CalendarCheck className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Upcoming Runs</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CalendarCheck className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Upcoming Runs</span>
+          </div>
+          <Select value={previewTimezone} onValueChange={setPreviewTimezone}>
+            <SelectTrigger className="w-[200px] h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {COMMON_TIMEZONES.map((tz) => (
+                <SelectItem key={tz.value} value={tz.value}>
+                  {tz.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         
         <div className="space-y-2">
@@ -159,18 +189,15 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-sm font-medium">
-                    {formatLocalTime(run)}
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-xs font-medium">
+                    {format(run, 'MMM dd, yyyy HH:mm')} UTC
                   </span>
-                  <Badge variant="outline" className="text-xs">
-                    Local
-                  </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  <Clock className="h-3 w-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">
-                    {formatUTCTime(run)}
+                    {formatLocalTime(run, previewTimezone)} {getTimezoneAbbr(previewTimezone)}
                   </span>
                 </div>
               </div>
