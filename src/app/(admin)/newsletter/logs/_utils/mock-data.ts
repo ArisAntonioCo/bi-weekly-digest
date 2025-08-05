@@ -26,7 +26,7 @@ export function generateMockLogs(): LogEntry[] {
   // Generate logs for the past 30 days
   for (let i = 0; i < 30; i++) {
     const date = new Date(now)
-    date.setDate(date.getDate() - i * 2) // Bi-weekly schedule
+    date.setDate(date.getDate() - i * 7) // Weekly schedule
     
     // Random chance of different statuses
     const random = Math.random()
@@ -65,7 +65,7 @@ export function generateMockLogs(): LogEntry[] {
         : 'Newsletter queued for sending',
       error: error,
       details: status === 'success' ? {
-        subject: `Bi-Weekly Investment Digest #${30 - i}`,
+        subject: `Weekly Investment Digest #${30 - i}`,
         openRate: Math.random() * 0.4 + 0.3,
         clickRate: Math.random() * 0.15 + 0.05,
         bounceRate: Math.random() * 0.02

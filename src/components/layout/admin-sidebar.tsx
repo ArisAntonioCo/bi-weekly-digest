@@ -69,7 +69,7 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
             <FileText className="h-3 w-3 md:h-4 md:w-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs md:text-sm font-semibold">BI-Weekly Digest</span>
+            <span className="text-xs md:text-sm font-semibold">Weekly Digest</span>
             <span className="text-xs text-muted-foreground hidden sm:block">Content Manager</span>
           </div>
         </div>

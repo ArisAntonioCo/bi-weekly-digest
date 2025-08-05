@@ -68,13 +68,13 @@ const pageConfigs: Record<string, PageConfig> = {
   },
   '/newsletter/send': {
     title: 'Send Newsletter',
-    description: 'Compose and send bi-weekly digest',
+    description: 'Compose and send weekly digest',
     icon: Mail,
     badge: 'Draft'
   },
   '/newsletter/schedule': {
     title: 'Newsletter Schedule',
-    description: 'Automate bi-weekly newsletter delivery',
+    description: 'Automate weekly newsletter delivery',
     icon: Calendar,
     badge: 'Automated',
     action: {
@@ -92,7 +92,7 @@ const pageConfigs: Record<string, PageConfig> = {
 }
 
 const defaultConfig: PageConfig = {
-  title: 'BI-Weekly Digest',
+  title: 'Weekly Digest',
   description: 'Kyle\'s AI-powered content management system',
   icon: Settings,
   badge: 'Admin Panel'
