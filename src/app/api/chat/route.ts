@@ -8,11 +8,11 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // Check authentication and user permissions
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
-    if (!user) {
+    if (!user || user.email !== 'kyle@zaigo.ai') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -74,8 +74,8 @@ Please refine the system prompt based on this request.`
         const refinementResponse = await openai.chat.completions.create({
           model: 'gpt-4o-mini',
           messages: refinementMessages,
-          temperature: 0.3,
-          max_tokens: 4000,
+          temperature: 0.45,
+          max_tokens: 8000,
         })
         
         const refinedPrompt = refinementResponse.choices[0].message.content?.trim()
@@ -106,8 +106,8 @@ Please refine the system prompt based on this request.`
             const summaryResponse = await openai.chat.completions.create({
               model: 'gpt-4o-mini',
               messages: summaryMessages,
-              temperature: 0.5,
-              max_tokens: 500,
+              temperature: 0.45,
+              max_tokens: 2000,
             })
             
             const changeSummary = summaryResponse.choices[0].message.content || 'System prompt has been updated based on your request.'
@@ -193,6 +193,7 @@ Use the web search tool to find the latest information when answering questions 
 
         const response = await openai.responses.create({
           model: 'gpt-4o-mini',
+          temperature: 0.45,
           instructions: instructions,
           input: lastMessage.content,
           tools: [{ type: 'web_search_preview' }],
@@ -220,8 +221,8 @@ Additionally, you can help the user update your system prompt. If they ask to up
         const completion = await openai.chat.completions.create({
           model: 'gpt-4o-mini',
           messages: messagesWithSystem,
-          temperature: 0.7,
-          max_tokens: 2000,
+          temperature: 0.45,
+          max_tokens: 8000,
         })
 
         const assistantMessage = completion.choices[0].message
@@ -253,8 +254,8 @@ Note: Real-time web search is currently unavailable. I'll provide the best infor
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: messagesWithSystem,
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.45,
+        max_tokens: 8000,
       })
 
       const assistantMessage = completion.choices[0].message
