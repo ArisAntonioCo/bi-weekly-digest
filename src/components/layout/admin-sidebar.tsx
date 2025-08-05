@@ -18,7 +18,6 @@ import {
   MessageSquare, 
   Settings, 
   FileText, 
-  Mail, 
   BarChart3, 
   User,
   Calendar,
