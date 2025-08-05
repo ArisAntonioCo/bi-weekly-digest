@@ -90,7 +90,7 @@ Structure it with:
 Make it informative and engaging, around 600-800 words.`
           }
         ],
-        max_tokens: 2000,
+        max_tokens: 8000,
       })
 
       return {

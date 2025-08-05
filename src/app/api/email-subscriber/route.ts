@@ -69,7 +69,7 @@ export async function POST(request: Request) {
             content: 'Provide your analysis based on your expertise and current market conditions.'
           }
         ],
-        max_tokens: 4000,
+        max_tokens: 8000,
       })
       
       aiResponse = completion.choices[0].message.content || 'No response generated'
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       year: 'numeric' 
     })
 
-    // Simple markdown to HTML conversion
+    // Enhanced markdown to HTML conversion
     const convertMarkdownToHtml = (markdown: string) => {
       // First, handle emoji shortcodes
       const emojiMap: Record<string, string> = {
@@ -104,9 +104,9 @@ export async function POST(request: Request) {
         ':bar_chart:': '📊',
         ':brain:': '🧠',
         ':sleuth_or_spy:': '🔍',
-        ':large_green_circle:': '',
-        ':large_yellow_circle:': '',
-        ':red_circle:': '',
+        ':large_green_circle:': '🟢',
+        ':large_yellow_circle:': '🟡',
+        ':red_circle:': '🔴',
       }
       
       let html = markdown
@@ -116,7 +116,28 @@ export async function POST(request: Request) {
         html = html.replace(new RegExp(code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), emoji)
       })
       
-      // Pre-process to handle inline lists (e.g., "Risk Vectors: - Item 1 - Item 2")
+      // Handle tables (simple pipe-separated tables)
+      html = html.replace(/^\|(.*)\|$/gm, (match) => {
+        const cells = match.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+        const isHeaderSeparator = cells.every(cell => /^-+$/.test(cell.replace(/:/g, '')))
+        
+        if (isHeaderSeparator) {
+          return '' // Remove separator row
+        }
+        
+        const cellTags = cells.map(cell => 
+          `<td style="padding: 8px 12px; border: 1px solid #e5e7eb; font-size: 14px;">${cell}</td>`
+        ).join('')
+        
+        return `<tr>${cellTags}</tr>`
+      })
+      
+      // Wrap table rows in table structure
+      html = html.replace(/(<tr>.*<\/tr>\s*)+/gs, (match) => {
+        return `<table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;">${match}</table>`
+      })
+      
+      // Pre-process to handle inline lists and fix dash bullets
       html = html.replace(/^(.+?):\s*-\s*(.+)$/gm, (match, prefix) => {
         const items = match.substring(match.indexOf('- '))
           .split(/\s*-\s*/)
@@ -144,9 +165,8 @@ export async function POST(request: Request) {
         // Code blocks
         .replace(/`([^`]+)`/g, '<code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: monospace;">$1</code>')
         
-        // Lists - handle various bullet formats
-        .replace(/^[\*\-]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
-        .replace(/^•\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+        // Lists - handle ALL bullet formats including dashes
+        .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
         .replace(/^\d+\.\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
       
       // Process the HTML to wrap list items in ul/ol tags
@@ -184,7 +204,7 @@ export async function POST(request: Request) {
         .split('\n\n')
         .map(para => {
           para = para.trim()
-          if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<ol') && !para.includes('<li')) {
+          if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<ol') && !para.includes('<li') && !para.includes('<table')) {
             return `<p style="margin-bottom: 16px; line-height: 1.7; color: #4b5563;">${para}</p>`
           }
           return para
