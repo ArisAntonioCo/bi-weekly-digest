@@ -41,13 +41,18 @@ export async function POST() {
         }
       }
 
+      // Add explicit ordering instructions to the prompt
+      const enhancedPrompt = `${systemPrompt}
+
+CRITICAL: You MUST follow the EXACT order of sections as specified in the system prompt. Do not rearrange or reorder any sections. Generate each section in the precise sequence defined above.`
+
       // Try Responses API first
       try {
         const response = await openai.responses.create({
           model: 'gpt-4o-mini',
           temperature: 0.45,
-          instructions: systemPrompt,
-          input: 'Generate a sample newsletter content for testing purposes. Make it brief but demonstrate the format.',
+          instructions: enhancedPrompt,
+          input: 'Generate a sample newsletter content for testing purposes. Make it brief but demonstrate the format. Follow the EXACT section ordering specified in the instructions.',
           tools: [{ type: 'web_search_preview' }],
         })
         
@@ -62,11 +67,11 @@ export async function POST() {
           messages: [
             { 
               role: 'system', 
-              content: systemPrompt 
+              content: enhancedPrompt 
             },
             {
               role: 'user',
-              content: 'Generate a sample newsletter content for testing purposes. Make it brief but demonstrate the format.'
+              content: 'Generate a sample newsletter content for testing purposes. Make it brief but demonstrate the format. Follow the EXACT section ordering specified in the system prompt.'
             }
           ],
           max_tokens: 2000,

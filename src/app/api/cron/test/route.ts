@@ -49,13 +49,18 @@ export async function GET(request: NextRequest) {
         }
       }
 
+      // Add explicit ordering instructions to the prompt
+      const enhancedPrompt = `${systemPrompt}
+
+CRITICAL: You MUST follow the EXACT order of sections as specified in the system prompt. Do not rearrange or reorder any sections. Generate each section in the precise sequence defined above.`
+
       // Try Responses API first
       try {
         const response = await openai.responses.create({
           model: 'gpt-4o-mini',
           temperature: 0.45,
-          instructions: systemPrompt,
-          input: 'Generate comprehensive investment analysis content based on current market data.',
+          instructions: enhancedPrompt,
+          input: 'Generate comprehensive investment analysis content based on current market data. Follow the EXACT section ordering specified in the instructions.',
           tools: [{ type: 'web_search_preview' }],
         })
         
@@ -70,11 +75,11 @@ export async function GET(request: NextRequest) {
           messages: [
             { 
               role: 'system', 
-              content: systemPrompt 
+              content: enhancedPrompt 
             },
             {
               role: 'user',
-              content: 'Generate comprehensive investment analysis content.'
+              content: 'Generate comprehensive investment analysis content. Follow the EXACT section ordering specified in the system prompt.'
             }
           ],
           max_tokens: 8000,

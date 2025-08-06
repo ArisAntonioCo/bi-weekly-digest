@@ -47,13 +47,18 @@ export async function POST() {
         }
       }
 
+      // Add explicit ordering instructions to the prompt
+      const enhancedPrompt = `${systemPrompt}
+
+CRITICAL: You MUST follow the EXACT order of sections as specified in the system prompt. Do not rearrange or reorder any sections. Generate each section in the precise sequence defined above.`
+
       // Try Responses API first
       try {
         const response = await openai.responses.create({
           model: 'gpt-4o-mini',
           temperature: 0.45,
-          instructions: systemPrompt,
-          input: 'Generate comprehensive investment analysis content based on current market data.',
+          instructions: enhancedPrompt,
+          input: 'Generate comprehensive investment analysis content based on current market data. Follow the EXACT section ordering specified in the instructions.',
           tools: [{ type: 'web_search_preview' }],
         })
         
@@ -68,11 +73,11 @@ export async function POST() {
           messages: [
             { 
               role: 'system', 
-              content: systemPrompt 
+              content: enhancedPrompt 
             },
             {
               role: 'user',
-              content: 'Generate comprehensive investment analysis content.'
+              content: 'Generate comprehensive investment analysis content. Follow the EXACT section ordering specified in the system prompt.'
             }
           ],
           max_tokens: 8000,
@@ -90,24 +95,24 @@ export async function POST() {
 
     // Send email to test recipients
     const emailPromises = TEST_RECIPIENTS.map(email => 
-      sendManualTestEmail(email, markdownHtml, aiResponse)
+      sendEmail(email, markdownHtml, aiResponse)
     )
 
     const results = await Promise.allSettled(emailPromises)
     const successCount = results.filter(r => r.status === 'fulfilled').length
     const failureCount = results.filter(r => r.status === 'rejected').length
 
-    // Store in blogs table with manual test flag
+    // Store in blogs table
     await supabase
       .from('blogs')
       .insert({
-        title: `[MANUAL TEST] Weekly Investment Analysis - ${new Date().toLocaleDateString()}`,
+        title: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
         content: aiResponse,
       })
 
     return NextResponse.json({
       success: true,
-      message: `Manual test sent to ${successCount} recipients (${TEST_RECIPIENTS.join(', ')})`,
+      message: `Newsletter sent to ${successCount} recipients`,
       stats: {
         totalRecipients: TEST_RECIPIENTS.length,
         successfulSends: successCount,
@@ -124,11 +129,11 @@ export async function POST() {
   }
 }
 
-async function sendManualTestEmail(email: string, htmlContent: string, markdownContent: string) {
+async function sendEmail(email: string, htmlContent: string, markdownContent: string) {
   const emailResult = await resend.emails.send({
     from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
     to: email,
-    subject: `[MANUAL TEST] AI Investment Analysis - ${new Date().toLocaleDateString()}`,
+    subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
     html: `<!DOCTYPE html>
 <html>
 <head>
@@ -154,16 +159,6 @@ async function sendManualTestEmail(email: string, htmlContent: string, markdownC
       border-radius: 12px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       overflow: hidden;
-    }
-    .manual-banner {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      color: white;
-      padding: 16px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
     }
     .header {
       background: linear-gradient(135deg, #111827 0%, #374151 100%);
@@ -203,33 +198,26 @@ async function sendManualTestEmail(email: string, htmlContent: string, markdownC
       font-weight: 600;
       color: #111827;
     }
-    .test-info {
-      background: #eff6ff;
-      border: 1px solid #3b82f6;
-      border-radius: 8px;
-      padding: 12px;
-      margin: 16px 32px;
-      text-align: center;
-      color: #1e40af;
-      font-size: 13px;
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .header {
+        padding: 24px;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .analysis-section {
+        padding: 24px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrapper">
     <div class="container">
-      <div class="manual-banner">
-        🚀 MANUAL TEST - Triggered from Admin Panel
-      </div>
-      
       <div class="header">
         <h1>AI Investment Analysis</h1>
-        <p>Your weekly investment insights (MANUAL TEST)</p>
-      </div>
-      
-      <div class="test-info">
-        <strong>Manual Test:</strong> This email was manually triggered from the admin panel. 
-        This helps verify the newsletter system is working correctly before scheduled sends.
+        <p>Your weekly investment insights</p>
       </div>
       
       <div class="analysis-section">
@@ -239,9 +227,8 @@ async function sendManualTestEmail(email: string, htmlContent: string, markdownC
       </div>
       
       <div class="footer">
-        <p>Manually triggered test email - Not part of scheduled delivery</p>
-        <p>Test Recipients: ${TEST_RECIPIENTS.join(', ')}</p>
-        <p class="footer-logo">Weekly Digest - Manual Test</p>
+        <p>This analysis was generated using AI-powered investment research</p>
+        <p class="footer-logo">Weekly Digest</p>
       </div>
     </div>
   </div>
@@ -258,29 +245,109 @@ async function sendManualTestEmail(email: string, htmlContent: string, markdownC
 }
 
 function convertMarkdownToHtml(markdown: string): string {
+  // First, handle emoji shortcodes
+  const emojiMap: Record<string, string> = {
+    ':chart_with_upwards_trend:': '📈',
+    ':chart_with_downwards_trend:': '📉',
+    ':white_check_mark:': '✅',
+    ':mortar_board:': '🎓',
+    ':bar_chart:': '📊',
+    ':brain:': '🧠',
+    ':sleuth_or_spy:': '🔍',
+    ':large_green_circle:': '🟢',
+    ':large_yellow_circle:': '🟡',
+    ':red_circle:': '🔴',
+  }
+  
   let html = markdown
-
-  // Headers
+  
+  // Replace emoji shortcodes
+  Object.entries(emojiMap).forEach(([code, emoji]) => {
+    html = html.replace(new RegExp(code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), emoji)
+  })
+  
+  // Handle tables (simple pipe-separated tables)
+  let isFirstRow = true
+  
+  html = html.replace(/^\|(.*)\|$/gm, (match) => {
+    const cells = match.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+    const isHeaderSeparator = cells.every(cell => /^-+$/.test(cell.replace(/:/g, '')))
+    
+    if (isHeaderSeparator) {
+      return '<!--separator-->' // Mark separator for removal
+    }
+    
+    const cellTag = isFirstRow ? 'th' : 'td'
+    const cellStyle = isFirstRow 
+      ? 'padding: 12px 16px; border: 1px solid #e5e7eb; background-color: #f9fafb; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151;'
+      : 'padding: 10px 16px; border: 1px solid #e5e7eb; font-size: 14px; color: #4b5563;'
+    
+    const cellTags = cells.map(cell => 
+      `<${cellTag} style="${cellStyle}">${cell}</${cellTag}>`
+    ).join('')
+    
+    if (isFirstRow) {
+      isFirstRow = false
+      return `<thead><tr style="background-color: #f9fafb;">${cellTags}</tr></thead><tbody>`
+    }
+    
+    return `<tr style="background-color: white; border-bottom: 1px solid #e5e7eb;">${cellTags}</tr>`
+  })
+  
+  // Clean up separators and wrap tables
+  html = html.replace(/<!--separator-->/g, '')
+  
+  // Wrap table rows in proper table structure with enhanced styling
+  html = html.replace(/(<thead>.*<\/tbody>)/gs, (match) => {
+    return `
+      <div style="margin: 20px 0; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+          ${match}</tbody>
+        </table>
+      </div>
+    `
+  })
+  
+  // Pre-process to handle inline lists and fix dash bullets
+  html = html.replace(/^(.+?):\s*-\s*(.+)$/gm, (match, prefix) => {
+    const items = match.substring(match.indexOf('- '))
+      .split(/\s*-\s*/)
+      .filter(item => item.trim())
+      .map(item => `\n• ${item.trim()}`)
+      .join('')
+    return `${prefix}:${items}`
+  })
+  
   html = html
+    // Headers - make them bold and properly sized
     .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 16px; color: #111827;">$1</h3>')
     .replace(/^## (.*$)/gim, '<h2 style="font-size: 20px; font-weight: 700; margin-bottom: 12px; margin-top: 20px; color: #111827;">$1</h2>')
     .replace(/^# (.*$)/gim, '<h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px; margin-top: 24px; color: #111827;">$1</h1>')
     
-  // Bold and italic
-  html = html
+    // Links - handle markdown links [text](url)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #111827; text-decoration: underline; font-weight: 600;">$1</a>')
+    
+    // Bold text - use negative lookahead to avoid matching italic markers
     .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 700; color: #111827;">$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em style="font-style: italic;">$1</em>')
     
-  // Lists
-  html = html
+    // Italic text - only match single asterisks not part of bold
+    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em style="font-style: italic;">$1</em>')
+    
+    // Code blocks
+    .replace(/`([^`]+)`/g, '<code style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: monospace;">$1</code>')
+    
+    // Lists - handle ALL bullet formats including dashes, add bullet character
     .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;"><span style="color: #374151;">•</span> $1</li>')
-    
-  // Wrap list items in ul tags
+    .replace(/^\d+\.\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+  
+  // Process the HTML to wrap list items in ul/ol tags
   const lines = html.split('\n')
   const processedLines: string[] = []
   let inList = false
   
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    
     if (line.includes('<li')) {
       if (!inList) {
         processedLines.push('<ul style="margin-bottom: 16px; padding-left: 0; list-style-type: none;">')
@@ -296,18 +363,19 @@ function convertMarkdownToHtml(markdown: string): string {
     }
   }
   
+  // Close list if still open at the end
   if (inList) {
     processedLines.push('</ul>')
   }
   
   html = processedLines.join('\n')
   
-  // Paragraphs
+  // Handle paragraphs
   html = html
     .split('\n\n')
     .map(para => {
       para = para.trim()
-      if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<li')) {
+      if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<ol') && !para.includes('<li') && !para.includes('<table')) {
         return `<p style="margin-bottom: 16px; line-height: 1.7; color: #4b5563;">${para}</p>`
       }
       return para
