@@ -31,7 +31,6 @@ export function ScheduleForm({
   const [isSaving, setIsSaving] = useState(false)
   const [isTesting, setIsTesting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [isTriggering, setIsTriggering] = useState(false)
 
   useEffect(() => {
     // Load existing schedule settings
@@ -144,27 +143,6 @@ export function ScheduleForm({
     }
   }
 
-  const handleManualTrigger = async () => {
-    setIsTriggering(true)
-    try {
-      const response = await fetch('/api/newsletter/trigger', {
-        method: 'POST',
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        toast.success(data.message || 'Manual test sent successfully!')
-      } else {
-        toast.error(data.error || 'Failed to send manual test')
-      }
-    } catch (error) {
-      console.error('Manual trigger error:', error)
-      toast.error('Failed to send manual test')
-    } finally {
-      setIsTriggering(false)
-    }
-  }
 
   if (isLoading) {
     return (
