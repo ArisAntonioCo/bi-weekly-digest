@@ -26,7 +26,14 @@
       "Bash(ls:*)",
       "Bash(curl:*)",
       "Bash(tar:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(sed:*)",
+      "Bash(grep:*)",
+      "Bash(for file in src/app/api/newsletter/trigger/route.ts src/app/api/newsletter/test/route.ts src/app/api/cron/test/route.ts src/app/api/cron/newsletter/route.ts)",
+      "Bash(do)",
+      "Bash(done)",
+      "Bash(npm run typecheck:*)",
+      "mcp__sequential-thinking__sequentialthinking"
     ],
     "deny": []
   },

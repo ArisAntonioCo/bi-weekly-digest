@@ -37,7 +37,7 @@ export async function POST() {
     try {
       // Use Responses API for dynamic content generation
       const response = await openai.responses.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         temperature: 0.45,
         instructions: systemPrompt,
         input: 'Generate comprehensive investment analysis content based on current market data.',
@@ -50,7 +50,7 @@ export async function POST() {
       
       // Fallback to regular chat completions
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         temperature: 0.45,
         messages: [
           { 
@@ -70,7 +70,7 @@ export async function POST() {
 
     // Generate a title based on the content
     const titleCompletion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       temperature: 0.3,
       messages: [
         {

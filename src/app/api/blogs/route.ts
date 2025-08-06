@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
 async function getSystemPromptSummary(systemPrompt: string) {
   try {
     const summary = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       temperature: 0.3,
       messages: [
         {
@@ -147,7 +147,7 @@ async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof 
     try {
       // Use Responses API for dynamic content generation
       const response = await openai.responses.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         temperature: 0.45,
         instructions: systemPrompt,
         input: 'Generate comprehensive investment analysis content based on current market data.',
@@ -160,7 +160,7 @@ async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof 
       
       // Fallback to regular chat completions
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         temperature: 0.45,
         messages: [
           { 
@@ -180,7 +180,7 @@ async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof 
 
     // Generate a title based on the content
     const titleCompletion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       temperature: 0.3,
       messages: [
         {

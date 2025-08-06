@@ -72,7 +72,7 @@ Please refine the system prompt based on this request.`
         ]
         
         const refinementResponse = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o',
           messages: refinementMessages,
           temperature: 0.45,
           max_tokens: 8000,
@@ -104,10 +104,10 @@ Please refine the system prompt based on this request.`
             ]
             
             const summaryResponse = await openai.chat.completions.create({
-              model: 'gpt-4o-mini',
+              model: 'gpt-4o',
               messages: summaryMessages,
               temperature: 0.45,
-              max_tokens: 2000,
+              max_tokens: 8000,
             })
             
             const changeSummary = summaryResponse.choices[0].message.content || 'System prompt has been updated based on your request.'
@@ -202,7 +202,7 @@ ${conversationHistory}
 Use the web search tool to find the latest information when answering questions about current events, stock prices, or recent news.`
 
         const response = await openai.responses.create({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o',
           temperature: 0.45,
           instructions: instructions,
           input: content,
@@ -256,7 +256,7 @@ Take your time to think deeply about this request and provide a thoughtful, well
         ]
 
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o',
           messages: messagesWithSystem,
           temperature: 0.45,
           max_tokens: 8000,
@@ -312,7 +312,7 @@ Take your time to think deeply about this request and provide a thoughtful, well
       ]
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: messagesWithSystem,
         temperature: 0.45,
         max_tokens: 8000,

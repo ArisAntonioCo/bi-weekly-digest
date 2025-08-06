@@ -40,27 +40,13 @@ export async function GET(request: NextRequest) {
     let aiResponse = ''
     
     try {
-      // Remove content restrictions from system prompt if present
-      let systemPrompt = config.system_prompt || ''
-      if (systemPrompt.includes('CONTENT RESTRICTION POLICY:')) {
-        const parts = systemPrompt.split('Core Analytical Framework:')
-        if (parts.length > 1) {
-          systemPrompt = 'Core Analytical Framework:' + parts[1]
-        }
-      }
-
-      // Add explicit ordering instructions to the prompt
-      const enhancedPrompt = `${systemPrompt}
-
-CRITICAL: You MUST follow the EXACT order of sections as specified in the system prompt. Do not rearrange or reorder any sections. Generate each section in the precise sequence defined above.`
-
       // Try Responses API first
       try {
         const response = await openai.responses.create({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o',
           temperature: 0.45,
-          instructions: enhancedPrompt,
-          input: 'Generate comprehensive investment analysis content based on current market data. Follow the EXACT section ordering specified in the instructions.',
+          instructions: config.system_prompt,
+          input: '',
           tools: [{ type: 'web_search_preview' }],
         })
         
@@ -70,16 +56,16 @@ CRITICAL: You MUST follow the EXACT order of sections as specified in the system
         
         // Fallback to regular chat completions
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o',
           temperature: 0.45,
           messages: [
             { 
               role: 'system', 
-              content: enhancedPrompt 
+              content: config.system_prompt 
             },
             {
               role: 'user',
-              content: 'Generate comprehensive investment analysis content. Follow the EXACT section ordering specified in the system prompt.'
+              content: ''
             }
           ],
           max_tokens: 8000,
@@ -269,9 +255,54 @@ async function sendTestNewsletterEmail(email: string, htmlContent: string, markd
 }
 
 function convertMarkdownToHtml(markdown: string): string {
-  // Enhanced markdown to HTML conversion (simplified version)
   let html = markdown
-
+  
+  // Handle tables properly
+  const tableRegex = /\|.*\|\n\|[-:\s|]+\|\n(?:\|.*\|\n?)+/gm
+  
+  html = html.replace(tableRegex, (tableMatch) => {
+    const lines = tableMatch.trim().split('\n')
+    const headers = lines[0].split('|').filter(h => h.trim()).map(h => h.trim())
+    const rows = lines.slice(2).map(line => 
+      line.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+    )
+    
+    let tableHtml = `
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin: 20px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+        <thead>
+          <tr style="background-color: #f9fafb;">`
+    
+    headers.forEach((header) => {
+      tableHtml += `
+            <th style="padding: 12px 8px; border: 1px solid #e5e7eb; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151; text-align: left;">${header}</th>`
+    })
+    
+    tableHtml += `
+          </tr>
+        </thead>
+        <tbody>`
+    
+    rows.forEach((row, rowIndex) => {
+      const bgColor = rowIndex % 2 === 0 ? '#ffffff' : '#f9fafb'
+      tableHtml += `
+          <tr style="background-color: ${bgColor};">`
+      
+      row.forEach((cell) => {
+        tableHtml += `
+            <td style="padding: 10px 8px; border: 1px solid #e5e7eb; font-size: 14px; color: #4b5563;">${cell}</td>`
+      })
+      
+      tableHtml += `
+          </tr>`
+    })
+    
+    tableHtml += `
+        </tbody>
+      </table>`
+    
+    return tableHtml
+  })
+  
   // Headers
   html = html
     .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 16px; color: #111827;">$1</h3>')
@@ -285,8 +316,9 @@ function convertMarkdownToHtml(markdown: string): string {
     
   // Lists
   html = html
-    .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;"><span style="color: #374151;">•</span> $1</li>')
-    
+    .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+    .replace(/^\d+\.\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+  
   // Wrap list items in ul tags
   const lines = html.split('\n')
   const processedLines: string[] = []
@@ -295,7 +327,7 @@ function convertMarkdownToHtml(markdown: string): string {
   for (const line of lines) {
     if (line.includes('<li')) {
       if (!inList) {
-        processedLines.push('<ul style="margin-bottom: 16px; padding-left: 0; list-style-type: none;">')
+        processedLines.push('<ul style="margin-bottom: 16px; padding-left: 20px;">')
         inList = true
       }
       processedLines.push(line)
@@ -319,7 +351,7 @@ function convertMarkdownToHtml(markdown: string): string {
     .split('\n\n')
     .map(para => {
       para = para.trim()
-      if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<li')) {
+      if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<li') && !para.includes('<table')) {
         return `<p style="margin-bottom: 16px; line-height: 1.7; color: #4b5563;">${para}</p>`
       }
       return para
