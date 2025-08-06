@@ -1,14 +1,31 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
+import { Paginated } from '@/types/pagination'
+
+interface Blog {
+  id: string
+  title: string
+  content: string
+  created_at: string
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
+    const searchParams = request.nextUrl.searchParams
+    
+    // Get pagination parameters
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const limit = parseInt(searchParams.get('limit') || '10', 10)
+    const sort = searchParams.get('sort') || 'latest' // 'latest' or 'oldest'
+    
+    // Calculate offset for pagination
+    const offset = (page - 1) * limit
     
     // Get system prompt from configurations table
     const { data: config } = await supabase
@@ -28,30 +45,71 @@ export async function GET() {
     // Get a brief summary of the system prompt for the header
     const systemPromptSummary = await getSystemPromptSummary(systemPrompt)
 
-    // Check if we have existing blogs
-    const { data: existingBlogs } = await supabase
+    // Get total count of blogs using Supabase count
+    const { count: totalCount } = await supabase
       .from('blogs')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .select('*', { count: 'exact', head: true })
 
-    // If no blogs exist, generate new one
-    if (!existingBlogs || existingBlogs.length === 0) {
+    // Check if we have any blogs
+    if (totalCount === 0) {
+      // Generate new blog if none exist
       await generateBlogFromSystemPrompt(supabase, systemPrompt)
       
-      // Fetch the newly created blog
+      // Re-fetch count after generation
+      const { count: newCount } = await supabase
+        .from('blogs')
+        .select('*', { count: 'exact', head: true })
+      
+      // Fetch the newly created blog with pagination
       const { data: newBlogs } = await supabase
         .from('blogs')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: sort === 'oldest' })
+        .range(offset, offset + limit - 1)
+
+      const paginatedResponse: Paginated<Blog> = {
+        data: newBlogs || [],
+        currentPage: page,
+        perPage: limit,
+        total: newCount || 0,
+        lastPage: Math.ceil((newCount || 0) / limit),
+        next: page < Math.ceil((newCount || 0) / limit) ? page + 1 : undefined,
+        prev: page > 1 ? page - 1 : undefined,
+      }
 
       return NextResponse.json({ 
-        blogs: newBlogs || [],
+        ...paginatedResponse,
         systemPromptSummary 
       })
     }
 
+    // Fetch blogs with pagination using range
+    const { data: blogs, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .order('created_at', { ascending: sort === 'oldest' })
+      .range(offset, offset + limit - 1)
+
+    if (error) {
+      console.error('Supabase query error:', error)
+      throw error
+    }
+
+    // Calculate pagination metadata
+    const lastPage = Math.ceil((totalCount || 0) / limit)
+    
+    const paginatedResponse: Paginated<Blog> = {
+      data: blogs || [],
+      currentPage: page,
+      perPage: limit,
+      total: totalCount || 0,
+      lastPage,
+      next: page < lastPage ? page + 1 : undefined,
+      prev: page > 1 ? page - 1 : undefined,
+    }
+
     return NextResponse.json({ 
-      blogs: existingBlogs,
+      ...paginatedResponse,
       systemPromptSummary 
     })
   } catch (error) {

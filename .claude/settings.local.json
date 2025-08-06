@@ -21,10 +21,16 @@
       "mcp__supabase__apply_migration",
       "Bash(git stash:*)",
       "Bash(npx tsx:*)",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(tar:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "context7",
     "puppeteer",
