@@ -290,7 +290,7 @@ export function ScheduleForm({
           </Label>
           <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
             <SelectTrigger id="timezone">
-              <SelectValue />
+              <SelectValue placeholder="Select timezone" />
             </SelectTrigger>
             <SelectContent>
               {COMMON_TIMEZONES.map((tz) => (
