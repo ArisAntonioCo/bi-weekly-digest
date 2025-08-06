@@ -263,8 +263,8 @@ async function sendNewsletterEmail(email: string, htmlContent: string, markdownC
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, #111827 0%, #374151 100%);
-      color: white;
+      background: linear-gradient(135deg, #111827 0%, #374151 100%) !important;
+      color: #FDFCFA !important;
       padding: 32px;
       text-align: center;
     }
@@ -273,11 +273,15 @@ async function sendNewsletterEmail(email: string, htmlContent: string, markdownC
       font-size: 28px;
       font-weight: 700;
       letter-spacing: -0.5px;
+      color: #FDFCFA !important;
+      -webkit-text-fill-color: #FDFCFA !important;
     }
     .header p {
       margin: 8px 0 0 0;
       font-size: 16px;
-      opacity: 0.9;
+      opacity: 1;
+      color: #FAF9F7 !important;
+      -webkit-text-fill-color: #FAF9F7 !important;
     }
     .analysis-section {
       padding: 32px;
