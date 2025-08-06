@@ -20,12 +20,7 @@ import {
 import { format } from 'date-fns'
 import { toast } from 'sonner'
 
-interface Blog {
-  id: string
-  title: string
-  content: string
-  created_at: string
-}
+import { Blog } from '@/types/blog'
 
 export default function BlogDetailPage() {
   const params = useParams()
@@ -128,7 +123,7 @@ export default function BlogDetailPage() {
             {error || 'Blog not found'}
           </h1>
           <p className="text-muted-foreground">
-            The blog post you're looking for could not be loaded.
+            The blog post you&apos;re looking for could not be loaded.
           </p>
           <Link href="/blogs">
             <Button variant="outline">

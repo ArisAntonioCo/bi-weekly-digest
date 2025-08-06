@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Save, TestTube, Calendar, Clock, Globe, Loader2, Send } from 'lucide-react'
+import { Save, TestTube, Calendar, Clock, Globe, Loader2 } from 'lucide-react'
 import { COMMON_TIMEZONES, formatTimeWithTimezone } from '@/utils/timezone'
 import { toast } from 'sonner'
 

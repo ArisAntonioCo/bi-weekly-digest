@@ -3,13 +3,7 @@
 import { useState, useEffect } from 'react'
 import { SubscriberForm } from '../_sections/subscriber-form'
 import { SubscribersList } from '../_sections/subscribers-list'
-
-interface Subscriber {
-  id: string
-  email: string
-  subscribed: boolean
-  created_at: string
-}
+import { Subscriber } from '@/types/subscriber'
 
 export function SubscribersPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])

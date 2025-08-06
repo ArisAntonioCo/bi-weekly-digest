@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button'
 import { CalendarDays, TrendingUp, AlertTriangle, ArrowRight, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import Link from 'next/link'
-
-interface Blog {
-  id: string
-  title: string
-  content: string
-  created_at: string
-}
+import { Blog } from '@/types/blog'
 
 interface BlogCardProps {
   blog: Blog

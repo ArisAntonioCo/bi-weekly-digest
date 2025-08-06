@@ -9,13 +9,7 @@ import rehypeHighlight from 'rehype-highlight'
 import rehypeRaw from 'rehype-raw'
 import { useEffect, useRef } from 'react'
 import type { Components } from 'react-markdown'
-
-interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'assistant'
-  timestamp: Date
-}
+import { Message } from '@/types/chat'
 
 interface ChatMessagesProps {
   messages: Message[]

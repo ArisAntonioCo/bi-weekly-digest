@@ -3,12 +3,7 @@
 import { useState, useEffect } from 'react'
 import { SystemPromptEditor, ConfigurationHeader } from '../_sections'
 import { toast } from 'sonner'
-
-interface Configuration {
-  id: string
-  system_prompt: string
-  updated_at: string
-}
+import { Configuration } from '@/types/configuration'
 
 export function ConfigurationPage() {
   const [config, setConfig] = useState<Configuration | null>(null)

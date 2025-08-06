@@ -4,13 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { BlogsGrid, BlogHeader } from '../_sections'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Paginated } from '@/types/pagination'
-
-interface Blog {
-  id: string
-  title: string
-  content: string
-  created_at: string
-}
+import { Blog } from '@/types/blog'
 
 export function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])

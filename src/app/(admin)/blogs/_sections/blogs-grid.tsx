@@ -5,13 +5,7 @@ import { BlogCard } from './blog-card'
 import { BlogPagination } from './blog-pagination'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TrendingUp, Clock, Calendar } from 'lucide-react'
-
-interface Blog {
-  id: string
-  title: string
-  content: string
-  created_at: string
-}
+import { Blog } from '@/types/blog'
 
 interface BlogsGridProps {
   blogs: Blog[]

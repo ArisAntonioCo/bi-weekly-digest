@@ -10,13 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Users, Mail, Trash2, ToggleLeft, Send } from 'lucide-react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-
-interface Subscriber {
-  id: string
-  email: string
-  subscribed: boolean
-  created_at: string
-}
+import { Subscriber } from '@/types/subscriber'
 
 interface SubscribersListProps {
   subscribers: Subscriber[]
