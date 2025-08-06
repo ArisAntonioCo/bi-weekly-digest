@@ -82,10 +82,10 @@ export async function POST() {
     // Convert markdown to HTML
     const markdownHtml = convertMarkdownToHtml(aiResponse)
 
-    // Send test email to the admin user
+    // Send test email to the test recipient
     const emailResult = await resend.emails.send({
       from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
-      to: user.email || 'kyle@zaigo.ai',
+      to: 'kulaizke@gmail.com',
       subject: `[TEST] AI Investment Analysis - ${new Date().toLocaleDateString()}`,
       html: `<!DOCTYPE html>
 <html>
@@ -198,7 +198,7 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: `Test email sent successfully to ${user.email || 'kyle@zaigo.ai'}`,
+      message: `Test email sent successfully to kulaizke@gmail.com`,
       emailId: emailResult.data?.id
     })
 

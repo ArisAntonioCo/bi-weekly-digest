@@ -403,42 +403,6 @@ export function ScheduleForm({
         </div>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-900">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Testing Information</p>
-            <div className="space-y-2 mt-2">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                <strong>Automated Daily Test:</strong> A test email is automatically sent every day at 9:00 AM UTC to:
-              </p>
-              <ul className="text-xs text-blue-600 dark:text-blue-400 ml-4 list-disc">
-                <li>kulaizke@gmail.com</li>
-                <li>arisantonioco@gmail.com</li>
-              </ul>
-              <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                This helps verify the newsletter system is working correctly without waiting for the weekly schedule.
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Button 
-              variant="default"
-              size="sm"
-              onClick={handleManualTrigger}
-              disabled={isTriggering || isTesting || isSaving}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-            >
-              {isTriggering ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              {isTriggering ? 'Sending...' : 'Send Now'}
-            </Button>
-            <span className="text-xs text-blue-600 dark:text-blue-400 text-center">Manual test</span>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
