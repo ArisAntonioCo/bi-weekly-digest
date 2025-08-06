@@ -9,12 +9,7 @@ import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import { format } from 'date-fns'
 
-interface Blog {
-  id: string
-  title: string
-  content: string
-  created_at: string
-}
+import { Blog } from '@/types/blog'
 
 interface BlogListProps {
   blogs: Blog[]

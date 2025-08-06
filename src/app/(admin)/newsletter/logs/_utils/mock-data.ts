@@ -1,23 +1,6 @@
-export type LogStatus = 'success' | 'failed' | 'pending' | 'running'
+import { LogEntry, LogStatus } from '@/types/newsletter'
 
-export interface LogEntry {
-  id: string
-  timestamp: string
-  status: LogStatus
-  trigger: 'scheduled' | 'manual' | 'api'
-  recipients: number
-  delivered: number
-  failed: number
-  duration: number // in seconds
-  message?: string
-  error?: string
-  details?: {
-    subject?: string
-    openRate?: number
-    clickRate?: number
-    bounceRate?: number
-  }
-}
+export type { LogEntry, LogStatus }
 
 export function generateMockLogs(): LogEntry[] {
   const logs: LogEntry[] = []

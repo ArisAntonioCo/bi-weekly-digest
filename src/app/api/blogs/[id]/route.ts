@@ -3,16 +3,17 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     
     // Fetch the specific blog by ID
     const { data: blog, error } = await supabase
       .from('blogs')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error || !blog) {

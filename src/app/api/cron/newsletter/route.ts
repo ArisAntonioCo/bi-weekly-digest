@@ -2,23 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { resend } from '@/lib/resend'
 import OpenAI from 'openai'
+import { NewsletterSchedule } from '@/types/newsletter'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
-
-interface NewsletterSchedule {
-  id: string
-  is_active: boolean
-  frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly'
-  hour: number
-  minute: number
-  day_of_week?: number
-  day_of_month?: number
-  timezone: string
-  last_sent_at: string | null
-  next_scheduled_at: string | null
-}
 
 export async function GET(request: NextRequest) {
   try {

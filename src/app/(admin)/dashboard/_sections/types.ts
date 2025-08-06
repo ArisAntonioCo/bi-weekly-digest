@@ -1,6 +1,1 @@
-export interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'assistant'
-  timestamp: Date
-}
+export type { Message } from '@/types/chat'

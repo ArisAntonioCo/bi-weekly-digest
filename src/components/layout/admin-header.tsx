@@ -15,8 +15,7 @@ import {
   User, 
   Calendar,
   Mail,
-  Brain,
-  TrendingUp
+  Brain
 } from 'lucide-react'
 
 interface PageConfig {
@@ -48,12 +47,7 @@ const pageConfigs: Record<string, PageConfig> = {
     title: 'Investment Analysis Blog',
     description: 'Dynamic insights from our AI analyst',
     icon: BookOpen,
-    badge: 'Auto-Generated',
-    action: {
-      label: 'Refresh Content',
-      href: '/blogs',
-      icon: TrendingUp
-    }
+    badge: 'Auto-Generated'
   },
   '/newsletter/config': {
     title: 'AI Configuration',

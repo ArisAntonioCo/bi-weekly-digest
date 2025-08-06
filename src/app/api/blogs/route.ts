@@ -2,13 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
 import { Paginated } from '@/types/pagination'
-
-interface Blog {
-  id: string
-  title: string
-  content: string
-  created_at: string
-}
+import { Blog } from '@/types/blog'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

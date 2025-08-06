@@ -25,12 +25,7 @@ import {
   Brain
 } from 'lucide-react'
 import { format } from 'date-fns'
-
-interface Configuration {
-  id: string
-  system_prompt: string
-  updated_at: string
-}
+import { Configuration } from '@/types/configuration'
 
 interface SystemPromptEditorProps {
   config: Configuration | null
