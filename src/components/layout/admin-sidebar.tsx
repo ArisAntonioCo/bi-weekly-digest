@@ -30,16 +30,16 @@ const sidebarItems = [
   {
     title: "Content Management",
     items: [
-      { title: "AI Assistant", icon: MessageSquare, href: "/dashboard" },
-      { title: "Blog", icon: BookOpen, href: "/blogs" },
+      { title: "AI Assistant", icon: MessageSquare, href: "/admin/dashboard" },
+      { title: "Blog", icon: BookOpen, href: "/admin/blogs" },
     ]
   },
   {
     title: "Newsletter",
     items: [
-      { title: "Configuration", icon: Settings, href: "/newsletter/config" },
-      { title: "Schedule", icon: Calendar, href: "/newsletter/schedule" },
-      { title: "Subscribers", icon: User, href: "/subscribers" },
+      { title: "Configuration", icon: Settings, href: "/admin/newsletter/config" },
+      { title: "Schedule", icon: Calendar, href: "/admin/newsletter/schedule" },
+      { title: "Subscribers", icon: User, href: "/admin/subscribers" },
     ]
   }
 ]

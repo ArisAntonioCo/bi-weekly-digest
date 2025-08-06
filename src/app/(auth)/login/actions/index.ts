@@ -14,12 +14,32 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { error, data: authData } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
     redirect('/login?error=Invalid credentials')
   }
 
+  // Check user role and redirect accordingly
+  if (authData?.user) {
+    const { data: userRole } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', authData.user.id)
+      .single()
+
+    const role = userRole?.role || 'user'
+    
+    revalidatePath('/', 'layout')
+    
+    if (role === 'admin') {
+      redirect('/admin/dashboard')
+    } else {
+      redirect('/dashboard')
+    }
+  }
+
+  // Fallback redirect
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }

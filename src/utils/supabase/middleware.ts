@@ -29,20 +29,67 @@ export async function updateSession(request: NextRequest) {
 
   // Refresh session if it exists
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  // Protected routes that require authentication
-  const protectedRoutes = ['/dashboard']
-  const isProtectedRoute = protectedRoutes.some(route => 
-    request.nextUrl.pathname.startsWith(route)
-  )
+  const url = request.nextUrl.clone()
+  const isAdminRoute = url.pathname.startsWith('/admin')
+  const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/signup')
+  const isPublicRoute = url.pathname === '/' || url.pathname.startsWith('/unsubscribe')
+  const isApiRoute = url.pathname.startsWith('/api')
+  const isDashboardRoute = url.pathname.startsWith('/dashboard')
 
-  if (!session && isProtectedRoute) {
-    // no user, redirect to login page
-    const url = request.nextUrl.clone()
+  // Allow API routes to handle their own auth
+  if (isApiRoute) {
+    return supabaseResponse
+  }
+
+  // If user is not authenticated
+  if (!user) {
+    // Allow access to public routes and auth routes
+    if (isPublicRoute || isAuthRoute) {
+      return supabaseResponse
+    }
+    // Redirect to login for protected routes
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  // If user is authenticated
+  if (user) {
+    // Get user role
+    const { data: userRole } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    const role = userRole?.role || 'user'
+
+    // Redirect authenticated users away from auth pages
+    if (isAuthRoute) {
+      if (role === 'admin') {
+        url.pathname = '/admin/dashboard'
+      } else {
+        url.pathname = '/dashboard'
+      }
+      return NextResponse.redirect(url)
+    }
+
+    // Check admin routes
+    if (isAdminRoute) {
+      if (role !== 'admin') {
+        // Non-admin users cannot access admin routes
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
+      }
+    }
+
+    // Check dashboard routes
+    if (isDashboardRoute) {
+      // All authenticated users can access dashboard
+      return supabaseResponse
+    }
   }
 
   return supabaseResponse
