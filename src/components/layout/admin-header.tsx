@@ -15,8 +15,7 @@ import {
   User, 
   Calendar,
   Mail,
-  Brain,
-  TrendingUp
+  Brain
 } from 'lucide-react'
 
 interface PageConfig {
