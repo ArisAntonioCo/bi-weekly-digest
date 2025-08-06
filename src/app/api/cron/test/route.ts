@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 // Test email recipients
 const TEST_RECIPIENTS = [
-  'kulaizki@gmail.com',
+  'kulaizke@gmail.com',
   'arisantonioco@gmail.com'
 ]
 

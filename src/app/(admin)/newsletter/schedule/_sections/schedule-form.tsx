@@ -412,7 +412,7 @@ export function ScheduleForm({
                 <strong>Automated Daily Test:</strong> A test email is automatically sent every day at 9:00 AM UTC to:
               </p>
               <ul className="text-xs text-blue-600 dark:text-blue-400 ml-4 list-disc">
-                <li>kulaizki@gmail.com</li>
+                <li>kulaizke@gmail.com</li>
                 <li>arisantonioco@gmail.com</li>
               </ul>
               <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
