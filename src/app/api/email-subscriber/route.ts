@@ -138,25 +138,25 @@ ${aiResponse}
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, #111827 0%, #374151 100%) !important;
-      color: #FDFCFA !important;
-      padding: 32px;
-      text-align: center;
-    }
-    .header h1 {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      padding: 45px;
       margin: 0;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #FDFCFA !important;
-      -webkit-text-fill-color: #FDFCFA !important;
+      position: relative;
+      overflow: hidden;
     }
-    .header p {
-      margin: 8px 0 0 0;
-      font-size: 16px;
-      opacity: 1;
-      color: #FAF9F7 !important;
-      -webkit-text-fill-color: #FAF9F7 !important;
+    .header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
     }
     .analysis-section {
       padding: 32px;
@@ -196,10 +196,7 @@ ${aiResponse}
 <body>
   <div class="wrapper">
     <div class="container">
-      <div class="header">
-        <h1>AI Investment Analysis</h1>
-        <p>Your weekly investment insights</p>
-      </div>
+      <div class="header"></div>
       
       <div class="analysis-section">
         <div class="content">
