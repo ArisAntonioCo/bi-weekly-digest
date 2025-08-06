@@ -72,9 +72,10 @@ export function LoginForm() {
               id="password"
               name="password"
               type="password"
+              placeholder="••••••••"
               required
               disabled={isLoading}
-              className="bg-zinc-800 border-zinc-700 text-zinc-100"
+              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
             />
           </div>
         </CardContent>

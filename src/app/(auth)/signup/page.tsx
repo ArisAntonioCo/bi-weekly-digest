@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2 } from 'lucide-react'
+import { Loader2, TrendingUp } from 'lucide-react'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -60,7 +60,14 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
-      <Card className="w-full max-w-md bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <Link href="/" className="flex items-center gap-2 self-center font-medium">
+          <div className="bg-zinc-100 text-zinc-900 flex size-8 items-center justify-center rounded-md">
+            <TrendingUp className="size-5" />
+          </div>
+          <span className="text-xl font-semibold text-zinc-100">Weekly Digest</span>
+        </Link>
+        <Card className="w-full max-w-md bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-zinc-100">
             Create an account
@@ -100,11 +107,12 @@ export default function SignUpPage() {
               <Input
                 id="password"
                 type="password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={loading}
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
               />
             </div>
             <div className="space-y-2">
@@ -114,11 +122,12 @@ export default function SignUpPage() {
               <Input
                 id="confirmPassword"
                 type="password"
+                placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={loading}
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
               />
             </div>
           </CardContent>
@@ -149,6 +158,7 @@ export default function SignUpPage() {
           </CardFooter>
         </form>
       </Card>
+      </div>
     </div>
   )
 }
