@@ -3,6 +3,7 @@ import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
 import { Paginated } from '@/types/pagination'
 import { Blog } from '@/types/blog'
+import { handleApiError, ApiError, createSuccessResponse, checkRateLimit } from '@/utils/api-errors'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -10,24 +11,37 @@ const openai = new OpenAI({
 
 export async function GET(request: NextRequest) {
   try {
+    // Basic rate limiting
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
+    checkRateLimit(`blogs-get-${ip}`, 30, 60000) // 30 requests per minute
+    
     const supabase = await createClient()
     const searchParams = request.nextUrl.searchParams
     
-    // Get pagination parameters
-    const page = parseInt(searchParams.get('page') || '1', 10)
-    const limit = parseInt(searchParams.get('limit') || '10', 10)
+    // Get pagination parameters with validation
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '10', 10)))
     const sort = searchParams.get('sort') || 'latest' // 'latest' or 'oldest'
     const search = searchParams.get('search') || ''
     const type = searchParams.get('type') || 'all'
+    
+    // Validate sort parameter
+    if (!['latest', 'oldest'].includes(sort)) {
+      throw new ApiError(400, 'Invalid sort parameter', { valid: ['latest', 'oldest'] })
+    }
     
     // Calculate offset for pagination
     const offset = (page - 1) * limit
     
     // Get system prompt from configurations table
-    const { data: config } = await supabase
+    const { data: config, error: configError } = await supabase
       .from('configurations')
       .select('system_prompt')
       .single()
+    
+    if (configError) {
+      throw new ApiError(500, 'Failed to fetch configuration')
+    }
 
     // Remove only the CONTENT RESTRICTION POLICY section if it exists
     let systemPrompt = config?.system_prompt || ''
@@ -80,133 +94,122 @@ export async function GET(request: NextRequest) {
         .from('blogs')
         .select('*', { count: 'exact', head: true })
       
-      // Fetch the newly created blog with pagination
-      const { data: newBlogs } = await supabase
-        .from('blogs')
-        .select('*')
-        .order('created_at', { ascending: sort === 'oldest' })
-        .range(offset, offset + limit - 1)
-
-      const paginatedResponse: Paginated<Blog> = {
-        data: newBlogs || [],
-        currentPage: page,
-        perPage: limit,
-        total: newCount || 0,
-        lastPage: Math.ceil((newCount || 0) / limit),
-        next: page < Math.ceil((newCount || 0) / limit) ? page + 1 : undefined,
-        prev: page > 1 ? page - 1 : undefined,
-      }
-
-      return NextResponse.json({ 
-        ...paginatedResponse,
-        systemPromptSummary 
-      })
+      // Re-build query for actual data fetch
+      query = supabase.from('blogs').select('*')
     }
-
-    // Build the main query with filters
-    let blogsQuery = supabase.from('blogs').select('*')
     
-    // Add search filter if provided
+    // Now build the actual data query
+    let dataQuery = supabase.from('blogs').select('*')
+    
+    // Apply filters again for data query
     if (search) {
-      blogsQuery = blogsQuery.or(`title.ilike.%${search}%,content.ilike.%${search}%`)
+      dataQuery = dataQuery.or(`title.ilike.%${search}%,content.ilike.%${search}%`)
     }
     
-    // Add type filter if provided
     if (type !== 'all') {
       switch (type) {
         case 'moic':
-          blogsQuery = blogsQuery.or('content.ilike.%moic%,content.ilike.%multiple on invested capital%')
+          dataQuery = dataQuery.or('content.ilike.%moic%,content.ilike.%multiple on invested capital%')
           break
         case 'risk':
-          blogsQuery = blogsQuery.or('content.ilike.%bear case%,content.ilike.%risk%')
+          dataQuery = dataQuery.or('content.ilike.%bear case%,content.ilike.%risk%')
           break
         case 'insight':
-          blogsQuery = blogsQuery.not('content', 'ilike', '%moic%')
-                                .not('content', 'ilike', '%bear case%')
-                                .not('content', 'ilike', '%risk%')
+          dataQuery = dataQuery.not('content', 'ilike', '%moic%')
+                              .not('content', 'ilike', '%bear case%')
+                              .not('content', 'ilike', '%risk%')
           break
       }
     }
     
-    // Fetch blogs with pagination using range
-    const { data: blogs, error } = await blogsQuery
+    // Apply sorting and pagination
+    dataQuery = dataQuery
       .order('created_at', { ascending: sort === 'oldest' })
       .range(offset, offset + limit - 1)
-
-    if (error) {
-      console.error('Supabase query error:', error)
-      throw error
-    }
-
-    // Calculate pagination metadata
-    const lastPage = Math.ceil((totalCount || 0) / limit)
     
-    const paginatedResponse: Paginated<Blog> = {
+    const { data: blogs, error } = await dataQuery
+    
+    if (error) {
+      throw new ApiError(500, 'Failed to fetch blogs', error)
+    }
+    
+    // Calculate total pages
+    const totalPages = Math.ceil((totalCount || 0) / limit)
+    
+    const response: Paginated<Blog> & { systemPromptSummary: string; page: number; limit: number; totalPages: number } = {
       data: blogs || [],
       currentPage: page,
+      page,
+      limit,
       perPage: limit,
       total: totalCount || 0,
-      lastPage,
-      next: page < lastPage ? page + 1 : undefined,
-      prev: page > 1 ? page - 1 : undefined,
+      totalPages,
+      systemPromptSummary
     }
-
-    return NextResponse.json({ 
-      ...paginatedResponse,
-      systemPromptSummary 
-    })
-  } catch (error) {
-    console.error('Blogs API error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch blogs' },
-      { status: 500 }
-    )
-  }
-}
-
-async function getSystemPromptSummary(systemPrompt: string) {
-  try {
-    const summary = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      temperature: 0.3,
-      messages: [
-        {
-          role: 'system',
-          content: 'Create a brief, concise summary (1-2 sentences max) describing what this AI assistant specializes in based on the system prompt. Focus on the key expertise and domain.'
-        },
-        {
-          role: 'user',
-          content: systemPrompt
-        }
-      ],
-      max_tokens: 100,
-    })
-
-    return summary.choices[0].message.content || 'AI-powered analysis and insights based on current system configuration.'
-  } catch (error) {
-    console.error('Error generating summary:', error)
-    return 'AI-powered analysis and insights based on current system configuration.'
-  }
-}
-
-async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof createClient>>, systemPrompt: string) {
-  try {
-    let aiResponse = ''
     
+    return createSuccessResponse(response)
+  } catch (error) {
+    return handleApiError(error)
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // Rate limiting
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
+    checkRateLimit(`blogs-post-${ip}`, 5, 60000) // 5 requests per minute
+    
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user || user.email !== 'kyle@zaigo.ai') {
+      throw new ApiError(401, 'Unauthorized')
+    }
+    
+    const { data: config, error: configError } = await supabase
+      .from('configurations')
+      .select('system_prompt')
+      .single()
+    
+    if (configError || !config) {
+      throw new ApiError(500, 'Configuration not found')
+    }
+    
+    const aiResponse = await generateBlogContent(config.system_prompt)
+    
+    const { data: blog, error } = await supabase
+      .from('blogs')
+      .insert({
+        title: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
+        content: aiResponse,
+      })
+      .select()
+      .single()
+    
+    if (error) {
+      throw new ApiError(500, 'Failed to create blog', error)
+    }
+    
+    return createSuccessResponse(blog, 201)
+  } catch (error) {
+    return handleApiError(error)
+  }
+}
+
+async function generateBlogContent(systemPrompt: string): Promise<string> {
+  try {
+    // Try Responses API first
     try {
-      // Use Responses API for dynamic content generation
       const response = await openai.responses.create({
         model: 'gpt-4o',
         temperature: 0.45,
         instructions: systemPrompt,
-        input: 'Generate comprehensive investment analysis content based on current market data.',
+        input: '',
         tools: [{ type: 'web_search_preview' }],
       })
       
-      aiResponse = response.output_text || 'No response generated'
+      return response.output_text || 'No response generated'
     } catch {
-      console.log('Responses API failed, falling back to Chat Completions')
-      
       // Fallback to regular chat completions
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o',
@@ -218,71 +221,51 @@ async function generateBlogFromSystemPrompt(supabase: Awaited<ReturnType<typeof 
           },
           {
             role: 'user',
-            content: 'Generate comprehensive investment analysis content.'
+            content: ''
           }
         ],
         max_tokens: 8000,
       })
       
-      aiResponse = completion.choices[0].message.content || 'No response generated'
+      return completion.choices[0].message.content || 'No response generated'
     }
-
-    // Generate a title based on the content
-    const titleCompletion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      temperature: 0.3,
-      messages: [
-        {
-          role: 'system',
-          content: 'Generate a concise, engaging title for this analysis content. Maximum 60 characters.'
-        },
-        {
-          role: 'user',
-          content: aiResponse.substring(0, 500)
-        }
-      ],
-      max_tokens: 50,
-    })
-
-    const title = titleCompletion.choices[0].message.content || 'Investment Analysis Update'
-
-    // Insert blog into database
-    await supabase
-      .from('blogs')
-      .insert({
-        title,
-        content: aiResponse,
-      })
-
   } catch (error) {
-    console.error('Error generating blog:', error)
-    // Create fallback content if AI generation fails
-    const fallbackBlog = {
-      title: 'Welcome to Our Dynamic Blog',
-      content: `# Welcome to Our Dynamic Blog
-
-This blog is powered by AI and dynamically generates content based on our current system configuration.
-
-## How It Works
-
-Our blog system:
-- Analyzes the current system prompt
-- Identifies key themes and topics
-- Generates relevant, engaging content
-- Updates automatically when the system prompt changes
-
-## Current Theme
-
-Based on our system configuration, this blog focuses on providing insights and analysis that align with our AI assistant's current expertise and domain knowledge.
-
-Stay tuned for more dynamic content as our system evolves!`,
-    }
-
-    await supabase
-      .from('blogs')
-      .insert({
-        title: fallbackBlog.title,
-        content: fallbackBlog.content,
-      })
+    throw new ApiError(500, 'Failed to generate AI content', error)
   }
+}
+
+async function generateBlogFromSystemPrompt(supabase: any, systemPrompt: string) {
+  const aiResponse = await generateBlogContent(systemPrompt)
+  
+  const { error } = await supabase
+    .from('blogs')
+    .insert({
+      title: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
+      content: aiResponse,
+    })
+  
+  if (error) {
+    throw new ApiError(500, 'Failed to create initial blog', error)
+  }
+}
+
+async function getSystemPromptSummary(systemPrompt: string): Promise<string> {
+  // Extract a meaningful summary from the system prompt
+  const lines = systemPrompt.split('\n').filter(line => line.trim())
+  
+  // Look for key indicators in the prompt
+  const summaryLines = lines.filter(line => 
+    line.includes('Framework') || 
+    line.includes('Analysis') || 
+    line.includes('Focus') ||
+    line.includes('Strategy') ||
+    line.includes('Investment')
+  ).slice(0, 3)
+  
+  if (summaryLines.length > 0) {
+    return summaryLines.join(' • ')
+  }
+  
+  // Fallback to first meaningful line
+  return lines.find(line => line.length > 20)?.substring(0, 100) || 'AI-Powered Investment Analysis'
 }
