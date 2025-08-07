@@ -151,6 +151,24 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Blog Preview Section */}
+      <section className="container mx-auto px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-zinc-100 mb-4">
+            Latest Investment Insights
+          </h2>
+          <p className="text-zinc-400 max-w-2xl mx-auto mb-8">
+            Explore our AI-powered analysis and stay ahead of market trends with comprehensive investment research.
+          </p>
+          <Link href="/blogs">
+            <Button size="lg" variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+              View All Insights
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="container mx-auto px-6 py-24">
         <div className="bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-2xl p-12 text-center">

@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
-import { BlogsGrid, BlogHeader } from '../_sections'
+import { BlogHeader } from '../_sections'
+import { BlogGrid } from '@/components/ui/blog-grid'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Paginated } from '@/types/pagination'
 import { Blog } from '@/types/blog'
@@ -103,7 +104,7 @@ export function BlogsPage() {
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="space-y-8">
         <BlogHeader systemPromptSummary={systemPromptSummary} />
-        <BlogsGrid 
+        <BlogGrid 
           blogs={blogs}
           currentPage={currentPage}
           totalPages={totalPages}
@@ -112,6 +113,9 @@ export function BlogsPage() {
           onPageChange={handlePageChange}
           onSortChange={handleSortChange}
           currentSort={sort}
+          isAdmin={true}
+          showSearch={false}
+          showFilters={false}
         />
       </div>
     </div>
