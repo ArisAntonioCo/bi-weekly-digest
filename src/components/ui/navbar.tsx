@@ -91,9 +91,10 @@ export default function Navbar({ className }: NavbarProps) {
     return false
   }, [pathname])
 
-  // Don't show navbar on auth pages
+  // Don't show navbar on auth pages or admin pages
   const isAuthPage = ['/login', '/signup'].includes(pathname)
-  if (isAuthPage) return null
+  const isAdminPage = pathname.startsWith('/admin')
+  if (isAuthPage || isAdminPage) return null
 
   return (
     <nav className={`border-b border-zinc-800 ${className || ''}`}>
