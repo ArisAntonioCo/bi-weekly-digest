@@ -6,34 +6,43 @@ export default function LandingPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="container mx-auto px-6 py-24">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-zinc-100 mb-6 bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
-            AI-Powered Investment Intelligence
-          </h1>
-          <p className="text-xl text-zinc-400 mb-8 max-w-2xl mx-auto">
-            Get comprehensive weekly analysis of market trends, investment opportunities, and strategic insights delivered directly to your inbox.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/signup">
-              <Button size="lg" className="bg-zinc-100 text-zinc-900 hover:bg-zinc-200">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
-                View Dashboard
-              </Button>
-            </Link>
+      <section className="container mx-auto px-6 py-32">
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Badge */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <div className="h-2 w-2 bg-zinc-100 rounded-full"></div>
+            <span className="text-sm text-zinc-400 uppercase tracking-wider">Top Investment Newsletter</span>
           </div>
+          
+          {/* Main Headline - Two Lines */}
+          <h1 className="text-6xl md:text-8xl font-medium text-zinc-100 mb-6 leading-none">
+            Predictive Finance
+            <br />
+            In Your Inbox
+          </h1>
+          
+          {/* Subtext */}
+          <p className="text-xl text-zinc-400 mb-12 max-w-2xl mx-auto">
+            AI-powered MOIC projections and market insights in your inbox.
+          </p>
+          
+          {/* CTA Button */}
+          <Link href="/signup">
+            <Button 
+              size="lg" 
+              className="bg-zinc-900 text-zinc-100 hover:bg-zinc-800 border border-zinc-700 px-8 py-6 text-lg rounded-full shadow-2xl shadow-zinc-900/50 transition-all hover:shadow-zinc-900/70 hover:scale-105"
+            >
+              Get Started
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 
       {/* Features Grid */}
       <section className="container mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-100 mb-4">
+          <h2 className="text-3xl md:text-4xl font-medium text-zinc-100 mb-4">
             Intelligent Analytics Platform
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto">
@@ -47,7 +56,7 @@ export default function LandingPage() {
             <div className="bg-zinc-700 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <Brain className="h-6 w-6 text-zinc-100" />
             </div>
-            <h3 className="text-xl font-semibold text-zinc-100 mb-2">
+            <h3 className="text-xl font-medium text-zinc-100 mb-2">
               AI-Driven Analysis
             </h3>
             <p className="text-zinc-400">
@@ -60,7 +69,7 @@ export default function LandingPage() {
             <div className="bg-zinc-700 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <Shield className="h-6 w-6 text-zinc-100" />
             </div>
-            <h3 className="text-xl font-semibold text-zinc-100 mb-2">
+            <h3 className="text-xl font-medium text-zinc-100 mb-2">
               Risk Assessment
             </h3>
             <p className="text-zinc-400">
@@ -73,7 +82,7 @@ export default function LandingPage() {
             <div className="bg-zinc-700 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <Zap className="h-6 w-6 text-zinc-100" />
             </div>
-            <h3 className="text-xl font-semibold text-zinc-100 mb-2">
+            <h3 className="text-xl font-medium text-zinc-100 mb-2">
               Real-Time Updates
             </h3>
             <p className="text-zinc-400">
@@ -88,7 +97,7 @@ export default function LandingPage() {
         <div className="bg-zinc-800/30 backdrop-blur-sm border border-zinc-800 rounded-2xl p-12">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-zinc-100 mb-6">
+              <h2 className="text-3xl md:text-4xl font-medium text-zinc-100 mb-6">
                 Professional-Grade Analytics
               </h2>
               <p className="text-zinc-400 mb-6">
@@ -128,7 +137,7 @@ export default function LandingPage() {
       {/* Blog Preview Section */}
       <section className="container mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-100 mb-4">
+          <h2 className="text-3xl md:text-4xl font-medium text-zinc-100 mb-4">
             Latest Investment Insights
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto mb-8">
@@ -146,7 +155,7 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="container mx-auto px-6 py-24">
         <div className="bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-2xl p-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-100 mb-4">
+          <h2 className="text-3xl md:text-4xl font-medium text-zinc-100 mb-4">
             Start Your Investment Journey Today
           </h2>
           <p className="text-zinc-300 mb-8 max-w-2xl mx-auto">
@@ -169,7 +178,7 @@ export default function LandingPage() {
               <div className="bg-zinc-100 text-zinc-900 flex size-8 items-center justify-center rounded-md">
                 <TrendingUp className="size-5" />
               </div>
-              <span className="text-xl font-semibold text-zinc-100">Weekly Digest</span>
+              <span className="text-xl font-medium text-zinc-100">Weekly Digest</span>
             </div>
             <div className="flex gap-6">
               <Link href="/privacy" className="text-zinc-400 hover:text-zinc-100 transition-colors">
