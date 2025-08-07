@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, Mail, Calendar, User, Clock, CheckCircle, BookOpen, ArrowRight, ChevronRight } from 'lucide-react'
+import { TrendingUp, Mail, Calendar, User, Clock, CheckCircle, BookOpen, ArrowRight, ChevronRight, Brain } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface Blog {
@@ -177,6 +177,47 @@ export default function DashboardPage() {
                     <p className="text-zinc-600 text-sm mt-1">Check back soon for new content</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Finance Assistant */}
+            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-zinc-100 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Finance Assistant
+                </CardTitle>
+                <CardDescription className="text-zinc-400">
+                  Ask about stocks & investments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-zinc-300 text-sm">
+                    Get instant insights on:
+                  </p>
+                  <ul className="space-y-2 text-zinc-400 text-sm">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-3 w-3 text-zinc-500" />
+                      3Y MOIC projections for any stock
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-3 w-3 text-zinc-500" />
+                      Expert analysis with your 5 advisors
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-3 w-3 text-zinc-500" />
+                      Comparative sector MOIC analysis
+                    </li>
+                  </ul>
+                  <Button 
+                    onClick={() => router.push('/dashboard/moic-analyzer')}
+                    className="w-full bg-zinc-100 text-zinc-900 hover:bg-zinc-200 mt-4"
+                  >
+                    Start Chat
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
