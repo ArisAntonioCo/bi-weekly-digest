@@ -146,7 +146,7 @@ export function AdminHeader() {
           </div>
         </div>
         
-        {config.action ? (
+        {config.action && (
           config.action.onClick === 'emailAnalysis' ? (
             <Button 
               variant="outline" 
@@ -166,36 +166,27 @@ export function AdminHeader() {
               </Link>
             </Button>
           )
-        ) : (
-          <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
-            <Link href="/newsletter/config">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Link>
-          </Button>
         )}
         
         {/* Mobile version */}
-        {config.action && config.action.onClick === 'emailAnalysis' ? (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="sm:hidden" 
-            onClick={handleEmailAnalysis}
-            disabled={isEmailingAnalysis}
-          >
-            <config.action.icon className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button variant="outline" size="sm" className="sm:hidden" asChild>
-            <Link href={config.action?.href || "/newsletter/config"}>
-              {config.action?.icon ? (
+        {config.action && (
+          config.action.onClick === 'emailAnalysis' ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="sm:hidden" 
+              onClick={handleEmailAnalysis}
+              disabled={isEmailingAnalysis}
+            >
+              <config.action.icon className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="sm:hidden" asChild>
+              <Link href={config.action.href || '#'}>
                 <config.action.icon className="h-4 w-4" />
-              ) : (
-                <Settings className="h-4 w-4" />
-              )}
-            </Link>
-          </Button>
+              </Link>
+            </Button>
+          )
         )}
       </div>
     </header>
