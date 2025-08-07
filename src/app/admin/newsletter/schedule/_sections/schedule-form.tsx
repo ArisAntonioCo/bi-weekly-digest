@@ -6,8 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Save, TestTube, Calendar, Clock, Globe, Loader2 } from 'lucide-react'
-import { COMMON_TIMEZONES, formatTimeWithTimezone } from '@/utils/timezone'
+import { Save, TestTube, Calendar, Clock, Info, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ScheduleFormProps {
@@ -22,15 +21,16 @@ export function ScheduleForm({
   isActive, 
   onActiveChange 
 }: ScheduleFormProps) {
-  const [minute, setMinute] = useState('0')
-  const [hour, setHour] = useState('9')
   const [dayOfMonth, setDayOfMonth] = useState('1')
   const [dayOfWeek, setDayOfWeek] = useState('1')
   const [frequency, setFrequency] = useState('weekly')
-  const [selectedTimezone, setSelectedTimezone] = useState('America/New_York')
   const [isSaving, setIsSaving] = useState(false)
   const [isTesting, setIsTesting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  
+  // Fixed values for Vercel cron - 9 AM EST is 14:00 UTC
+  const hour = 14
+  const minute = 0
 
   useEffect(() => {
     // Load existing schedule settings
@@ -41,19 +41,16 @@ export function ScheduleForm({
   useEffect(() => {
     updateCronExpression()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frequency, minute, hour, dayOfWeek, dayOfMonth])
+  }, [frequency, dayOfWeek, dayOfMonth])
 
   const loadScheduleSettings = async () => {
     try {
       const response = await fetch('/api/newsletter/schedule')
       if (response.ok) {
         const data = await response.json()
-        setMinute(data.minute?.toString() || '0')
-        setHour(data.hour?.toString() || '9')
         setDayOfMonth(data.day_of_month?.toString() || '1')
         setDayOfWeek(data.day_of_week?.toString() || '1')
         setFrequency(data.frequency || 'weekly')
-        setSelectedTimezone(data.timezone || 'America/New_York')
         onActiveChange(data.is_active || false)
       }
     } catch (error) {
@@ -65,25 +62,9 @@ export function ScheduleForm({
   }
 
   const updateCronExpression = () => {
-    let expression = ''
-    
-    switch (frequency) {
-      case 'daily':
-        expression = `${minute} ${hour} * * *`
-        break
-      case 'weekly':
-        expression = `${minute} ${hour} * * ${dayOfWeek}`
-        break
-      case 'biweekly':
-        expression = `${minute} ${hour} */14 * ${dayOfWeek}`
-        break
-      case 'monthly':
-        expression = `${minute} ${hour} ${dayOfMonth} * *`
-        break
-      default:
-        expression = '0 9 * * 1'
-    }
-    
+    // Fixed to 9 AM EST (14:00 UTC) - Vercel cron runs daily
+    // The actual sending logic is handled in the route based on frequency
+    const expression = `${minute} ${hour} * * *`
     onCronChange(expression)
   }
 
@@ -98,11 +79,11 @@ export function ScheduleForm({
         body: JSON.stringify({
           is_active: isActive,
           frequency,
-          hour: parseInt(hour),
-          minute: parseInt(minute),
+          hour: hour,
+          minute: minute,
           day_of_week: frequency === 'weekly' || frequency === 'biweekly' ? parseInt(dayOfWeek) : null,
           day_of_month: frequency === 'monthly' ? parseInt(dayOfMonth) : null,
-          timezone: selectedTimezone,
+          timezone: 'America/New_York',
         }),
       })
 
@@ -176,176 +157,62 @@ export function ScheduleForm({
       <Separator />
 
       <div className="space-y-4">
+        <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 space-y-3">
+          <div className="flex items-start gap-2">
+            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <div className="flex-1 space-y-2">
+              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Fixed Schedule Time
+              </h4>
+              <p className="text-xs text-blue-700 dark:text-blue-200">
+                Newsletters are checked daily at <strong>9:00 AM EST</strong> (2:00 PM UTC).
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-300">
+                Your frequency setting below determines on which days the newsletter is actually sent.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="frequency" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            How often should newsletters be sent?
+            Newsletter Frequency
           </Label>
           <Select value={frequency} onValueChange={setFrequency}>
             <SelectTrigger id="frequency">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="daily">Every Day</SelectItem>
-              <SelectItem value="weekly">Once a Week (Recommended)</SelectItem>
-              <SelectItem value="biweekly">Every Two Weeks</SelectItem>
-              <SelectItem value="monthly">Once a Month</SelectItem>
+              <SelectItem value="daily">Daily</SelectItem>
+              <SelectItem value="weekly">Weekly (Recommended)</SelectItem>
+              <SelectItem value="biweekly">Bi-weekly</SelectItem>
+              <SelectItem value="monthly">Monthly</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
-            {frequency === 'biweekly' && 'Good for less frequent updates and monthly summaries'}
-            {frequency === 'weekly' && 'Perfect for consistent engagement without overwhelming subscribers'}
-            {frequency === 'daily' && 'Best for time-sensitive content and daily digests'}
-            {frequency === 'monthly' && 'Ideal for monthly summaries and less frequent updates'}
+            {frequency === 'daily' && 'Newsletter will be sent every day at 9:00 AM EST'}
+            {frequency === 'weekly' && 'Newsletter will be sent every Monday at 9:00 AM EST'}
+            {frequency === 'biweekly' && 'Newsletter will be sent every other Monday at 9:00 AM EST'}
+            {frequency === 'monthly' && 'Newsletter will be sent on the 1st of each month at 9:00 AM EST'}
           </p>
         </div>
 
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            What time should it be sent? (UTC)
-          </Label>
-          <div className="flex gap-2">
-            <div className="space-y-2">
-              <Label htmlFor="hour" className="text-xs text-muted-foreground">Hour</Label>
-              <Select value={hour} onValueChange={setHour}>
-                <SelectTrigger id="hour" className="w-[200px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">12:00 AM (Midnight)</SelectItem>
-                  <SelectItem value="1">1:00 AM</SelectItem>
-                  <SelectItem value="2">2:00 AM</SelectItem>
-                  <SelectItem value="3">3:00 AM</SelectItem>
-                  <SelectItem value="4">4:00 AM</SelectItem>
-                  <SelectItem value="5">5:00 AM</SelectItem>
-                  <SelectItem value="6">6:00 AM</SelectItem>
-                  <SelectItem value="7">7:00 AM</SelectItem>
-                  <SelectItem value="8">8:00 AM</SelectItem>
-                  <SelectItem value="9">9:00 AM (Recommended)</SelectItem>
-                  <SelectItem value="10">10:00 AM</SelectItem>
-                  <SelectItem value="11">11:00 AM</SelectItem>
-                  <SelectItem value="12">12:00 PM (Noon)</SelectItem>
-                  <SelectItem value="13">1:00 PM</SelectItem>
-                  <SelectItem value="14">2:00 PM</SelectItem>
-                  <SelectItem value="15">3:00 PM</SelectItem>
-                  <SelectItem value="16">4:00 PM</SelectItem>
-                  <SelectItem value="17">5:00 PM</SelectItem>
-                  <SelectItem value="18">6:00 PM</SelectItem>
-                  <SelectItem value="19">7:00 PM</SelectItem>
-                  <SelectItem value="20">8:00 PM</SelectItem>
-                  <SelectItem value="21">9:00 PM</SelectItem>
-                  <SelectItem value="22">10:00 PM</SelectItem>
-                  <SelectItem value="23">11:00 PM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="minute" className="text-xs text-muted-foreground">Minute</Label>
-              <Select value={minute} onValueChange={setMinute}>
-                <SelectTrigger id="minute" className="w-[100px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">:00</SelectItem>
-                  <SelectItem value="15">:15</SelectItem>
-                  <SelectItem value="30">:30</SelectItem>
-                  <SelectItem value="45">:45</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Time shown is in UTC. Emails will be sent at this time regardless of subscriber timezone.
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="timezone" className="flex items-center gap-2">
-            <Globe className="h-4 w-4" />
-            Your timezone (for reference only)
-          </Label>
-          <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
-            <SelectTrigger id="timezone">
-              <SelectValue placeholder="Select timezone" />
-            </SelectTrigger>
-            <SelectContent>
-              {COMMON_TIMEZONES.map((tz) => (
-                <SelectItem key={tz.value} value={tz.value}>
-                  {tz.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            Select your timezone to see when the newsletter will be sent in your local time.
-            The schedule always runs at the UTC time you specified.
-          </p>
-        </div>
-
-        {(frequency === 'weekly' || frequency === 'biweekly') && (
-          <div className="space-y-2">
-            <Label htmlFor="dayOfWeek">Which day of the week?</Label>
-            <Select value={dayOfWeek} onValueChange={setDayOfWeek}>
-              <SelectTrigger id="dayOfWeek">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">Monday (Start of work week)</SelectItem>
-                <SelectItem value="2">Tuesday</SelectItem>
-                <SelectItem value="3">Wednesday</SelectItem>
-                <SelectItem value="4">Thursday</SelectItem>
-                <SelectItem value="5">Friday (End of work week)</SelectItem>
-                <SelectItem value="6">Saturday</SelectItem>
-                <SelectItem value="0">Sunday</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-
-        {frequency === 'monthly' && (
-          <div className="space-y-2">
-            <Label htmlFor="dayOfMonth">Which day of the month?</Label>
-            <Select value={dayOfMonth} onValueChange={setDayOfMonth}>
-              <SelectTrigger id="dayOfMonth">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1st (Beginning of month)</SelectItem>
-                <SelectItem value="15">15th (Mid-month)</SelectItem>
-                <SelectItem value="28">28th (End of month - safe for all months)</SelectItem>
-                {Array.from({ length: 28 }, (_, i) => {
-                  const day = i + 1
-                  if (day === 1 || day === 15 || day === 28) return null
-                  return (
-                    <SelectItem key={day} value={day.toString()}>
-                      {day}{day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'}
-                    </SelectItem>
-                  )
-                }).filter(Boolean)}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Note: Choosing days after 28th may skip months with fewer days
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="bg-muted/50 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium">Production Schedule</p>
+            <p className="text-sm font-medium">Schedule Summary</p>
             <div className="space-y-1 mt-1">
               <p className="text-sm text-muted-foreground">
-                {frequency === 'daily' && `Newsletters will be sent every day at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-                {frequency === 'weekly' && `Newsletters will be sent every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)]} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-                {frequency === 'biweekly' && `Newsletters will be sent every two weeks on ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)]} at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
-                {frequency === 'monthly' && `Newsletters will be sent on the ${dayOfMonth}${dayOfMonth === '1' ? 'st' : dayOfMonth === '2' ? 'nd' : dayOfMonth === '3' ? 'rd' : 'th'} of each month at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} UTC`}
+                {frequency === 'daily' && 'Newsletter will be sent every day at 9:00 AM EST'}
+                {frequency === 'weekly' && 'Newsletter will be sent every Monday at 9:00 AM EST'}
+                {frequency === 'biweekly' && 'Newsletter will be sent every other Monday at 9:00 AM EST'}
+                {frequency === 'monthly' && 'Newsletter will be sent on the 1st of each month at 9:00 AM EST'}
               </p>
               <p className="text-xs text-muted-foreground/80">
-                {`(${formatTimeWithTimezone(parseInt(hour), parseInt(minute), selectedTimezone)} in your timezone)`}
+                Status: {isActive ? '✅ Active' : '⏸️ Inactive'}
               </p>
             </div>
           </div>
