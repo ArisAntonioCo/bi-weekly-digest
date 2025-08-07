@@ -80,41 +80,116 @@ export class NewsletterService {
    * Converts markdown to HTML for email
    */
   static convertMarkdownToHtml(markdown: string): string {
-    // Basic markdown to HTML conversion
     let html = markdown
-      // Headers
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      // Bold
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      // Italic
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      // Links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-      // Line breaks
-      .replace(/\n\n/g, '</p><p>')
-      // Lists
-      .replace(/^\* (.+)$/gim, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-      // Code blocks
-      .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>')
-      // Inline code
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-
-    return `<p>${html}</p>`
+    
+    // Handle tables properly
+    const tableRegex = /\|.*\|\n\|[-:\s|]+\|\n(?:\|.*\|\n?)+/gm
+    
+    html = html.replace(tableRegex, (tableMatch) => {
+      const lines = tableMatch.trim().split('\n')
+      const headers = lines[0].split('|').filter(h => h.trim()).map(h => h.trim())
+      const rows = lines.slice(2).map(line => 
+        line.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+      )
+      
+      let tableHtml = `
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin: 20px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+          <thead>
+            <tr style="background-color: #f9fafb;">`
+      
+      headers.forEach((header) => {
+        tableHtml += `
+              <th style="padding: 12px 8px; border: 1px solid #e5e7eb; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151; text-align: left;">${header}</th>`
+      })
+      
+      tableHtml += `
+            </tr>
+          </thead>
+          <tbody>`
+      
+      rows.forEach((row, rowIndex) => {
+        const bgColor = rowIndex % 2 === 0 ? '#ffffff' : '#f9fafb'
+        tableHtml += `
+            <tr style="background-color: ${bgColor};">`
+        
+        row.forEach((cell) => {
+          tableHtml += `
+              <td style="padding: 10px 8px; border: 1px solid #e5e7eb; font-size: 14px; color: #4b5563;">${cell}</td>`
+        })
+        
+        tableHtml += `
+            </tr>`
+      })
+      
+      tableHtml += `
+          </tbody>
+        </table>`
+      
+      return tableHtml
+    })
+    
+    // Headers
+    html = html
+      .replace(/^### (.*$)/gim, '<h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 16px; color: #111827;">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 style="font-size: 20px; font-weight: 700; margin-bottom: 12px; margin-top: 20px; color: #111827;">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 style="font-size: 24px; font-weight: 700; margin-bottom: 16px; margin-top: 24px; color: #111827;">$1</h1>')
+      
+    // Bold and italic
+    html = html
+      .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 700; color: #111827;">$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em style="font-style: italic;">$1</em>')
+      
+    // Lists
+    html = html
+      .replace(/^[\*\-•]\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+      .replace(/^\d+\.\s+(.+)$/gim, '<li style="margin-bottom: 8px; line-height: 1.7; color: #4b5563;">$1</li>')
+    
+    // Wrap list items in ul tags
+    const lines = html.split('\n')
+    const processedLines: string[] = []
+    let inList = false
+    
+    for (const line of lines) {
+      if (line.includes('<li')) {
+        if (!inList) {
+          processedLines.push('<ul style="margin-bottom: 16px; padding-left: 20px;">')
+          inList = true
+        }
+        processedLines.push(line)
+      } else {
+        if (inList) {
+          processedLines.push('</ul>')
+          inList = false
+        }
+        processedLines.push(line)
+      }
+    }
+    
+    if (inList) {
+      processedLines.push('</ul>')
+    }
+    
+    html = processedLines.join('\n')
+    
+    // Paragraphs
+    html = html
+      .split('\n\n')
+      .map(para => {
+        para = para.trim()
+        if (para && !para.includes('<h') && !para.includes('<ul') && !para.includes('<li') && !para.includes('<table')) {
+          return `<p style="margin-bottom: 16px; line-height: 1.7; color: #4b5563;">${para}</p>`
+        }
+        return para
+      })
+      .join('\n\n')
+    
+    return html
   }
 
   /**
    * Creates the email HTML template
    */
-  static createEmailTemplate(content: string, isTest: boolean = false): string {
-    const testBanner = isTest ? `
-      <div style="background-color: #fef2f2; border: 2px solid #dc2626; color: #dc2626; padding: 12px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-weight: bold;">
-        ⚠️ TEST EMAIL - This is a test newsletter
-      </div>
-    ` : ''
-
+  static createEmailTemplate(content: string): string {
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -136,158 +211,81 @@ export class NewsletterService {
     .container {
       max-width: 800px;
       margin: 0 auto;
-      background-color: white;
+      background-color: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 40px 30px;
-      text-align: center;
-    }
-    .header h1 {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      padding: 45px;
       margin: 0;
-      font-size: 32px;
-      font-weight: 700;
+      position: relative;
+      overflow: hidden;
     }
-    .header p {
-      margin: 10px 0 0;
-      font-size: 16px;
-      opacity: 0.95;
+    .header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    .analysis-section {
+      padding: 32px;
     }
     .content {
-      padding: 40px 30px;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: #1f2937;
-      margin-top: 28px;
-      margin-bottom: 16px;
-      font-weight: 600;
-    }
-    h1 { font-size: 28px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-    h2 { font-size: 24px; }
-    h3 { font-size: 20px; }
-    p {
-      margin-bottom: 16px;
-      color: #4b5563;
-      line-height: 1.7;
-    }
-    ul, ol {
-      margin-bottom: 16px;
-      padding-left: 24px;
-      color: #4b5563;
-    }
-    li {
-      margin-bottom: 8px;
-      line-height: 1.7;
-    }
-    strong {
-      color: #1f2937;
-      font-weight: 600;
-    }
-    em {
-      font-style: italic;
-      color: #6b7280;
-    }
-    a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    a:hover {
-      color: #764ba2;
-      text-decoration: underline;
-    }
-    blockquote {
-      border-left: 4px solid #667eea;
-      padding-left: 20px;
-      margin: 20px 0;
-      color: #6b7280;
-      font-style: italic;
-    }
-    code {
-      background-color: #f3f4f6;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      color: #1f2937;
-    }
-    pre {
-      background-color: #f3f4f6;
-      padding: 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      margin: 20px 0;
-    }
-    pre code {
-      background-color: transparent;
-      padding: 0;
+      color: #374151;
     }
     .footer {
+      padding: 24px 32px;
       background-color: #f9fafb;
-      padding: 30px;
-      text-align: center;
       border-top: 1px solid #e5e7eb;
+      text-align: center;
     }
     .footer p {
-      margin: 8px 0;
-      color: #6b7280;
-      font-size: 14px;
-    }
-    .unsubscribe {
-      color: #9ca3af;
+      margin: 4px 0;
       font-size: 12px;
-      text-decoration: none;
-      margin-top: 16px;
-      display: inline-block;
-    }
-    .unsubscribe:hover {
       color: #6b7280;
-      text-decoration: underline;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    th {
-      background-color: #f9fafb;
+    .footer-logo {
       font-weight: 600;
-      color: #1f2937;
+      color: #111827;
     }
-    .highlight {
-      background-color: #fef3c7;
-      padding: 2px 4px;
-      border-radius: 3px;
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .header {
+        padding: 24px;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .analysis-section {
+        padding: 24px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrapper">
     <div class="container">
-      ${testBanner}
-      <div class="header">
-        <h1>📊 AI Investment Analysis</h1>
-        <p>Your Bi-Weekly Market Intelligence Report</p>
+      <div class="header"></div>
+      
+      <div class="analysis-section">
+        <div class="content">
+          ${content}
+        </div>
       </div>
-      <div class="content">
-        ${content}
-      </div>
+      
       <div class="footer">
-        <p><strong>Bi-Weekly Investment Digest</strong></p>
-        <p>Generated with advanced AI analysis</p>
-        <p style="margin-top: 20px; color: #9ca3af; font-size: 12px;">
-          © ${new Date().getFullYear()} All rights reserved
-        </p>
+        <p>This analysis was generated using AI-powered investment research</p>
+        <p class="footer-logo">Weekly Digest</p>
       </div>
     </div>
   </div>
@@ -301,13 +299,43 @@ export class NewsletterService {
   static async sendEmail(options: EmailOptions, content: string): Promise<any> {
     const { to, subject, isTest = false } = options
     const htmlContent = this.convertMarkdownToHtml(content)
-    const emailTemplate = this.createEmailTemplate(htmlContent, isTest)
+    const emailTemplate = this.createEmailTemplate(htmlContent)
+
+    // Determine analysis type for badge
+    const getAnalysisType = (content: string) => {
+      if (content.toLowerCase().includes('moic') || content.toLowerCase().includes('multiple on invested capital')) {
+        return { type: 'MOIC Analysis', color: '#111827' }
+      }
+      if (content.toLowerCase().includes('bear case') || content.toLowerCase().includes('risk')) {
+        return { type: 'Risk Assessment', color: '#374151' }
+      }
+      return { type: 'Investment Insight', color: '#6b7280' }
+    }
+
+    const analysisType = getAnalysisType(content)
+
+    // Format the text content for email
+    const markdownContent = `# AI Analysis Report
+
+**Generated:** ${new Date().toLocaleString()}
+**Model:** GPT-4o
+**Type:** ${analysisType.type}
+
+## Analysis
+
+${content}
+
+---
+
+*This analysis was generated using the current system prompt configuration.*
+*Weekly Digest - AI-Powered Content Assistant*`
 
     return await resend.emails.send({
       from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
       to,
       subject: isTest ? `[TEST] ${subject}` : subject,
       html: emailTemplate,
+      text: markdownContent,
     })
   }
 

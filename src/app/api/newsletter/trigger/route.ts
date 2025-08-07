@@ -26,8 +26,7 @@ export async function POST() {
     const emailPromises = TEST_RECIPIENTS.map(email => 
       NewsletterService.sendEmail({
         to: email,
-        subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
-        isTest: false
+        subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`
       }, aiResponse)
     )
 

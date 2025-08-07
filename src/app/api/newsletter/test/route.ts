@@ -19,8 +19,7 @@ export async function POST() {
     // Send test email
     await NewsletterService.sendEmail({
       to: 'kulaizke@gmail.com',
-      subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
-      isTest: true
+      subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`
     }, aiResponse)
 
     // Log the test event

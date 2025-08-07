@@ -56,8 +56,7 @@ export async function GET(request: NextRequest) {
     const emailPromises = subscribers.map(email => 
       NewsletterService.sendEmail({
         to: email,
-        subject: `Weekly Investment Analysis - ${now.toLocaleDateString()}`,
-        isTest: false
+        subject: `Weekly Investment Analysis - ${now.toLocaleDateString()}`
       }, aiResponse)
     )
 
