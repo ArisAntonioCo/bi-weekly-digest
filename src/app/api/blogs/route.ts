@@ -89,10 +89,38 @@ export async function GET(request: NextRequest) {
       // Generate new blog if none exist
       await generateBlogFromSystemPrompt(supabase, systemPrompt)
       
-      // Re-fetch count after generation
-      await supabase
+      // Re-fetch count and data after generation
+      const { count: newCount } = await supabase
         .from('blogs')
         .select('*', { count: 'exact', head: true })
+      
+      // Fetch the newly created blog
+      const { data: newBlogs } = await supabase
+        .from('blogs')
+        .select('*')
+        .order('created_at', { ascending: sort === 'oldest' })
+        .range(offset, offset + limit - 1)
+      
+      const responseData: Paginated<Blog> & { systemPromptSummary: string; page: number; limit: number; totalPages: number } = {
+        data: newBlogs || [],
+        currentPage: page,
+        page,
+        limit,
+        perPage: limit,
+        total: newCount || 0,
+        totalPages: Math.ceil((newCount || 0) / limit),
+        systemPromptSummary
+      }
+      
+      const response = createSuccessResponse(responseData)
+      
+      // Add cache headers
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=60, stale-while-revalidate=120'
+      )
+      
+      return response
     }
     
     // Now build the actual data query
@@ -133,7 +161,7 @@ export async function GET(request: NextRequest) {
     // Calculate total pages
     const totalPages = Math.ceil((totalCount || 0) / limit)
     
-    const response: Paginated<Blog> & { systemPromptSummary: string; page: number; limit: number; totalPages: number } = {
+    const responseData: Paginated<Blog> & { systemPromptSummary: string; page: number; limit: number; totalPages: number } = {
       data: blogs || [],
       currentPage: page,
       page,
@@ -144,7 +172,15 @@ export async function GET(request: NextRequest) {
       systemPromptSummary
     }
     
-    return createSuccessResponse(response)
+    const response = createSuccessResponse(responseData)
+    
+    // Add cache headers for better performance
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=60, stale-while-revalidate=120'
+    )
+    
+    return response
   } catch (error) {
     return handleApiError(error)
   }

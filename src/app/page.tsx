@@ -4,33 +4,7 @@ import { TrendingUp, BarChart3, LineChart, PieChart, ArrowRight, Shield, Zap, Br
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
-      {/* Navigation */}
-      <nav className="border-b border-zinc-800">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-zinc-100 text-zinc-900 flex size-8 items-center justify-center rounded-md">
-                <TrendingUp className="size-5" />
-              </div>
-              <span className="text-xl font-semibold text-zinc-100">Weekly Digest</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href="/login">
-                <Button variant="ghost" className="text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button className="bg-zinc-100 text-zinc-900 hover:bg-zinc-200">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <div>
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-24">
         <div className="max-w-4xl mx-auto text-center">

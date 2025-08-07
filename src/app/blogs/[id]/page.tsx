@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Clock, TrendingUp } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BlogList } from '@/components/ui/blog-list'
 import { Badge } from '@/components/ui/badge'
@@ -55,36 +55,19 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     .limit(3)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
-      {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 z-10 bg-zinc-900/95 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/blogs">
-                <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Insights
-                </Button>
-              </Link>
-              <div className="hidden sm:flex items-center gap-2">
-                <div className="bg-zinc-100 text-zinc-900 flex size-6 items-center justify-center rounded-md">
-                  <TrendingUp className="size-4" />
-                </div>
-                <span className="text-sm font-medium text-zinc-100">Weekly Digest</span>
-              </div>
-            </div>
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
-                Dashboard
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <div>
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8 max-w-4xl">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link href="/blogs">
+            <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Insights
+            </Button>
+          </Link>
+        </div>
+
         {/* Article Header */}
         <div className="mb-8 space-y-4">
           <div className="flex items-center gap-3 flex-wrap">
