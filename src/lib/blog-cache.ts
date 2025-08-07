@@ -72,10 +72,33 @@ export const getBlogs = cache(async (params: BlogQueryParams): Promise<BlogRespo
   // Get count first
   const { count: totalCount } = await query
   
-  // Then get paginated results
-  const { data: blogs, error } = await supabase
-    .from('blogs')
-    .select('*')
+  // Build the same query for fetching data
+  let dataQuery = supabase.from('blogs').select('*')
+  
+  // Apply the same search filter
+  if (search) {
+    dataQuery = dataQuery.or(`title.ilike.%${search}%,content.ilike.%${search}%`)
+  }
+  
+  // Apply the same type filter
+  if (type && type !== 'all') {
+    switch (type) {
+      case 'moic':
+        dataQuery = dataQuery.or('content.ilike.%moic%,content.ilike.%multiple on invested capital%')
+        break
+      case 'risk':
+        dataQuery = dataQuery.or('content.ilike.%bear case%,content.ilike.%risk%')
+        break
+      case 'insight':
+        dataQuery = dataQuery.not('content', 'ilike', '%moic%')
+                            .not('content', 'ilike', '%bear case%')
+                            .not('content', 'ilike', '%risk%')
+        break
+    }
+  }
+  
+  // Then get paginated results with filters applied
+  const { data: blogs, error } = await dataQuery
     .order('created_at', { ascending: sort === 'oldest' })
     .range(offset, offset + limit - 1)
   
