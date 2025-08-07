@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, TrendingUp, Sparkles } from 'lucide-react'
 import { PromptInputBox } from '@/components/ui/ai-prompt-box'
 import { Button } from '@/components/ui/button'
+import { AIResponse } from '@/components/ui/ai-response'
 
 interface Message {
   id: string
@@ -47,17 +48,44 @@ export default function FinancePage() {
     setMessages(prev => [...prev, userMessage])
     setIsLoading(true)
 
-    // Placeholder for API call - will be implemented later
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+    try {
+      const response = await fetch('/api/finance-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get response')
+      }
+
+      const data = await response.json()
+      
+      if (data.message) {
+        setMessages(prev => [...prev, {
+          ...data.message,
+          timestamp: new Date(data.message.timestamp)
+        }])
+      }
+    } catch (error) {
+      console.error('Chat error:', error)
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: 'Sorry, I encountered an error processing your request. Please try again.',
         role: 'assistant',
-        content: "This feature is coming soon! I'll be able to help you with finance and stock questions, including detailed analysis of 3-year Forward MOIC Projections.",
         timestamp: new Date()
       }
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const handlePromptClick = (promptText: string) => {
@@ -130,7 +158,11 @@ export default function FinancePage() {
                         : 'bg-zinc-900 text-zinc-100 border border-zinc-800'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    {message.role === 'assistant' ? (
+                      <AIResponse content={message.content} />
+                    ) : (
+                      <p className="text-sm">{message.content}</p>
+                    )}
                     <p className="text-xs opacity-60 mt-1">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
