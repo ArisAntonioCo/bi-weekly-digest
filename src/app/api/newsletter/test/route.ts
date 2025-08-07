@@ -18,13 +18,13 @@ export async function POST() {
 
     // Send test email
     await NewsletterService.sendEmail({
-      to: 'kulaizke@gmail.com',
+      to: 'kyle@zaigo.ai',
       subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`
     }, aiResponse)
 
     // Log the test event
     await NewsletterService.logNewsletterEvent('test', 1, {
-      recipient: 'kulaizke@gmail.com'
+      recipient: 'kyle@zaigo.ai'
     })
 
     return NextResponse.json({
