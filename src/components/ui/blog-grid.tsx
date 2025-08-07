@@ -111,8 +111,8 @@ export const BlogGrid = memo(function BlogGrid({
             <div className="flex-1">
               <BlogSearch 
                 value={searchQuery}
-                onChange={onSearchChange}
-                placeholder="Search investment insights..."
+                onSubmit={onSearchChange}
+                placeholder="Press Enter to search investment insights..."
               />
             </div>
           )}

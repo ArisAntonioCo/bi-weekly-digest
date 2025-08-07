@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Clock, TrendingUp } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BlogList } from '@/components/ui/blog-list'
 import { Badge } from '@/components/ui/badge'

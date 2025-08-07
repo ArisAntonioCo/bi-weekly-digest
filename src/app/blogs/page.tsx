@@ -1,50 +1,67 @@
-"use client"
+import { BlogListWrapper } from '@/components/blog-list-wrapper'
+import { BlogSearchClient } from '@/components/blog-search-client'
 
-import { useCallback } from 'react'
-import { TrendingUp, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { BlogGrid } from '@/components/ui/blog-grid'
-import { useBlogSearch } from '@/hooks/use-blog-search'
-import { Skeleton } from '@/components/ui/skeleton'
-import { BlogFilterOptions } from '@/components/ui/blog-grid'
+interface BlogsPageProps {
+  searchParams: Promise<{
+    page?: string
+    search?: string
+    sort?: string
+    type?: string
+  }>
+}
 
-export default function BlogsPage() {
-  const {
-    blogs,
-    loading,
-    error,
-    currentPage,
-    totalPages,
-    total,
-    searchQuery,
-    sort,
-    filters,
-    systemPromptSummary,
-    setPage,
-    setSort,
-    setSearchQuery,
-    setFilters
-  } = useBlogSearch({
-    perPage: 9
-  })
+async function getSystemPromptSummary() {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/blogs?page=1&limit=1`,
+      { cache: 'no-store' }
+    )
+    
+    if (!response.ok) return null
+    
+    const data = await response.json()
+    return data.systemPromptSummary || null
+  } catch {
+    return null
+  }
+}
 
-  // Memoize handlers to prevent unnecessary re-renders
-  const handlePageChange = useCallback((page: number) => {
-    setPage(page)
-  }, [setPage])
+type SearchParams = {
+  page?: string
+  search?: string
+  sort?: string
+  type?: string
+}
 
-  const handleSortChange = useCallback((newSort: 'latest' | 'oldest') => {
-    setSort(newSort)
-  }, [setSort])
+async function getTotalCount(searchParams: SearchParams) {
+  try {
+    const params = new URLSearchParams({
+      page: '1',
+      limit: '1',
+      ...(searchParams.search && { search: searchParams.search }),
+      ...(searchParams.type && { type: searchParams.type })
+    })
+    
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/blogs?${params}`,
+      { cache: 'no-store' }
+    )
+    
+    if (!response.ok) return 0
+    
+    const data = await response.json()
+    return data.total || 0
+  } catch {
+    return 0
+  }
+}
 
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query)
-  }, [setSearchQuery])
-
-  const handleFilterChange = useCallback((newFilters: BlogFilterOptions) => {
-    setFilters(newFilters)
-  }, [setFilters])
+export default async function BlogsPage({ searchParams }: BlogsPageProps) {
+  const params = await searchParams
+  const [systemPromptSummary, totalCount] = await Promise.all([
+    getSystemPromptSummary(),
+    getTotalCount(params)
+  ])
 
   return (
     <div>
@@ -55,8 +72,9 @@ export default function BlogsPage() {
           <h1 className="text-3xl font-bold text-zinc-100 mb-2">Investment Insights</h1>
           <p className="text-zinc-400">AI-Powered Market Analysis</p>
         </div>
+        
         {/* System Prompt Summary */}
-        {systemPromptSummary && !loading && (
+        {systemPromptSummary && (
           <div className="mb-8 p-4 bg-zinc-800/50 backdrop-blur-sm rounded-lg border border-zinc-700">
             <p className="text-sm text-zinc-300 text-center">
               {systemPromptSummary}
@@ -64,48 +82,10 @@ export default function BlogsPage() {
           </div>
         )}
 
-        {/* Loading State */}
-        {loading && (
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <Skeleton className="h-10 flex-1 bg-zinc-800" />
-              <Skeleton className="h-10 w-40 bg-zinc-800" />
-            </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-64 bg-zinc-800" />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Error State */}
-        {error && !loading && (
-          <div className="text-center py-12">
-            <p className="text-red-400">Error loading blogs: {error}</p>
-          </div>
-        )}
-
-        {/* Blog Grid */}
-        {!loading && !error && (
-          <BlogGrid
-            blogs={blogs}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            total={total}
-            perPage={9}
-            onPageChange={handlePageChange}
-            onSortChange={handleSortChange}
-            onSearchChange={handleSearchChange}
-            onFilterChange={handleFilterChange}
-            currentSort={sort}
-            searchQuery={searchQuery}
-            filters={filters}
-            isAdmin={false}
-            showSearch={true}
-            showFilters={true}
-          />
-        )}
+        {/* Blog Content with Search and Suspense */}
+        <BlogSearchClient totalCount={totalCount}>
+          <BlogListWrapper searchParams={params} />
+        </BlogSearchClient>
       </main>
 
       {/* Footer */}
