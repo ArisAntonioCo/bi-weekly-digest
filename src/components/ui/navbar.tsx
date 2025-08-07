@@ -32,9 +32,10 @@ export default function Navbar({ className }: NavbarProps) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
-  const supabase = createClient()
 
   useEffect(() => {
+    const supabase = createClient()
+    
     // Check initial auth state
     const checkUser = async () => {
       try {
@@ -59,13 +60,28 @@ export default function Navbar({ className }: NavbarProps) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase])
+  }, [])
+
+  // Check auth state when pathname changes (e.g., after login redirect)
+  useEffect(() => {
+    // Only check on specific route changes that matter
+    if (pathname === '/dashboard' || pathname === '/admin/dashboard' || pathname === '/') {
+      const checkAuthOnRouteChange = async () => {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      }
+      
+      checkAuthOnRouteChange()
+    }
+  }, [pathname])
 
   // Memoized handlers
   const handleSignOut = useCallback(async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/login')
-  }, [supabase, router])
+  }, [router])
 
   const handleNavigation = useCallback((path: string) => {
     router.push(path)
