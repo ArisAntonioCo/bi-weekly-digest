@@ -4,13 +4,12 @@ import { useState } from 'react'
 import { 
   ScheduleHeader, 
   ScheduleForm, 
-  SchedulePresets, 
   CronPreview 
 } from '../_sections'
 import { Card } from '@/components/ui/card'
 
 export function SchedulePage() {
-  const [cronExpression, setCronExpression] = useState('0 0 * * 1')
+  const [cronExpression, setCronExpression] = useState('0 14 * * *') // 9 AM EST = 14:00 UTC
   const [isActive, setIsActive] = useState(false)
 
   return (
@@ -18,22 +17,14 @@ export function SchedulePage() {
       <div className="space-y-6">
         <ScheduleHeader isActive={isActive} />
         
-
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2">
             <Card className="p-6">
               <ScheduleForm 
                 cronExpression={cronExpression}
                 onCronChange={setCronExpression}
                 isActive={isActive}
                 onActiveChange={setIsActive}
-              />
-            </Card>
-            
-            <Card className="p-6">
-              <SchedulePresets 
-                onSelectPreset={setCronExpression}
-                currentExpression={cronExpression}
               />
             </Card>
           </div>
