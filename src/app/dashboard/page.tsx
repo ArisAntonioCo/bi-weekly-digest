@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, Mail, Calendar, LogOut, User, Clock, CheckCircle } from 'lucide-react'
+import { TrendingUp, Mail, Calendar, LogOut, User, Clock, CheckCircle, BookOpen } from 'lucide-react'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<{ email?: string; created_at?: string } | null>(null)
@@ -218,6 +219,30 @@ export default function DashboardPage() {
                 <p className="text-zinc-500 text-sm mt-2">
                   Get comprehensive market analysis and investment insights delivered to your inbox weekly
                 </p>
+              </CardContent>
+            </Card>
+
+            {/* Investment Insights Card */}
+            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-zinc-100 flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
+                  Investment Insights
+                </CardTitle>
+                <CardDescription className="text-zinc-400">
+                  Read our latest analysis and market insights
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-zinc-300 mb-4">
+                  Explore in-depth investment analysis, market trends, and strategic insights from our AI-powered research.
+                </p>
+                <Link href="/blogs">
+                  <Button className="w-full bg-zinc-100 text-zinc-900 hover:bg-zinc-200">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    View All Insights
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

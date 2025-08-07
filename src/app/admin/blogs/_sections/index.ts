@@ -1,5 +1,1 @@
 export { BlogHeader } from './blog-header'
-export { BlogList } from './blog-list'
-export { BlogCard } from './blog-card'
-export { BlogsGrid } from './blogs-grid'
-export { BlogPagination } from './blog-pagination'

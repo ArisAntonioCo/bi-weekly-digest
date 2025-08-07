@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10)
     const limit = parseInt(searchParams.get('limit') || '10', 10)
     const sort = searchParams.get('sort') || 'latest' // 'latest' or 'oldest'
+    const search = searchParams.get('search') || ''
+    const type = searchParams.get('type') || 'all'
     
     // Calculate offset for pagination
     const offset = (page - 1) * limit
@@ -39,10 +41,34 @@ export async function GET(request: NextRequest) {
     // Get a brief summary of the system prompt for the header
     const systemPromptSummary = await getSystemPromptSummary(systemPrompt)
 
-    // Get total count of blogs using Supabase count
-    const { count: totalCount } = await supabase
-      .from('blogs')
-      .select('*', { count: 'exact', head: true })
+    // Build query with filters
+    let query = supabase.from('blogs').select('*', { count: 'exact', head: true })
+    
+    // Add search filter if provided
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`)
+    }
+    
+    // Add type filter if provided
+    if (type !== 'all') {
+      switch (type) {
+        case 'moic':
+          query = query.or('content.ilike.%moic%,content.ilike.%multiple on invested capital%')
+          break
+        case 'risk':
+          query = query.or('content.ilike.%bear case%,content.ilike.%risk%')
+          break
+        case 'insight':
+          // Default - will match entries that don't specifically match MOIC or Risk
+          query = query.not('content', 'ilike', '%moic%')
+                      .not('content', 'ilike', '%bear case%')
+                      .not('content', 'ilike', '%risk%')
+          break
+      }
+    }
+
+    // Get total count of blogs with filters
+    const { count: totalCount } = await query
 
     // Check if we have any blogs
     if (totalCount === 0) {
@@ -77,10 +103,33 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Build the main query with filters
+    let blogsQuery = supabase.from('blogs').select('*')
+    
+    // Add search filter if provided
+    if (search) {
+      blogsQuery = blogsQuery.or(`title.ilike.%${search}%,content.ilike.%${search}%`)
+    }
+    
+    // Add type filter if provided
+    if (type !== 'all') {
+      switch (type) {
+        case 'moic':
+          blogsQuery = blogsQuery.or('content.ilike.%moic%,content.ilike.%multiple on invested capital%')
+          break
+        case 'risk':
+          blogsQuery = blogsQuery.or('content.ilike.%bear case%,content.ilike.%risk%')
+          break
+        case 'insight':
+          blogsQuery = blogsQuery.not('content', 'ilike', '%moic%')
+                                .not('content', 'ilike', '%bear case%')
+                                .not('content', 'ilike', '%risk%')
+          break
+      }
+    }
+    
     // Fetch blogs with pagination using range
-    const { data: blogs, error } = await supabase
-      .from('blogs')
-      .select('*')
+    const { data: blogs, error } = await blogsQuery
       .order('created_at', { ascending: sort === 'oldest' })
       .range(offset, offset + limit - 1)
 
