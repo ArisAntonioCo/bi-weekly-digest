@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Save, TestTube, Calendar, Clock, Info, Loader2 } from 'lucide-react'
+import { Save, TestTube, Calendar, Info, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ScheduleFormProps {

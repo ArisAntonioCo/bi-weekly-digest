@@ -118,15 +118,29 @@ function getTimeParts(date: Date, timeZone: string) {
     minute: '2-digit',
     weekday: 'short'
   })
-  const parts = Object.fromEntries(dtf.formatToParts(date).map(p => [p.type, p.value])) as any
+  type PartType = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'weekday'
+  const initial: Record<PartType, string> = {
+    year: '',
+    month: '',
+    day: '',
+    hour: '',
+    minute: '',
+    weekday: ''
+  }
+  const reduced = dtf.formatToParts(date).reduce((acc, p) => {
+    if ((['year','month','day','hour','minute','weekday'] as string[]).includes(p.type)) {
+      acc[p.type as PartType] = p.value
+    }
+    return acc
+  }, initial)
   const weekdayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
   return {
-    year: Number(parts.year),
-    month: Number(parts.month),
-    day: Number(parts.day),
-    hour: Number(parts.hour),
-    minute: Number(parts.minute),
-    weekday: weekdayMap[parts.weekday as string] ?? new Date(date).getDay(),
+    year: Number(reduced.year),
+    month: Number(reduced.month),
+    day: Number(reduced.day),
+    hour: Number(reduced.hour),
+    minute: Number(reduced.minute),
+    weekday: weekdayMap[reduced.weekday] ?? new Date(date).getDay(),
   }
 }
 
