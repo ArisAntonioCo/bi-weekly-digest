@@ -107,34 +107,72 @@ export async function GET(request: NextRequest) {
   }
 }
 
+function getTimeParts(date: Date, timeZone: string) {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    weekday: 'short'
+  })
+  const parts = Object.fromEntries(dtf.formatToParts(date).map(p => [p.type, p.value])) as any
+  const weekdayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    hour: Number(parts.hour),
+    minute: Number(parts.minute),
+    weekday: weekdayMap[parts.weekday as string] ?? new Date(date).getDay(),
+  }
+}
+
+function startOfDayUTCFromParts(year: number, month: number, day: number): Date {
+  // Create a UTC date at midnight using the provided calendar day
+  return new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0))
+}
+
 function shouldSendNewsletter(schedule: NewsletterSchedule, now: Date): boolean {
-  // Check if we've already sent today
+  const tz = schedule.timezone || 'America/New_York'
+  const parts = getTimeParts(now, tz)
+
+  // Gate by local time: only send at the configured local hour/minute
+  const targetHour = schedule.hour ?? 9
+  const targetMinute = schedule.minute ?? 0
+  if (parts.hour !== targetHour || parts.minute !== targetMinute) {
+    return false
+  }
+
+  // Prevent multiple sends on the same local calendar day
   if (schedule.last_sent_at) {
-    const lastSent = new Date(schedule.last_sent_at)
-    if (
-      lastSent.getDate() === now.getDate() &&
-      lastSent.getMonth() === now.getMonth() &&
-      lastSent.getFullYear() === now.getFullYear()
-    ) {
+    const lastParts = getTimeParts(new Date(schedule.last_sent_at), tz)
+    const lastDay = startOfDayUTCFromParts(lastParts.year, lastParts.month, lastParts.day)
+    const today = startOfDayUTCFromParts(parts.year, parts.month, parts.day)
+    if (lastDay.getTime() === today.getTime()) {
       return false
     }
   }
 
-  // Check if today matches the schedule
+  // Check if today matches the frequency based on local weekday/day
   switch (schedule.frequency) {
     case 'daily':
       return true
     case 'weekly':
-      return now.getDay() === (schedule.day_of_week || 1)
+      return parts.weekday === (schedule.day_of_week ?? 1) // default Monday
     case 'biweekly':
       if (schedule.last_sent_at) {
-        const lastSent = new Date(schedule.last_sent_at)
-        const daysSinceLastSent = Math.floor((now.getTime() - lastSent.getTime()) / (1000 * 60 * 60 * 24))
-        return daysSinceLastSent >= 14 && now.getDay() === (schedule.day_of_week || 1)
+        const lastParts = getTimeParts(new Date(schedule.last_sent_at), tz)
+        const lastDay = startOfDayUTCFromParts(lastParts.year, lastParts.month, lastParts.day)
+        const today = startOfDayUTCFromParts(parts.year, parts.month, parts.day)
+        const daysSince = Math.floor((today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24))
+        return daysSince >= 14 && parts.weekday === (schedule.day_of_week ?? 1)
       }
-      return now.getDay() === (schedule.day_of_week || 1)
+      return parts.weekday === (schedule.day_of_week ?? 1)
     case 'monthly':
-      return now.getDate() === (schedule.day_of_month || 1)
+      return parts.day === (schedule.day_of_month ?? 1)
     default:
       return false
   }

@@ -28,8 +28,8 @@ export function ScheduleForm({
   const [isTesting, setIsTesting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   
-  // Fixed values for Vercel cron - 9 AM EST is 14:00 UTC
-  const hour = 14
+  // Fixed local send time: 9:00 AM America/New_York; cron runs hourly and route gates by local time
+  const hour = 9
   const minute = 0
 
   useEffect(() => {
@@ -165,7 +165,7 @@ export function ScheduleForm({
                 Fixed Schedule Time
               </h4>
               <p className="text-xs text-blue-700 dark:text-blue-200">
-                Newsletters are checked daily at <strong>9:00 AM EST</strong> (2:00 PM UTC).
+                Checks run hourly. Newsletters are sent at 	9:00 AM America/New_York	.
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-300">
                 Your frequency setting below determines on which days the newsletter is actually sent.
