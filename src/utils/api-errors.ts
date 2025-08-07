@@ -4,7 +4,7 @@ export class ApiError extends Error {
   constructor(
     public statusCode: number,
     message: string,
-    public details?: any
+    public details?: unknown
   ) {
     super(message)
     this.name = 'ApiError'
@@ -14,18 +14,20 @@ export class ApiError extends Error {
 export function handleApiError(error: unknown): NextResponse {
   // Handle our custom API errors
   if (error instanceof ApiError) {
-    return NextResponse.json(
-      {
-        error: error.message,
-        details: error.details
-      },
-      { status: error.statusCode }
-    )
+    const response: { error: string; details?: unknown } = {
+      error: error.message
+    }
+    
+    if (error.details !== undefined) {
+      response.details = error.details
+    }
+    
+    return NextResponse.json(response, { status: error.statusCode })
   }
 
   // Handle Supabase errors
   if (error && typeof error === 'object' && 'code' in error) {
-    const supabaseError = error as any
+    const supabaseError = error as { code: string; message?: string }
     
     // Map common Supabase error codes to HTTP status codes
     const errorMap: Record<string, number> = {
@@ -69,29 +71,40 @@ export function handleApiError(error: unknown): NextResponse {
 export function createErrorResponse(
   message: string,
   statusCode: number = 500,
-  details?: any
+  details?: unknown
 ): NextResponse {
-  return NextResponse.json(
-    {
-      error: message,
-      ...(details && { details })
-    },
-    { status: statusCode }
-  )
+  const response: { error: string; details?: unknown } = {
+    error: message
+  }
+  
+  if (details !== undefined) {
+    response.details = details
+  }
+  
+  return NextResponse.json(response, { status: statusCode })
 }
 
 export function createSuccessResponse(
-  data: any,
+  data: unknown,
   statusCode: number = 200
 ): NextResponse {
   return NextResponse.json(data, { status: statusCode })
 }
 
 // Authentication helpers
+interface SupabaseClient {
+  auth: {
+    getUser: () => Promise<{ 
+      data: { user: { email?: string; [key: string]: unknown } | null }; 
+      error: Error | null 
+    }>
+  }
+}
+
 export async function requireAuth(
-  supabase: any,
+  supabase: SupabaseClient,
   allowedEmails?: string[]
-): Promise<any> {
+): Promise<{ email?: string; [key: string]: unknown }> {
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) {
@@ -135,7 +148,7 @@ export function checkRateLimit(
 
 // Input validation helper
 export function validateRequired(
-  data: any,
+  data: Record<string, unknown>,
   requiredFields: string[]
 ): void {
   const missing = requiredFields.filter(field => !data[field])

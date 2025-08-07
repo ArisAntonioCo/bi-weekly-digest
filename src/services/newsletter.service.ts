@@ -296,7 +296,7 @@ export class NewsletterService {
   /**
    * Sends an email using Resend
    */
-  static async sendEmail(options: EmailOptions, content: string): Promise<any> {
+  static async sendEmail(options: EmailOptions, content: string) {
     const { to, subject, isTest = false } = options
     const htmlContent = this.convertMarkdownToHtml(content)
     const emailTemplate = this.createEmailTemplate(htmlContent)
@@ -381,7 +381,7 @@ ${content}
   static async logNewsletterEvent(
     type: 'sent' | 'failed' | 'test',
     recipientCount: number,
-    metadata?: any
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     const supabase = await createClient()
     

@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextRequest } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
 import { Paginated } from '@/types/pagination'
@@ -90,12 +90,9 @@ export async function GET(request: NextRequest) {
       await generateBlogFromSystemPrompt(supabase, systemPrompt)
       
       // Re-fetch count after generation
-      const { count: newCount } = await supabase
+      await supabase
         .from('blogs')
         .select('*', { count: 'exact', head: true })
-      
-      // Re-build query for actual data fetch
-      query = supabase.from('blogs').select('*')
     }
     
     // Now build the actual data query
@@ -234,7 +231,7 @@ async function generateBlogContent(systemPrompt: string): Promise<string> {
   }
 }
 
-async function generateBlogFromSystemPrompt(supabase: any, systemPrompt: string) {
+async function generateBlogFromSystemPrompt(supabase: ReturnType<typeof createClient> extends Promise<infer T> ? T : never, systemPrompt: string) {
   const aiResponse = await generateBlogContent(systemPrompt)
   
   const { error } = await supabase
