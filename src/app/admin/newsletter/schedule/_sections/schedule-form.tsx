@@ -212,7 +212,7 @@ export function ScheduleForm({
                 {frequency === 'monthly' && 'Newsletter will be sent on the 1st of each month at 9:00 AM EST'}
               </p>
               <p className="text-xs text-muted-foreground/80">
-                Status: {isActive ? '✅ Active' : '⏸️ Inactive'}
+                Status: {isActive ? 'Active' : 'Inactive'}
               </p>
             </div>
           </div>
