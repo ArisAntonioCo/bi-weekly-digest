@@ -34,7 +34,8 @@
       "Bash(done)",
       "Bash(npm run typecheck:*)",
       "mcp__sequential-thinking__sequentialthinking",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)"
     ],
     "deny": []
   },

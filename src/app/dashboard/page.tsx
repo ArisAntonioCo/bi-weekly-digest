@@ -29,7 +29,8 @@ export default function DashboardPage() {
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-          router.push('/login')
+          // Don't redirect here - let middleware handle it
+          setLoading(false)
           return
         }
 
@@ -103,6 +104,14 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-zinc-400">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-zinc-400">Redirecting to login...</div>
       </div>
     )
   }

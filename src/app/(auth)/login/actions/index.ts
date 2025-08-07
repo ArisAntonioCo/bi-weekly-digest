@@ -17,7 +17,14 @@ export async function login(formData: FormData) {
   const { error, data: authData } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
+    console.error('Login error:', error)
     redirect('/login?error=Invalid credentials')
+  }
+
+  // Ensure the session is properly set
+  if (!authData?.session) {
+    console.error('No session returned from login')
+    redirect('/login?error=Login failed')
   }
 
   // Check user role and redirect accordingly
@@ -30,7 +37,10 @@ export async function login(formData: FormData) {
 
     const role = userRole?.role || 'user'
     
+    // Revalidate all layouts to ensure fresh data
     revalidatePath('/', 'layout')
+    revalidatePath('/dashboard', 'layout')
+    revalidatePath('/admin', 'layout')
     
     if (role === 'admin') {
       redirect('/admin/dashboard')
