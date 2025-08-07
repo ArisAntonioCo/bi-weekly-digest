@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, Mail, Calendar, User, Clock, CheckCircle, BookOpen, ArrowRight, ChevronRight, Brain } from 'lucide-react'
+import { TrendingUp, Mail, Calendar, User, Clock, CheckCircle, BookOpen, ArrowRight, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface Blog {
