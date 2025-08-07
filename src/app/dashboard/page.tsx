@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, Mail, Calendar, LogOut, User, Clock, CheckCircle, BookOpen, ArrowRight, ChevronRight } from 'lucide-react'
+import { TrendingUp, Mail, Calendar, User, Clock, CheckCircle, BookOpen, ArrowRight, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface Blog {
@@ -62,10 +62,6 @@ export default function DashboardPage() {
     loadUserData()
   }, [router, supabase])
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
 
   const handleSubscribe = async () => {
     if (!user?.email) return
@@ -105,39 +101,14 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-zinc-400">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
-      {/* Header */}
-      <header className="border-b border-zinc-800">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-zinc-100 text-zinc-900 flex size-8 items-center justify-center rounded-md">
-                <TrendingUp className="size-5" />
-              </div>
-              <span className="text-xl font-semibold text-zinc-100">Weekly Digest</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-zinc-400 text-sm">{user?.email}</span>
-              <Button 
-                onClick={handleSignOut}
-                variant="ghost" 
-                className="text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div>
       {/* Main Content */}
       <main className="container mx-auto px-6 py-12">
         <div className="max-w-7xl mx-auto">

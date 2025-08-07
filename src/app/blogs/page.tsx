@@ -47,39 +47,14 @@ export default function BlogsPage() {
   }, [setFilters])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
-      {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 z-10 bg-zinc-900/95 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Button>
-              </Link>
-              <div className="flex items-center gap-2">
-                <div className="bg-zinc-100 text-zinc-900 flex size-8 items-center justify-center rounded-md">
-                  <TrendingUp className="size-5" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-zinc-100">Investment Insights</h1>
-                  <p className="text-xs text-zinc-400 hidden sm:block">AI-Powered Market Analysis</p>
-                </div>
-              </div>
-            </div>
-            <Link href="/dashboard">
-              <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
-                Dashboard
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <div>
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-zinc-100 mb-2">Investment Insights</h1>
+          <p className="text-zinc-400">AI-Powered Market Analysis</p>
+        </div>
         {/* System Prompt Summary */}
         {systemPromptSummary && !loading && (
           <div className="mb-8 p-4 bg-zinc-800/50 backdrop-blur-sm rounded-lg border border-zinc-700">
