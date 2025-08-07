@@ -1,30 +1,5 @@
 import { BlogGridServer } from './blog-grid-server'
-
-async function fetchBlogs(searchParams: {
-  page?: string
-  search?: string
-  sort?: string
-  type?: string
-}) {
-  const params = new URLSearchParams({
-    page: searchParams.page || '1',
-    limit: '9',
-    sort: searchParams.sort || 'latest',
-    ...(searchParams.search && { search: searchParams.search }),
-    ...(searchParams.type && { type: searchParams.type })
-  })
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/blogs?${params}`,
-    { cache: 'no-store' }
-  )
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch blogs')
-  }
-
-  return response.json()
-}
+import { getBlogs, prefetchAdjacentPages } from '@/lib/blog-cache'
 
 interface BlogListServerProps {
   searchParams: {
@@ -36,15 +11,27 @@ interface BlogListServerProps {
 }
 
 export async function BlogListServer({ searchParams }: BlogListServerProps) {
-  const data = await fetchBlogs(searchParams)
+  const params = {
+    page: parseInt(searchParams.page || '1', 10),
+    limit: 9,
+    sort: (searchParams.sort || 'latest') as 'latest' | 'oldest',
+    search: searchParams.search,
+    type: searchParams.type
+  }
+  
+  // Fetch current page data
+  const data = await getBlogs(params)
+  
+  // Prefetch adjacent pages in background
+  prefetchAdjacentPages(params)
   
   return (
     <BlogGridServer
-      blogs={data.data || []}
-      currentPage={data.currentPage || 1}
-      totalPages={data.lastPage || 1}
-      total={data.total || 0}
-      perPage={9}
+      blogs={data.data}
+      currentPage={data.currentPage}
+      totalPages={data.lastPage}
+      total={data.total}
+      perPage={data.perPage}
       searchQuery={searchParams.search}
     />
   )

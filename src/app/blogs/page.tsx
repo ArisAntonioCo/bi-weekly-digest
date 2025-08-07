@@ -1,5 +1,6 @@
 import { BlogListWrapper } from '@/components/blog-list-wrapper'
 import { BlogSearchClient } from '@/components/blog-search-client'
+import { getCachedSystemPromptSummary, getCachedTotalCount } from '@/lib/blog-cache'
 
 interface BlogsPageProps {
   searchParams: Promise<{
@@ -10,57 +11,13 @@ interface BlogsPageProps {
   }>
 }
 
-async function getSystemPromptSummary() {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/blogs?page=1&limit=1`,
-      { cache: 'no-store' }
-    )
-    
-    if (!response.ok) return null
-    
-    const data = await response.json()
-    return data.systemPromptSummary || null
-  } catch {
-    return null
-  }
-}
-
-type SearchParams = {
-  page?: string
-  search?: string
-  sort?: string
-  type?: string
-}
-
-async function getTotalCount(searchParams: SearchParams) {
-  try {
-    const params = new URLSearchParams({
-      page: '1',
-      limit: '1',
-      ...(searchParams.search && { search: searchParams.search }),
-      ...(searchParams.type && { type: searchParams.type })
-    })
-    
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/blogs?${params}`,
-      { cache: 'no-store' }
-    )
-    
-    if (!response.ok) return 0
-    
-    const data = await response.json()
-    return data.total || 0
-  } catch {
-    return 0
-  }
-}
-
 export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   const params = await searchParams
+  
+  // Fetch data in parallel using cached functions
   const [systemPromptSummary, totalCount] = await Promise.all([
-    getSystemPromptSummary(),
-    getTotalCount(params)
+    getCachedSystemPromptSummary(),
+    getCachedTotalCount(params.search, params.type)
   ])
 
   return (

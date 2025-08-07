@@ -97,10 +97,18 @@ export async function GET(request: NextRequest) {
         prev: page > 1 ? page - 1 : undefined,
       }
 
-      return NextResponse.json({ 
+      const response = NextResponse.json({ 
         ...paginatedResponse,
         systemPromptSummary 
       })
+      
+      // Add cache headers
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=60, stale-while-revalidate=120'
+      )
+      
+      return response
     }
 
     // Build the main query with filters
@@ -151,10 +159,18 @@ export async function GET(request: NextRequest) {
       prev: page > 1 ? page - 1 : undefined,
     }
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       ...paginatedResponse,
       systemPromptSummary 
     })
+    
+    // Add cache headers for better performance
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=60, stale-while-revalidate=120'
+    )
+    
+    return response
   } catch (error) {
     console.error('Blogs API error:', error)
     return NextResponse.json(

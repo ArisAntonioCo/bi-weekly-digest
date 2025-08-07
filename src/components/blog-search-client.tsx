@@ -6,6 +6,7 @@ import { BlogSearch } from '@/components/ui/blog-search'
 import { BlogFilters } from '@/components/ui/blog-filters'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Clock, Calendar } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { BlogFilterOptions } from '@/components/ui/blog-grid'
 
 interface BlogSearchClientProps {
@@ -65,13 +66,19 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
   const handleSortChange = useCallback((newSort: string) => {
     const sortValue = newSort as 'latest' | 'oldest'
     setSort(sortValue)
-    updateSearchParams({ sort: sortValue })
+    // Use startTransition for smoother updates
+    startTransition(() => {
+      updateSearchParams({ sort: sortValue })
+    })
   }, [updateSearchParams])
 
   const handleFilterChange = useCallback((newFilters: BlogFilterOptions) => {
     setFilters(newFilters)
-    updateSearchParams({ 
-      type: newFilters.type !== 'all' ? newFilters.type : undefined 
+    // Use startTransition for smoother updates
+    startTransition(() => {
+      updateSearchParams({ 
+        type: newFilters.type !== 'all' ? newFilters.type : undefined 
+      })
     })
   }, [updateSearchParams])
 
@@ -120,9 +127,27 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
         </div>
 
         <TabsContent value={sort} className="mt-0">
-          <div className={isPending ? 'opacity-50 transition-opacity' : 'transition-opacity'}>
-            {children}
-          </div>
+          {isPending ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="group rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-4 animate-pulse">
+                  <Skeleton className="h-5 w-20 bg-zinc-800" />
+                  <Skeleton className="h-7 w-full bg-zinc-800" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full bg-zinc-800" />
+                    <Skeleton className="h-4 w-5/6 bg-zinc-800" />
+                    <Skeleton className="h-4 w-4/6 bg-zinc-800" />
+                  </div>
+                  <div className="flex items-center justify-between pt-4">
+                    <Skeleton className="h-4 w-24 bg-zinc-800" />
+                    <Skeleton className="h-8 w-20 bg-zinc-800 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            children
+          )}
         </TabsContent>
       </Tabs>
     </div>
