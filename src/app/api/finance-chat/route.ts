@@ -55,22 +55,9 @@ export async function POST(request: NextRequest) {
 
     const lastMessage = messages[messages.length - 1]
     
-    // Check if the message requires real-time financial data
-    const needsFinancialData = lastMessage?.content && (
-      lastMessage.content.toLowerCase().includes('stock') ||
-      lastMessage.content.toLowerCase().includes('price') ||
-      lastMessage.content.toLowerCase().includes('moic') ||
-      lastMessage.content.toLowerCase().includes('market') ||
-      lastMessage.content.toLowerCase().includes('earnings') ||
-      lastMessage.content.toLowerCase().includes('valuation') ||
-      lastMessage.content.toLowerCase().includes('analysis') ||
-      lastMessage.content.toLowerCase().includes('projection') ||
-      lastMessage.content.toLowerCase().includes('forward') ||
-      /\b[A-Z]{1,5}\b/.test(lastMessage.content) // Stock ticker pattern
-    )
-
-    // Use Responses API with web search for financial data that needs current information
-    if (needsFinancialData) {
+    // ALWAYS use web search for ALL queries to get current information
+    // This ensures we have access to real-time data for dates, prices, news, etc.
+    if (lastMessage?.content) {
       try {
         console.log('Using Responses API with web_search_preview for real-time finance data...')
         
@@ -87,7 +74,14 @@ export async function POST(request: NextRequest) {
         // Create instructions that include the system prompt and conversation history
         const instructions = `${FINANCE_SYSTEM_PROMPT}
 
-IMPORTANT: Use web search to get the most current stock prices, market data, and financial news for accurate analysis.${conversationContext}`
+CRITICAL: ALWAYS use web search for ALL information including:
+- Current date and time
+- Stock prices and market data
+- Recent news and events
+- Any factual information that could change over time
+- Weather, sports scores, or any real-world data
+
+Today's actual date should be retrieved via web search, not from training data.${conversationContext}`
         
         // Use Responses API with web_search_preview tool
         const response = await openai.responses.create({
@@ -117,10 +111,8 @@ IMPORTANT: Use web search to get the most current stock prices, market data, and
       }
     }
     
-    // Fallback to Chat Completions
-    const systemPrompt = needsFinancialData 
-      ? `${FINANCE_SYSTEM_PROMPT}\n\nNote: I'll provide analysis based on my training data. For real-time prices, please check financial websites.`
-      : FINANCE_SYSTEM_PROMPT
+    // Fallback to Chat Completions (only if Responses API fails)
+    const systemPrompt = `${FINANCE_SYSTEM_PROMPT}\n\nNote: Web search is currently unavailable. I'll provide analysis based on my training data. For real-time information, please check current sources.`
 
     const messagesWithSystem = [
       { role: 'system' as const, content: systemPrompt },
