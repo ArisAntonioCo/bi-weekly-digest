@@ -38,9 +38,18 @@ export function HeroSection() {
 
         {/* Hero Images Container */}
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Main Hero Image */}
-          <div className="bg-muted rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 flex items-center justify-center">
-            <p className="text-muted-foreground text-center px-4">Hero Image Coming Soon</p>
+          {/* Main Hero Video */}
+          <div className="bg-black rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 overflow-hidden relative">
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src="/HeroVideo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
           
           {/* Square Newsletter Updates Card */}
