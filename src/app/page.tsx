@@ -1,8 +1,31 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { TrendingUp, BarChart3, LineChart, PieChart, ArrowRight, Shield, Zap, Brain } from 'lucide-react'
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createClient()
+  
+  // Check if user is logged in
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (user) {
+    // Check user role
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+    
+    // Redirect based on role
+    if (roleData?.role === 'admin') {
+      redirect('/admin/dashboard')
+    } else {
+      redirect('/dashboard')
+    }
+  }
+
   return (
     <div>
       {/* Hero Section */}
