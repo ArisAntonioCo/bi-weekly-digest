@@ -85,7 +85,7 @@ export function SchedulePresets({ onSelectPreset, currentExpression }: ScheduleP
           return (
             <div 
               key={preset.id}
-              className="relative flex items-start space-x-3 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
+              className="relative flex items-start space-x-3 rounded-lg border p-4 hover:bg-secondary/50 transition-colors cursor-pointer"
               onClick={() => handlePresetSelect(preset.expression)}
             >
               <RadioGroupItem 
