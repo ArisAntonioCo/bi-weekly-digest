@@ -1,9 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AnimatedNewsletterList } from '@/components/animated-newsletter-list'
+import { useState } from 'react'
 
 
 export function HeroSection() {
+  const [videoError, setVideoError] = useState(false)
+  
   return (
     <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
       {/* Main Content */}
@@ -38,9 +43,26 @@ export function HeroSection() {
 
         {/* Hero Images Container */}
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Main Hero Image */}
-          <div className="bg-muted rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 flex items-center justify-center">
-            <p className="text-muted-foreground text-center px-4">Hero Image Coming Soon</p>
+          {/* Main Hero Video */}
+          <div className="rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 overflow-hidden relative">
+            <video 
+              src="/videos/HeroVideo.mp4"
+              className="absolute inset-0 w-full h-full object-cover rounded-3xl"
+              autoPlay
+              loop
+              muted
+              playsInline
+              onError={(e) => {
+                console.error('Video error:', e);
+                setVideoError(true);
+              }}
+              onLoadedData={() => console.log('Video loaded successfully')}
+            />
+            {videoError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-3xl">
+                <p className="text-muted-foreground text-center px-4">Unable to load video</p>
+              </div>
+            )}
           </div>
           
           {/* Square Newsletter Updates Card */}
