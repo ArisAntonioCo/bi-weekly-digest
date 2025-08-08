@@ -72,7 +72,7 @@ Please refine the system prompt based on this request.`
         ]
         
         const refinementResponse = await openai.chat.completions.create({
-          model: 'gpt-5',
+          model: 'gpt-4o',
           messages: refinementMessages,
           temperature: 0.45,
           max_tokens: 8000,
@@ -104,7 +104,7 @@ Please refine the system prompt based on this request.`
             ]
             
             const summaryResponse = await openai.chat.completions.create({
-              model: 'gpt-5',
+              model: 'gpt-4o',
               messages: summaryMessages,
               temperature: 0.45,
               max_tokens: 8000,
@@ -227,7 +227,7 @@ Take your time to think deeply about this request and provide a thoughtful, well
     ]
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5',
+      model: 'gpt-4o',
       messages: messagesWithSystem,
       temperature: 0.45,
       max_tokens: 8000,

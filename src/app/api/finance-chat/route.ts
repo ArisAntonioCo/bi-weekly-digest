@@ -154,7 +154,7 @@ Focus ONLY on finance and investment-related topics.${conversationContext}`
         
         // Use Responses API with web_search_preview tool
         const response = await openai.responses.create({
-          model: 'gpt-5',
+          model: 'gpt-4o',
           instructions: instructions,
           input: lastMessage.content,
           tools: [{ type: 'web_search_preview' }],
@@ -192,7 +192,7 @@ Focus ONLY on finance and investment-related topics.${conversationContext}`
     ]
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5',
+      model: 'gpt-4o',
       messages: messagesWithSystem,
       temperature: 0.45,
       max_tokens: 8000,
