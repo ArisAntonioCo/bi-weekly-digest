@@ -215,7 +215,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
           <div className="space-y-2">
             {previewMode ? (
               <div className="min-h-[300px] p-4 border rounded-lg bg-muted/20">
-                <div className="prose prose-sm max-w-none dark:prose-invert">
+                <div className="prose prose-sm max-w-none">
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">
                     {watchedPrompt || 'No system prompt configured'}
                   </div>

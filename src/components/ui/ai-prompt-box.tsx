@@ -137,9 +137,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", ...props }, ref) => {
     const variantClasses = {
-      default: "bg-primary hover:bg-primary/80 text-primary-foreground",
-      outline: "border border-border bg-transparent hover:bg-muted",
-      ghost: "bg-transparent hover:bg-muted",
+      default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm",
+      outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",
+      ghost: "bg-transparent hover:bg-accent hover:text-accent-foreground",
     };
     const sizeClasses = {
       default: "h-10 px-4 py-2",
@@ -210,14 +210,14 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       )}
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+        <div className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
         <span className="font-mono text-sm text-muted-foreground">{formatTime(time)}</span>
       </div>
       <div className="w-full h-10 flex items-center justify-center gap-0.5 px-4">
         {[...Array(visualizerBars)].map((_, i) => (
           <div
             key={i}
-            className="w-0.5 rounded-full bg-foreground/50 animate-pulse"
+            className="w-0.5 rounded-full bg-primary/40 animate-pulse"
             style={{
               height: `${Math.max(15, Math.random() * 100)}%`,
               animationDelay: `${i * 0.05}s`,
@@ -586,7 +586,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
                         e.stopPropagation();
                         handleRemoveFile(index);
                       }}
-                      className="absolute top-1 right-1 rounded-full bg-background/70 p-0.5 opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 rounded-full bg-background/90 border border-border p-0.5 opacity-100 transition-opacity shadow-sm"
                     >
                       <X className="h-3 w-3 text-foreground" />
                     </button>
@@ -700,10 +700,10 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
               className={cn(
                 "h-8 w-8 rounded-full transition-all duration-200",
                 isRecording
-                  ? "bg-transparent hover:bg-muted text-destructive hover:text-destructive/80"
+                  ? "bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20"
                   : hasContent
-                  ? "bg-primary hover:bg-primary/80 text-primary-foreground"
-                  : "bg-transparent hover:bg-muted text-muted-foreground hover:text-foreground"
+                  ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+                  : "bg-accent/50 hover:bg-accent text-muted-foreground hover:text-accent-foreground border border-border"
               )}
               onClick={() => {
                 if (isLoading) {
@@ -719,13 +719,13 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
               disabled={false}
             >
               {isLoading ? (
-                <Square className="h-4 w-4 fill-primary-foreground animate-pulse" />
+                <Square className="h-4 w-4 fill-current animate-pulse" />
               ) : isRecording ? (
-                <StopCircle className="h-5 w-5 text-destructive" />
+                <StopCircle className="h-5 w-5" />
               ) : hasContent ? (
-                <ArrowUp className="h-4 w-4 text-primary-foreground" />
+                <ArrowUp className="h-4 w-4" />
               ) : (
-                <Mic className="h-5 w-5 text-primary-foreground transition-colors" />
+                <Mic className="h-5 w-5 transition-colors" />
               )}
             </Button>
           </PromptInputAction>

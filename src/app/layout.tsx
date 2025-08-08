@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/ui/navbar";
+import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
 
 const figtree = Figtree({
@@ -26,12 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${figtree.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900`}
+        className={`${figtree.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background`}
       >
-        <Navbar />
-        {children}
+        <ThemeProvider defaultTheme="light" storageKey="bi-weekly-digest-theme">
+          <Navbar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

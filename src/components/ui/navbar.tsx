@@ -22,6 +22,7 @@ import {
   ChevronDown
 } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 interface NavbarProps {
   className?: string
@@ -129,6 +130,7 @@ export default function Navbar({ className }: NavbarProps) {
 
           {/* Navigation */}
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             {loading ? (
               <div className="h-8 w-20 bg-muted animate-pulse rounded-md" />
             ) : user ? (
