@@ -44,7 +44,7 @@ export class NewsletterService {
       try {
         console.log('Attempting Responses API with web_search_preview for newsletter generation...')
         const response = await openai.responses.create({
-          model: 'gpt-4o-search-preview',
+          model: 'gpt-4o',
           instructions: `${systemPrompt}\n\nIMPORTANT: Use web search to get the most current market data, stock prices, and financial news for the investment analysis.`,
           input: 'Generate comprehensive investment analysis based on current market conditions. Include real-time stock prices and recent market developments.',
           tools: [{ type: 'web_search_preview' }],

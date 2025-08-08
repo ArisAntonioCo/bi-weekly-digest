@@ -91,7 +91,7 @@ IMPORTANT: Use web search to get the most current stock prices, market data, and
         
         // Use Responses API with web_search_preview tool
         const response = await openai.responses.create({
-          model: 'gpt-4o-search-preview',
+          model: 'gpt-4o',
           instructions: instructions,
           input: lastMessage.content,
           tools: [{ type: 'web_search_preview' }],
