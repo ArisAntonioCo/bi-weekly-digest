@@ -1,0 +1,49 @@
+/* KaTeX styles for MOIC analyzer - responsive to light/dark theme */
+
+/* Light mode styles (default) */
+.katex {
+  color: #18181b !important; /* zinc-900 for light mode */
+}
+
+.katex .mord,
+.katex .mop,
+.katex .mbin,
+.katex .mrel,
+.katex .mopen,
+.katex .mclose,
+.katex .mpunct,
+.katex .minner {
+  color: #18181b !important;
+}
+
+.katex .frac-line {
+  background-color: #18181b !important;
+}
+
+.katex .sqrt .sqrt-line {
+  background-color: #18181b !important;
+}
+
+/* Dark mode styles */
+.dark .katex {
+  color: #e4e4e7 !important; /* zinc-200 for dark mode */
+}
+
+.dark .katex .mord,
+.dark .katex .mop,
+.dark .katex .mbin,
+.dark .katex .mrel,
+.dark .katex .mopen,
+.dark .katex .mclose,
+.dark .katex .mpunct,
+.dark .katex .minner {
+  color: #e4e4e7 !important;
+}
+
+.dark .katex .frac-line {
+  background-color: #e4e4e7 !important;
+}
+
+.dark .katex .sqrt .sqrt-line {
+  background-color: #e4e4e7 !important;
+}
