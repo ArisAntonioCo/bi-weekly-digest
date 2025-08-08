@@ -157,17 +157,17 @@ export function ScheduleForm({
       <Separator />
 
       <div className="space-y-4">
-        <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 space-y-3">
+        <div className="bg-info/10 rounded-lg p-4 space-y-3">
           <div className="flex items-start gap-2">
-            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <Info className="h-4 w-4 text-info mt-0.5" />
             <div className="flex-1 space-y-2">
-              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              <h4 className="text-sm font-medium text-info">
                 Fixed Schedule Time
               </h4>
-              <p className="text-xs text-blue-700 dark:text-blue-200">
+              <p className="text-xs text-info/80">
                 Checks run hourly. Newsletters are sent at 	9:00 AM America/New_York	.
               </p>
-              <p className="text-xs text-blue-600 dark:text-blue-300">
+              <p className="text-xs text-info/80">
                 Your frequency setting below determines on which days the newsletter is actually sent.
               </p>
             </div>

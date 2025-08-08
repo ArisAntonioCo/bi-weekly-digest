@@ -88,15 +88,15 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
   const getPromptTheme = (prompt: string) => {
     const lower = prompt.toLowerCase()
     if (lower.includes('investment') || lower.includes('moic') || lower.includes('stock')) {
-      return { theme: 'Investment Analysis', color: 'bg-blue-500', icon: 'TrendingUp' }
+      return { theme: 'Investment Analysis', color: 'bg-info', icon: 'TrendingUp' }
     }
     if (lower.includes('crypto') || lower.includes('bitcoin') || lower.includes('blockchain')) {
-      return { theme: 'Cryptocurrency', color: 'bg-orange-500', icon: 'Coins' }
+      return { theme: 'Cryptocurrency', color: 'bg-warning', icon: 'Coins' }
     }
     if (lower.includes('newsletter') || lower.includes('content') || lower.includes('marketing')) {
-      return { theme: 'Content Creation', color: 'bg-green-500', icon: 'FileText' }
+      return { theme: 'Content Creation', color: 'bg-success', icon: 'FileText' }
     }
-    return { theme: 'General AI', color: 'bg-gray-500', icon: 'Brain' }
+    return { theme: 'General AI', color: 'bg-muted', icon: 'Brain' }
   }
 
   const currentTheme = getPromptTheme(watchedPrompt || config?.system_prompt || '')
@@ -204,7 +204,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
             <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
               <span>{characterCount.toLocaleString()} characters</span>
               {characterCount > 5000 && (
-                <Badge variant="outline" className="text-orange-600 border-orange-200 text-xs">
+                <Badge variant="outline" className="text-warning border-warning/20 text-xs">
                   Long prompt
                 </Badge>
               )}
@@ -271,7 +271,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
             <div className="flex flex-col sm:flex-row items-center gap-2">
               {!hasChanges && !saving && (
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
                   Configuration saved
                 </div>
               )}

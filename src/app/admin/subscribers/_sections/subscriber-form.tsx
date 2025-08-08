@@ -99,7 +99,7 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
               {message.type === 'error' ? (
                 <AlertCircle className="h-4 w-4" />
               ) : (
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
               )}
               <AlertDescription>
                 {message.text}

@@ -61,7 +61,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/blogs">
-            <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Insights
             </Button>
@@ -74,7 +74,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             <Badge variant={analysisType.variant}>
               {analysisType.type}
             </Badge>
-            <div className="flex items-center gap-4 text-sm text-zinc-400">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 {format(new Date(blog.created_at), 'MMM d, yyyy')}
@@ -86,22 +86,22 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             </div>
           </div>
           
-          <h1 className="text-3xl md:text-4xl font-bold text-zinc-100">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
             {blog.title}
           </h1>
         </div>
 
         {/* Blog Content */}
         <article className="prose prose-invert prose-zinc max-w-none">
-          <div className="bg-zinc-800/30 backdrop-blur-sm rounded-lg border border-zinc-700 p-8">
+          <div className="bg-card/30 backdrop-blur-sm rounded-lg border border-border p-8">
             <BlogList blogs={[blog]} />
           </div>
         </article>
 
         {/* Related Posts */}
         {relatedBlogs && relatedBlogs.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-zinc-800">
-            <h2 className="text-2xl font-semibold text-zinc-100 mb-6">Related Insights</h2>
+          <div className="mt-12 pt-8 border-t border-border">
+            <h2 className="text-2xl font-semibold text-foreground mb-6">Related Insights</h2>
             <div className="space-y-4">
               {relatedBlogs.map((related) => (
                 <Link 
@@ -109,17 +109,17 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   href={`/blogs/${related.id}`}
                   className="block group"
                 >
-                  <div className="p-4 bg-zinc-800/30 backdrop-blur-sm rounded-lg border border-zinc-700 hover:border-zinc-600 transition-all">
+                  <div className="p-4 bg-card/30 backdrop-blur-sm rounded-lg border border-border hover:border-muted-foreground transition-all">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="font-medium text-zinc-100 group-hover:text-zinc-300 transition-colors">
+                        <h3 className="font-medium text-foreground group-hover:text-muted-foreground transition-colors">
                           {related.title}
                         </h3>
-                        <p className="text-sm text-zinc-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                           {format(new Date(related.created_at), 'MMM d, yyyy')}
                         </p>
                       </div>
-                      <ArrowLeft className="h-4 w-4 text-zinc-500 rotate-180 group-hover:translate-x-1 transition-transform" />
+                      <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
@@ -130,9 +130,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 mt-auto">
+      <footer className="border-t border-border mt-auto">
         <div className="container mx-auto px-6 py-8">
-          <div className="text-center text-zinc-500 text-sm">
+          <div className="text-center text-muted-foreground text-sm">
             © 2024 Weekly Digest. All rights reserved.
           </div>
         </div>

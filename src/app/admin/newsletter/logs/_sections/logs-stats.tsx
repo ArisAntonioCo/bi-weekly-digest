@@ -34,43 +34,43 @@ export function LogsStats({ logs }: LogsStatsProps) {
       label: 'Success Rate',
       value: `${stats.successRate.toFixed(1)}%`,
       icon: TrendingUp,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50 dark:bg-green-950/30'
+      color: 'text-success',
+      bgColor: 'bg-success/10'
     },
     {
       label: 'Successful',
       value: stats.successful,
       icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50 dark:bg-green-950/30'
+      color: 'text-success',
+      bgColor: 'bg-success/10'
     },
     {
       label: 'Failed',
       value: stats.failed,
       icon: XCircle,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50 dark:bg-red-950/30'
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/10'
     },
     {
       label: 'Pending',
       value: stats.pending,
       icon: Clock,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50 dark:bg-yellow-950/30'
+      color: 'text-warning',
+      bgColor: 'bg-warning/10'
     },
     {
       label: 'Total Recipients',
       value: stats.totalRecipients.toLocaleString(),
       icon: Users,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-950/30'
+      color: 'text-info',
+      bgColor: 'bg-info/10'
     },
     {
       label: 'Avg Duration',
       value: `${Math.round(stats.avgDuration)}s`,
       icon: AlertCircle,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-950/30'
+      color: 'text-primary',
+      bgColor: 'bg-primary/10'
     }
   ]
 
