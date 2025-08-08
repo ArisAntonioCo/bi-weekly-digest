@@ -117,10 +117,10 @@ export default function FinancePage() {
             <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
               <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
               <h2 className="text-2xl font-semibold text-foreground mb-2">
-                AI Finance Assistant
+                3-Year MOIC Projection Tool
               </h2>
               <p className="text-muted-foreground mb-8 max-w-md">
-                I can help you understand financial metrics, analyze stocks, and explain investment strategies.
+                Which stock or index fund would you like to analyze over our 3-year time horizon? Using expert framework for forward MOIC projections.
               </p>
               
               <div className="w-full max-w-2xl">
@@ -190,7 +190,7 @@ export default function FinancePage() {
             <PromptInputBox
               onSend={handleSend}
               isLoading={isLoading}
-              placeholder="Ask about stocks, MOIC projections, or any finance question..."
+              placeholder="Enter a stock ticker or index fund for 3-year MOIC analysis..."
               className="bg-card/50 border-border"
             />
           </div>

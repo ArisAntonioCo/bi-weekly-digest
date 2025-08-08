@@ -86,8 +86,8 @@ const pageConfigs: Record<string, PageConfig> = {
 }
 
 const defaultConfig: PageConfig = {
-  title: 'Weekly Digest',
-  description: 'Kyle\'s AI-powered content management system',
+  title: '3-Year MOIC Projections',
+  description: 'Expert framework for analyzing stocks & index funds over 3-year horizon',
   icon: Settings,
   badge: 'Admin Panel'
 }
