@@ -35,9 +35,9 @@ export function AuthPanel({ children }: AuthPanelProps) {
           <div className="relative z-10">
             {/* Heading at bottom */}
             <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-              Your AI-Powered Edge in
+              AI-Powered 3Y MOIC
               <br />
-              3-Year Investment Returns
+              Projections Weekly
             </h1>
           </div>
         </div>
