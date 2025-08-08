@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button'
 
 export function CTASection() {
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
-      <div className="bg-gradient-to-r from-muted to-secondary rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center">
+    <section className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="bg-gradient-to-r from-muted to-secondary rounded-xl sm:rounded-2xl py-16 sm:py-20 lg:py-24 px-8 sm:px-12 text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-none">
-          Start Your Investment Journey Today
+          Leverage Our Proprietary Investment Projections Today
         </h2>
         <p className="text-sm sm:text-base text-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-snug px-4">
           Join thousands of investors who trust our AI-powered platform for market insights and investment strategies.
