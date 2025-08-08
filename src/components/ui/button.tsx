@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -20,11 +21,15 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        brand:
+          "bg-brand text-brand-foreground shadow-lg shadow-brand/30 hover:bg-brand/90 hover:scale-105 rounded-full",
+        "brand-cta":
+          "bg-brand text-brand-foreground shadow-lg shadow-brand/30 hover:bg-brand/90 hover:scale-105 rounded-full",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
+        lg: "h-12 px-8 has-[>svg]:px-4",
         icon: "size-9",
       },
     },
@@ -40,6 +45,7 @@ function Button({
   variant,
   size,
   asChild = false,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -47,12 +53,37 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button"
 
+  // Special handling for brand-cta variant
+  if (variant === "brand-cta" && !asChild) {
+    const iconSize = size === "lg" ? "h-5 w-5" : size === "sm" ? "h-3 w-3" : "h-4 w-4"
+    const iconPadding = size === "lg" ? "p-2" : size === "sm" ? "p-1" : "p-1.5"
+    const rightPadding = size === "lg" ? "pr-14" : size === "sm" ? "pr-10" : "pr-12"
+    
+    return (
+      <Comp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }), "relative", rightPadding)}
+        {...props}
+      >
+        <span>{children}</span>
+        <span className={cn(
+          "absolute right-2 flex items-center justify-center bg-black rounded-full",
+          iconPadding
+        )}>
+          <ArrowRight className={cn("text-brand", iconSize)} />
+        </span>
+      </Comp>
+    )
+  }
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {children}
+    </Comp>
   )
 }
 

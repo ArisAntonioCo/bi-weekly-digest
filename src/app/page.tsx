@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { TrendingUp, BarChart3, LineChart, PieChart, ArrowRight, Shield, Zap, Brain } from 'lucide-react'
+import { TrendingUp, BarChart3, LineChart, PieChart, Shield, Zap, Brain, ArrowRight } from 'lucide-react'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -29,30 +29,42 @@ export default async function LandingPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="container mx-auto px-6 py-32">
-        <div className="max-w-5xl mx-auto text-center">
-          {/* Main Headline - Two Lines */}
-          <h1 className="text-5xl md:text-7xl font-semibold text-foreground mb-6 leading-none">
-            Predictive Finance
-            <br />
-            In Your Inbox
-          </h1>
-          
-          {/* Subtext */}
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-tight">
-            AI-powered MOIC projections and market insights in your inbox.
-          </p>
-          
-          {/* CTA Button */}
-          <Link href="/signup">
-            <Button 
-              size="lg" 
-              className="bg-card text-card-foreground hover:bg-muted border border-border px-8 py-6 text-lg rounded-full shadow-2xl shadow-card/50 transition-all hover:shadow-card/70 hover:scale-105"
-            >
-              Get Started
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+      <section className="container mx-auto px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          {/* Main Content */}
+          <div className="mb-12">
+            <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-4 leading-none">
+              Predictive Finance
+              <br />
+              In Your Inbox
+            </h1>
+          </div>
+
+          {/* CTA Section with Subheading */}
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center gap-6">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Get Weekly Insights</h3>
+                <p className="text-sm text-foreground">In Your Inbox</p>
+              </div>
+              <Link href="/signup">
+                <Button variant="brand-cta" size="lg">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+            
+            <p className="text-lg font-semibold text-foreground max-w-md">
+              AI-powered MOIC projections and
+              <br />
+              market insights in your inbox.
+            </p>
+          </div>
+
+          {/* Hero Image Container */}
+          <div className="bg-muted rounded-2xl h-[500px] w-full flex items-center justify-center">
+            <p className="text-muted-foreground">Hero Image Coming Soon</p>
+          </div>
         </div>
       </section>
 
@@ -179,9 +191,8 @@ export default async function LandingPage() {
             Join thousands of investors who trust our AI-powered platform for market insights and investment strategies.
           </p>
           <Link href="/signup">
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button variant="brand-cta" size="lg">
               Get Started for Free
-              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
