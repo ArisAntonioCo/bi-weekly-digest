@@ -130,7 +130,7 @@ export default function Navbar({ className }: NavbarProps) {
 
           {/* Navigation */}
           <div className="flex items-center gap-4">
-            <ThemeToggle />
+            {pathname !== '/' && <ThemeToggle />}
             {loading ? (
               <div className="h-8 w-20 bg-muted animate-pulse rounded-md" />
             ) : user ? (

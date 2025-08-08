@@ -37,15 +37,9 @@ export const AnimatedList = React.memo(
     );
 
     useEffect(() => {
-      if (index < childrenArray.length - 1) {
+      if (index < childrenArray.length) {
         const timeout = setTimeout(() => {
           setIndex((prevIndex) => prevIndex + 1);
-        }, delay);
-        return () => clearTimeout(timeout);
-      } else {
-        // Loop back to start after reaching the end
-        const timeout = setTimeout(() => {
-          setIndex(0);
         }, delay);
         return () => clearTimeout(timeout);
       }

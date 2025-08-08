@@ -44,9 +44,9 @@ export function HeroSection() {
           </div>
           
           {/* Square Newsletter Updates Card */}
-          <div className="bg-muted rounded-2xl w-[500px] h-[500px] flex flex-col overflow-hidden">
+          <div className="bg-foreground rounded-2xl w-[500px] h-[500px] flex flex-col overflow-hidden">
             <div className="px-8 pt-8 pb-4">
-              <h3 className="text-2xl font-bold text-foreground leading-tight">Weekly MOIC<br />Predictions Delivered</h3>
+              <h3 className="text-2xl font-bold text-background leading-tight">Weekly 3Y MOIC<br />Predictions Delivered</h3>
             </div>
             
             <div className="flex-1 relative px-8 pb-8">
