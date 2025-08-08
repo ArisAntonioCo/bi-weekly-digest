@@ -227,7 +227,7 @@ Take your time to think deeply about this request and provide a thoughtful, well
     ]
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'o1-mini',
       messages: messagesWithSystem,
       temperature: 0.45,
       max_tokens: 8000,

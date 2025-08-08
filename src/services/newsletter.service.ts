@@ -324,7 +324,7 @@ export class NewsletterService {
     const markdownContent = `# 3-Year MOIC Investment Analysis
 
 **Generated:** ${new Date().toLocaleString()}
-**Model:** GPT-4o with Web Search
+**Model:** o1-mini with Web Search
 **Type:** ${analysisType.type}
 **Framework:** Elite Investor Perspectives
 

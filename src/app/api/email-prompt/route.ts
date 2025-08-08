@@ -68,7 +68,7 @@ export async function POST() {
     const markdownContent = `# AI Analysis Report
 
 **Generated:** ${new Date().toLocaleString()}
-**Model:** GPT-4o
+**Model:** o1-mini
 **Type:** ${analysisType.type}
 
 ## Analysis
