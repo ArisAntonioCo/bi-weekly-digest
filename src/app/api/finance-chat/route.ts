@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: {
           id: Date.now().toString(),
-          content: "I'm specialized in finance and investment analysis. I can help you with:\n\n• Stock market analysis and valuations\n• MOIC projections and investment calculations\n• Market trends and financial news\n• Portfolio strategies and risk assessment\n• Economic indicators and market conditions\n• Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
+          content: "I'm specialized in finance and investment analysis. I can help you with:\n\n- Stock market analysis and valuations\n- MOIC projections and investment calculations\n- Market trends and financial news\n- Portfolio strategies and risk assessment\n- Economic indicators and market conditions\n- Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
           role: 'assistant',
           timestamp: new Date(),
         }
