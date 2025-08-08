@@ -191,7 +191,7 @@ export function LogsList({ logs, onSelectLog, selectedLog }: LogsListProps) {
                     <Mail className="h-4 w-4" />
                     <span>Delivered</span>
                   </div>
-                  <p className="text-2xl font-bold text-green-600">{selectedLog.delivered}</p>
+                  <p className="text-2xl font-bold text-success">{selectedLog.delivered}</p>
                 </div>
                 
                 <div className="space-y-2">
@@ -242,9 +242,9 @@ export function LogsList({ logs, onSelectLog, selectedLog }: LogsListProps) {
 
               {selectedLog.error && (
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-red-600">Error Details</h4>
-                  <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-md">
-                    <p className="text-sm text-red-900 dark:text-red-100">{selectedLog.error}</p>
+                  <h4 className="font-semibold text-destructive">Error Details</h4>
+                  <div className="p-3 bg-destructive/10 rounded-md">
+                    <p className="text-sm text-destructive">{selectedLog.error}</p>
                   </div>
                 </div>
               )}

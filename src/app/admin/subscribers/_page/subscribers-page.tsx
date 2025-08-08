@@ -108,11 +108,11 @@ export function SubscribersPage() {
               <div className="text-xs sm:text-sm text-muted-foreground">Total Subscribers</div>
             </div>
             <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border">
-              <div className="text-xl sm:text-2xl font-bold text-green-600">{subscribers.filter(s => s.subscribed).length}</div>
+              <div className="text-xl sm:text-2xl font-bold text-success">{subscribers.filter(s => s.subscribed).length}</div>
               <div className="text-xs sm:text-sm text-muted-foreground">Active Subscribers</div>
             </div>
             <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border sm:col-span-2 lg:col-span-1">
-              <div className="text-xl sm:text-2xl font-bold text-orange-600">{subscribers.filter(s => !s.subscribed).length}</div>
+              <div className="text-xl sm:text-2xl font-bold text-warning">{subscribers.filter(s => !s.subscribed).length}</div>
               <div className="text-xs sm:text-sm text-muted-foreground">Inactive Subscribers</div>
             </div>
           </div>

@@ -103,7 +103,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-zinc-400">Loading...</div>
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     )
   }
@@ -111,7 +111,7 @@ export default function DashboardPage() {
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-zinc-400">Redirecting to login...</div>
+        <div className="text-muted-foreground">Redirecting to login...</div>
       </div>
     )
   }
@@ -123,28 +123,28 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-zinc-100">Welcome back!</h1>
-            <p className="text-zinc-400 mt-2">Here&apos;s your investment insights dashboard</p>
+            <h1 className="text-3xl font-bold text-foreground">Welcome back!</h1>
+            <p className="text-muted-foreground mt-2">Here&apos;s your investment insights dashboard</p>
           </div>
 
           {/* Bento Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Latest Investment Insights - Spans 2 columns on large screens */}
-            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800 lg:col-span-2">
+            <Card className="bg-card/50 backdrop-blur-sm border-border lg:col-span-2">
               <CardHeader>
-                <CardTitle className="text-zinc-100 flex items-center justify-between">
+                <CardTitle className="text-card-foreground flex items-center justify-between">
                   <span className="flex items-center gap-2">
                     <BookOpen className="h-5 w-5" />
                     Latest Investment Insights
                   </span>
                   <Link href="/blogs">
-                    <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                       View All
                       <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
                   </Link>
                 </CardTitle>
-                <CardDescription className="text-zinc-400">
+                <CardDescription className="text-muted-foreground">
                   Recent AI-powered market analysis and investment strategies
                 </CardDescription>
               </CardHeader>
@@ -157,62 +157,62 @@ export default function DashboardPage() {
                         href={`/blogs/${blog.id}`}
                         className="block group"
                       >
-                        <div className="flex items-center justify-between p-3 rounded-lg border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/50 transition-all">
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-ring hover:bg-muted/50 transition-all">
                           <div className="flex-1">
-                            <h3 className="text-zinc-200 font-medium group-hover:text-zinc-100 line-clamp-1">
+                            <h3 className="text-card-foreground font-medium group-hover:text-foreground line-clamp-1">
                               {blog.title}
                             </h3>
-                            <p className="text-zinc-500 text-sm mt-1">
+                            <p className="text-muted-foreground text-sm mt-1">
                               {format(new Date(blog.created_at), 'MMM d, yyyy')}
                             </p>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                         </div>
                       </Link>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-zinc-500">No insights available yet</p>
-                    <p className="text-zinc-600 text-sm mt-1">Check back soon for new content</p>
+                    <p className="text-muted-foreground">No insights available yet</p>
+                    <p className="text-muted-foreground text-sm mt-1">Check back soon for new content</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             {/* Finance Assistant */}
-            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+            <Card className="bg-card/50 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-zinc-100 flex items-center gap-2">
+                <CardTitle className="text-card-foreground flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
                   Finance Assistant
                 </CardTitle>
-                <CardDescription className="text-zinc-400">
+                <CardDescription className="text-muted-foreground">
                   Ask about stocks & investments
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <p className="text-zinc-300 text-sm">
+                  <p className="text-card-foreground text-sm">
                     Get instant insights on:
                   </p>
-                  <ul className="space-y-2 text-zinc-400 text-sm">
+                  <ul className="space-y-2 text-muted-foreground text-sm">
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-3 w-3 text-zinc-500" />
+                      <CheckCircle className="h-3 w-3 text-muted-foreground" />
                       3Y MOIC projections for any stock
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-3 w-3 text-zinc-500" />
+                      <CheckCircle className="h-3 w-3 text-muted-foreground" />
                       Expert analysis with your 5 advisors
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-3 w-3 text-zinc-500" />
+                      <CheckCircle className="h-3 w-3 text-muted-foreground" />
                       Comparative sector MOIC analysis
                     </li>
                   </ul>
                   <Button 
                     onClick={() => router.push('/dashboard/moic-analyzer')}
-                    className="w-full bg-zinc-100 text-zinc-900 hover:bg-zinc-200 mt-4"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
                   >
                     Start Chat
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -222,13 +222,13 @@ export default function DashboardPage() {
             </Card>
 
             {/* Newsletter Subscription - Tall card on large screens */}
-            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800 lg:row-span-2">
+            <Card className="bg-card/50 backdrop-blur-sm border-border lg:row-span-2">
               <CardHeader>
-                <CardTitle className="text-zinc-100 flex items-center gap-2">
+                <CardTitle className="text-card-foreground flex items-center gap-2">
                   <Mail className="h-5 w-5" />
                   Newsletter
                 </CardTitle>
-                <CardDescription className="text-zinc-400">
+                <CardDescription className="text-muted-foreground">
                   Weekly investment digest
                 </CardDescription>
               </CardHeader>
@@ -237,11 +237,11 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     {subscriptionStatus ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                     ) : (
-                      <div className="h-5 w-5 rounded-full border-2 border-zinc-600" />
+                      <div className="h-5 w-5 rounded-full border-2 border-muted-foreground" />
                     )}
-                    <span className="text-zinc-300 text-sm">
+                    <span className="text-card-foreground text-sm">
                       {subscriptionStatus ? 'Subscribed' : 'Not subscribed'}
                     </span>
                   </div>
@@ -250,14 +250,14 @@ export default function DashboardPage() {
                     <Button 
                       onClick={handleUnsubscribe}
                       variant="outline" 
-                      className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                      className="w-full border-border text-card-foreground hover:bg-muted"
                     >
                       Unsubscribe
                     </Button>
                   ) : (
                     <Button 
                       onClick={handleSubscribe}
-                      className="w-full bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       Subscribe Now
                     </Button>
@@ -265,25 +265,25 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Schedule Info */}
-                <div className="space-y-3 pt-3 border-t border-zinc-800">
-                  <h4 className="text-zinc-300 text-sm font-medium">Schedule</h4>
+                <div className="space-y-3 pt-3 border-t border-border">
+                  <h4 className="text-card-foreground text-sm font-medium">Schedule</h4>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-zinc-500" />
-                      <span className="text-zinc-400 text-sm">Every Sunday</span>
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground text-sm">Every Sunday</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-zinc-500" />
-                      <span className="text-zinc-400 text-sm">9:00 AM UTC</span>
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground text-sm">9:00 AM UTC</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Next Newsletter */}
                 {subscriptionStatus && (
-                  <div className="space-y-2 pt-3 border-t border-zinc-800">
-                    <h4 className="text-zinc-300 text-sm font-medium">Next Newsletter</h4>
-                    <p className="text-zinc-400 text-sm">
+                  <div className="space-y-2 pt-3 border-t border-border">
+                    <h4 className="text-card-foreground text-sm font-medium">Next Newsletter</h4>
+                    <p className="text-muted-foreground text-sm">
                       {(() => {
                         const today = new Date()
                         const nextSunday = new Date(today)
@@ -297,21 +297,21 @@ export default function DashboardPage() {
             </Card>
 
             {/* Account Information - Compact */}
-            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+            <Card className="bg-card/50 backdrop-blur-sm border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-zinc-100 flex items-center gap-2 text-lg">
+                <CardTitle className="text-card-foreground flex items-center gap-2 text-lg">
                   <User className="h-4 w-4" />
                   Account
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Email</p>
-                  <p className="text-zinc-300 text-sm truncate">{user?.email}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Email</p>
+                  <p className="text-card-foreground text-sm truncate">{user?.email}</p>
                 </div>
                 <div>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Member Since</p>
-                  <p className="text-zinc-300 text-sm">
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Member Since</p>
+                  <p className="text-card-foreground text-sm">
                     {user?.created_at ? format(new Date(user.created_at), 'MMM yyyy') : 'N/A'}
                   </p>
                 </div>
@@ -319,21 +319,21 @@ export default function DashboardPage() {
             </Card>
 
             {/* Quick Stats */}
-            <Card className="bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+            <Card className="bg-card/50 backdrop-blur-sm border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-zinc-100 flex items-center gap-2 text-lg">
+                <CardTitle className="text-card-foreground flex items-center gap-2 text-lg">
                   <TrendingUp className="h-4 w-4" />
                   Quick Stats
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Total Insights</p>
-                  <p className="text-zinc-100 text-2xl font-semibold">{blogs.length}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Total Insights</p>
+                  <p className="text-foreground text-2xl font-semibold">{blogs.length}</p>
                 </div>
                 <div>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Latest Post</p>
-                  <p className="text-zinc-300 text-sm">
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Latest Post</p>
+                  <p className="text-card-foreground text-sm">
                     {blogs.length > 0 
                       ? format(new Date(blogs[0].created_at), 'MMM d')
                       : 'No posts yet'}

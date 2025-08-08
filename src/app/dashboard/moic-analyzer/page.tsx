@@ -93,15 +93,15 @@ export default function FinancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <Button
             onClick={() => router.push('/dashboard')}
             variant="ghost"
             size="sm"
-            className="text-zinc-400 hover:text-zinc-100"
+            className="text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
@@ -115,16 +115,16 @@ export default function FinancePage() {
           {/* Welcome Message & Suggested Prompts */}
           {messages.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-              <TrendingUp className="h-12 w-12 text-zinc-600 mb-4" />
-              <h2 className="text-2xl font-semibold text-zinc-100 mb-2">
+              <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
+              <h2 className="text-2xl font-semibold text-foreground mb-2">
                 AI Finance Assistant
               </h2>
-              <p className="text-zinc-400 mb-8 max-w-md">
+              <p className="text-muted-foreground mb-8 max-w-md">
                 I can help you understand financial metrics, analyze stocks, and explain investment strategies.
               </p>
               
               <div className="w-full max-w-2xl">
-                <p className="text-sm text-zinc-500 mb-4 flex items-center justify-center gap-2">
+                <p className="text-sm text-muted-foreground mb-4 flex items-center justify-center gap-2">
                   <Sparkles className="h-4 w-4" />
                   Try asking
                 </p>
@@ -133,7 +133,7 @@ export default function FinancePage() {
                     <button
                       key={prompt}
                       onClick={() => handlePromptClick(prompt)}
-                      className="text-left p-3 rounded-lg border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/50 transition-all text-sm text-zinc-300 hover:text-zinc-100"
+                      className="text-left p-3 rounded-lg border border-border hover:border-ring hover:bg-muted/50 transition-all text-sm text-card-foreground hover:text-foreground"
                     >
                       {prompt}
                     </button>
@@ -154,8 +154,8 @@ export default function FinancePage() {
                   <div
                     className={`max-w-[70%] rounded-lg px-4 py-3 ${
                       message.role === 'user'
-                        ? 'bg-zinc-100 text-zinc-900'
-                        : 'bg-zinc-900 text-zinc-100 border border-zinc-800'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-card text-card-foreground border border-border'
                     }`}
                   >
                     {message.role === 'assistant' ? (
@@ -172,11 +172,11 @@ export default function FinancePage() {
               
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-zinc-900 rounded-lg px-4 py-3 border border-zinc-800">
+                  <div className="bg-card rounded-lg px-4 py-3 border border-border">
                     <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-zinc-600 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-zinc-600 rounded-full animate-bounce delay-100" />
-                      <div className="w-2 h-2 bg-zinc-600 rounded-full animate-bounce delay-200" />
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce delay-100" />
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce delay-200" />
                     </div>
                   </div>
                 </div>
@@ -186,12 +186,12 @@ export default function FinancePage() {
           )}
 
           {/* Input Area */}
-          <div className="mt-auto border-t border-zinc-800 pt-4">
+          <div className="mt-auto border-t border-border pt-4">
             <PromptInputBox
               onSend={handleSend}
               isLoading={isLoading}
               placeholder="Ask about stocks, MOIC projections, or any finance question..."
-              className="bg-zinc-900/50 border-zinc-800"
+              className="bg-card/50 border-border"
             />
           </div>
         </div>

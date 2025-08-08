@@ -134,7 +134,7 @@ export function SubscribersList({
                         <TableCell>
                           <Badge 
                             variant={subscriber.subscribed ? "default" : "secondary"}
-                            className={subscriber.subscribed ? "bg-green-100 text-green-800 border-green-200" : "bg-orange-100 text-orange-800 border-orange-200"}
+                            className={subscriber.subscribed ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}
                           >
                             {subscriber.subscribed ? 'Active' : 'Inactive'}
                           </Badge>
@@ -237,7 +237,7 @@ export function SubscribersList({
                       </div>
                       <Badge 
                         variant={subscriber.subscribed ? "default" : "secondary"}
-                        className={`ml-2 ${subscriber.subscribed ? "bg-green-100 text-green-800 border-green-200" : "bg-orange-100 text-orange-800 border-orange-200"}`}
+                        className={`ml-2 ${subscriber.subscribed ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}`}
                       >
                         {subscriber.subscribed ? 'Active' : 'Inactive'}
                       </Badge>

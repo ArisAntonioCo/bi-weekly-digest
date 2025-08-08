@@ -26,14 +26,14 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
       <main className="container mx-auto px-6 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-zinc-100 mb-2">Investment Insights</h1>
-          <p className="text-zinc-400">AI-Powered Market Analysis</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Investment Insights</h1>
+          <p className="text-muted-foreground">AI-Powered Market Analysis</p>
         </div>
         
         {/* System Prompt Summary */}
         {systemPromptSummary && (
-          <div className="mb-8 p-4 bg-zinc-800/50 backdrop-blur-sm rounded-lg border border-zinc-700">
-            <p className="text-sm text-zinc-300 text-center">
+          <div className="mb-8 p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-border">
+            <p className="text-sm text-muted-foreground text-center">
               {systemPromptSummary}
             </p>
           </div>
@@ -46,9 +46,9 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 mt-auto">
+      <footer className="border-t border-border mt-auto">
         <div className="container mx-auto px-6 py-8">
-          <div className="text-center text-zinc-500 text-sm">
+          <div className="text-center text-muted-foreground text-sm">
             © 2024 Weekly Digest. All rights reserved.
           </div>
         </div>

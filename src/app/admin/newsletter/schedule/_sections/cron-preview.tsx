@@ -203,8 +203,8 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
         </div>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3">
-        <p className="text-xs text-blue-900 dark:text-blue-100">
+      <div className="bg-info/10 rounded-lg p-3">
+        <p className="text-xs text-info">
           <strong>Note:</strong> Newsletter checks run daily at 9:00 AM EST (2:00 PM UTC). 
           The frequency setting determines which days newsletters are actually sent.
         </p>

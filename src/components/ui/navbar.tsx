@@ -113,7 +113,7 @@ export default function Navbar({ className }: NavbarProps) {
   if (isAuthPage || isAdminPage) return null
 
   return (
-    <nav className={`border-b border-zinc-800 ${className || ''}`}>
+    <nav className={`border-b border-border ${className || ''}`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -121,89 +121,89 @@ export default function Navbar({ className }: NavbarProps) {
             href={user ? '/dashboard' : '/'} 
             className="flex items-center gap-2 transition-opacity hover:opacity-80"
           >
-            <div className="bg-zinc-100 text-zinc-900 flex size-8 items-center justify-center rounded-md">
+            <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
               <TrendingUp className="size-5" />
             </div>
-            <span className="text-xl font-semibold text-zinc-100">Weekly Digest</span>
+            <span className="text-xl font-semibold text-foreground">Weekly Digest</span>
           </Link>
 
           {/* Navigation */}
           <div className="flex items-center gap-4">
             {loading ? (
-              <div className="h-8 w-20 bg-zinc-800 animate-pulse rounded-md" />
+              <div className="h-8 w-20 bg-muted animate-pulse rounded-md" />
             ) : user ? (
               // Authenticated user - Dropdown menu
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="flex items-center gap-2 hover:bg-zinc-800 px-2 py-1.5"
+                    className="flex items-center gap-2 hover:bg-muted px-2 py-1.5"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-zinc-700 text-zinc-200 text-xs font-medium">
+                      <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
                         {user.email ? getUserInitials(user.email) : 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm text-zinc-300 hidden sm:inline-block max-w-[200px] truncate">
+                    <span className="text-sm text-muted-foreground hidden sm:inline-block max-w-[200px] truncate">
                       {user.email}
                     </span>
-                    <ChevronDown className="h-4 w-4 text-zinc-400 ml-1" />
+                    <ChevronDown className="h-4 w-4 text-muted-foreground ml-1" />
                   </Button>
                 </DropdownMenuTrigger>
                 
                 <DropdownMenuContent 
                   align="end" 
-                  className="w-56 bg-zinc-900 border-zinc-800"
+                  className="w-56 bg-popover border-border"
                 >
                   {/* Account Info */}
-                  <DropdownMenuLabel className="text-zinc-400 font-normal">
+                  <DropdownMenuLabel className="text-muted-foreground font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium text-zinc-200">Account</p>
-                      <p className="text-xs text-zinc-500 truncate">
+                      <p className="text-sm font-medium text-popover-foreground">Account</p>
+                      <p className="text-xs text-muted-foreground truncate">
                         {user.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   
-                  <DropdownMenuSeparator className="bg-zinc-800" />
+                  <DropdownMenuSeparator className="bg-border" />
                   
                   {/* Navigation Links */}
                   <DropdownMenuItem 
                     onClick={() => handleNavigation('/dashboard')}
-                    className={`text-zinc-300 cursor-pointer transition-colors ${
+                    className={`text-muted-foreground cursor-pointer transition-colors ${
                       isActiveRoute('/dashboard') 
-                        ? 'bg-zinc-800 text-zinc-100' 
-                        : 'hover:bg-zinc-800 hover:text-zinc-100'
+                        ? 'bg-muted text-foreground' 
+                        : 'hover:bg-muted hover:text-foreground'
                     }`}
                   >
                     <LayoutDashboard className="h-4 w-4 mr-2" />
                     Dashboard
                     {isActiveRoute('/dashboard') && (
-                      <span className="ml-auto text-xs text-zinc-500">●</span>
+                      <span className="ml-auto text-xs text-muted-foreground">●</span>
                     )}
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem 
                     onClick={() => handleNavigation('/blogs')}
-                    className={`text-zinc-300 cursor-pointer transition-colors ${
+                    className={`text-muted-foreground cursor-pointer transition-colors ${
                       isActiveRoute('/blogs') 
-                        ? 'bg-zinc-800 text-zinc-100' 
-                        : 'hover:bg-zinc-800 hover:text-zinc-100'
+                        ? 'bg-muted text-foreground' 
+                        : 'hover:bg-muted hover:text-foreground'
                     }`}
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
                     Insights
                     {isActiveRoute('/blogs') && (
-                      <span className="ml-auto text-xs text-zinc-500">●</span>
+                      <span className="ml-auto text-xs text-muted-foreground">●</span>
                     )}
                   </DropdownMenuItem>
                   
-                  <DropdownMenuSeparator className="bg-zinc-800" />
+                  <DropdownMenuSeparator className="bg-border" />
                   
                   {/* Sign Out */}
                   <DropdownMenuItem 
                     onClick={handleSignOut}
-                    className="text-zinc-300 hover:bg-zinc-800 hover:text-red-400 cursor-pointer transition-colors"
+                    className="text-muted-foreground hover:bg-muted hover:text-destructive cursor-pointer transition-colors"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
@@ -216,13 +216,13 @@ export default function Navbar({ className }: NavbarProps) {
                 <Link href="/login">
                   <Button 
                     variant="ghost" 
-                    className="text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800"
+                    className="text-muted-foreground hover:text-foreground hover:bg-muted"
                   >
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-zinc-100 text-zinc-900 hover:bg-zinc-200">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/80">
                     Get Started
                   </Button>
                 </Link>

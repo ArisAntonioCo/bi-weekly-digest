@@ -64,9 +64,9 @@ export function LogsPage() {
       <div className="space-y-6">
         <LogsHeader onRefresh={handleRefresh} />
         
-        <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30">
-          <InfoIcon className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-900 dark:text-blue-100">
+        <Alert className="border-info/20 bg-info/10">
+          <InfoIcon className="h-4 w-4 text-info" />
+          <AlertDescription className="text-info">
             <strong>Cron Job Logs:</strong> View execution history of your scheduled newsletter sends. 
             Logs are retained for 30 days and show all automated and manual triggers.
           </AlertDescription>

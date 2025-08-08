@@ -8,7 +8,7 @@ interface TextRotateProps {
   texts: string[]
   className?: string
   duration?: number
-  framerProps?: any
+  framerProps?: Record<string, unknown>
 }
 
 export function TextRotate({

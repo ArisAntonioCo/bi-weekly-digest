@@ -94,11 +94,11 @@ export function LoginForm() {
               'Sign In'
             )}
           </Button>
-          <p className="text-sm text-center text-zinc-400">
+          <p className="text-sm text-center text-muted-foreground">
             Don&apos;t have an account?{' '}
             <Link
               href="/signup"
-              className="text-zinc-100 hover:text-zinc-300 underline underline-offset-4"
+              className="text-foreground hover:text-primary underline underline-offset-4"
             >
               Sign Up
             </Link>
