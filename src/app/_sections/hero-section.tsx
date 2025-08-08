@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { AnimatedNewsletterList } from '@/components/animated-newsletter-list'
+
 
 export function HeroSection() {
   return (
@@ -41,9 +43,15 @@ export function HeroSection() {
             <p className="text-muted-foreground">Hero Image Coming Soon</p>
           </div>
           
-          {/* Square Image */}
-          <div className="bg-muted rounded-2xl w-[500px] h-[500px] flex items-center justify-center">
-            <p className="text-muted-foreground">Square Image</p>
+          {/* Square Newsletter Updates Card */}
+          <div className="bg-muted rounded-2xl w-[500px] h-[500px] flex flex-col overflow-hidden">
+            <div className="px-8 pt-8 pb-4">
+              <h3 className="text-2xl font-bold text-foreground leading-tight">Weekly MOIC<br />Predictions Delivered</h3>
+            </div>
+            
+            <div className="flex-1 relative px-8 pb-8">
+              <AnimatedNewsletterList />
+            </div>
           </div>
       </div>
     </section>
