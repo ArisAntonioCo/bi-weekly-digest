@@ -55,9 +55,79 @@ export async function POST(request: NextRequest) {
 
     const lastMessage = messages[messages.length - 1]
     
-    // ALWAYS use web search for ALL queries to get current information
-    // This ensures we have access to real-time data for dates, prices, news, etc.
-    if (lastMessage?.content) {
+    // Check if the query is finance-related or asking for current date/time
+    const isFinanceRelated = lastMessage?.content && (
+      // Finance and investment keywords
+      lastMessage.content.toLowerCase().includes('stock') ||
+      lastMessage.content.toLowerCase().includes('price') ||
+      lastMessage.content.toLowerCase().includes('moic') ||
+      lastMessage.content.toLowerCase().includes('market') ||
+      lastMessage.content.toLowerCase().includes('earnings') ||
+      lastMessage.content.toLowerCase().includes('valuation') ||
+      lastMessage.content.toLowerCase().includes('investment') ||
+      lastMessage.content.toLowerCase().includes('portfolio') ||
+      lastMessage.content.toLowerCase().includes('dividend') ||
+      lastMessage.content.toLowerCase().includes('analysis') ||
+      lastMessage.content.toLowerCase().includes('projection') ||
+      lastMessage.content.toLowerCase().includes('forward') ||
+      lastMessage.content.toLowerCase().includes('trading') ||
+      lastMessage.content.toLowerCase().includes('finance') ||
+      lastMessage.content.toLowerCase().includes('financial') ||
+      lastMessage.content.toLowerCase().includes('economy') ||
+      lastMessage.content.toLowerCase().includes('inflation') ||
+      lastMessage.content.toLowerCase().includes('interest rate') ||
+      lastMessage.content.toLowerCase().includes('revenue') ||
+      lastMessage.content.toLowerCase().includes('profit') ||
+      lastMessage.content.toLowerCase().includes('loss') ||
+      lastMessage.content.toLowerCase().includes('pe ratio') ||
+      lastMessage.content.toLowerCase().includes('eps') ||
+      lastMessage.content.toLowerCase().includes('ipo') ||
+      lastMessage.content.toLowerCase().includes('merger') ||
+      lastMessage.content.toLowerCase().includes('acquisition') ||
+      lastMessage.content.toLowerCase().includes('crypto') ||
+      lastMessage.content.toLowerCase().includes('bitcoin') ||
+      lastMessage.content.toLowerCase().includes('ethereum') ||
+      lastMessage.content.toLowerCase().includes('bond') ||
+      lastMessage.content.toLowerCase().includes('treasury') ||
+      lastMessage.content.toLowerCase().includes('fed') ||
+      lastMessage.content.toLowerCase().includes('federal reserve') ||
+      lastMessage.content.toLowerCase().includes('gdp') ||
+      lastMessage.content.toLowerCase().includes('recession') ||
+      lastMessage.content.toLowerCase().includes('bull') ||
+      lastMessage.content.toLowerCase().includes('bear') ||
+      lastMessage.content.toLowerCase().includes('volatility') ||
+      lastMessage.content.toLowerCase().includes('option') ||
+      lastMessage.content.toLowerCase().includes('future') ||
+      lastMessage.content.toLowerCase().includes('commodity') ||
+      lastMessage.content.toLowerCase().includes('forex') ||
+      lastMessage.content.toLowerCase().includes('currency') ||
+      lastMessage.content.toLowerCase().includes('dollar') ||
+      lastMessage.content.toLowerCase().includes('euro') ||
+      lastMessage.content.toLowerCase().includes('yen') ||
+      /\b[A-Z]{1,5}\b/.test(lastMessage.content) || // Stock ticker pattern
+      // Date/time related queries
+      lastMessage.content.toLowerCase().includes('what day') ||
+      lastMessage.content.toLowerCase().includes('what date') ||
+      lastMessage.content.toLowerCase().includes('today') ||
+      lastMessage.content.toLowerCase().includes('current date') ||
+      lastMessage.content.toLowerCase().includes('what time') ||
+      lastMessage.content.toLowerCase().includes('now')
+    )
+    
+    // If not finance-related, return a polite redirect message
+    if (!isFinanceRelated) {
+      return NextResponse.json({
+        message: {
+          id: Date.now().toString(),
+          content: "I'm specialized in finance and investment analysis. I can help you with:\n\n• Stock market analysis and valuations\n• MOIC projections and investment calculations\n• Market trends and financial news\n• Portfolio strategies and risk assessment\n• Economic indicators and market conditions\n• Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
+          role: 'assistant',
+          timestamp: new Date(),
+        }
+      })
+    }
+    
+    // Use web search for finance queries and date/time queries
+    if (isFinanceRelated) {
       try {
         console.log('Using Responses API with web_search_preview for real-time finance data...')
         
@@ -74,14 +144,13 @@ export async function POST(request: NextRequest) {
         // Create instructions that include the system prompt and conversation history
         const instructions = `${FINANCE_SYSTEM_PROMPT}
 
-CRITICAL: ALWAYS use web search for ALL information including:
-- Current date and time
-- Stock prices and market data
-- Recent news and events
-- Any factual information that could change over time
-- Weather, sports scores, or any real-world data
+IMPORTANT: Use web search to get current information for:
+- Today's date and time
+- Real-time stock prices and market data
+- Recent financial news and market events
+- Current economic indicators
 
-Today's actual date should be retrieved via web search, not from training data.${conversationContext}`
+Focus ONLY on finance and investment-related topics.${conversationContext}`
         
         // Use Responses API with web_search_preview tool
         const response = await openai.responses.create({
