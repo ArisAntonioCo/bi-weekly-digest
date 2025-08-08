@@ -16,9 +16,9 @@ export function BlogHeader({ systemPromptSummary }: BlogHeaderProps) {
             <BookOpen className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Investment Analysis Blog</h1>
+            <h1 className="text-3xl font-bold tracking-tight">MOIC Mastery Blog</h1>
             <p className="text-muted-foreground">
-              Dynamic insights generated from our AI investment analyst
+              Expert 3-year projections powered by elite investor insights
             </p>
           </div>
         </div>

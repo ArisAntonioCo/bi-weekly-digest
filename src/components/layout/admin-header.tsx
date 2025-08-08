@@ -44,8 +44,8 @@ const pageConfigs: Record<string, PageConfig> = {
     }
   },
   '/blogs': {
-    title: 'Investment Analysis Blog',
-    description: 'Dynamic insights from our AI analyst',
+    title: 'MOIC Mastery Blog',
+    description: 'Expert 3-year projections powered by elite investor insights',
     icon: BookOpen,
     badge: 'Auto-Generated'
   },
