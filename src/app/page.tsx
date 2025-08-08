@@ -31,21 +31,15 @@ export default async function LandingPage() {
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-32">
         <div className="max-w-5xl mx-auto text-center">
-          {/* Badge */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="h-2 w-2 bg-foreground rounded-full"></div>
-            <span className="text-sm text-muted-foreground uppercase tracking-wider">Top Investment Newsletter</span>
-          </div>
-          
           {/* Main Headline - Two Lines */}
-          <h1 className="text-6xl md:text-8xl font-medium text-foreground mb-6 leading-none">
+          <h1 className="text-5xl md:text-7xl font-semibold text-foreground mb-6 leading-none">
             Predictive Finance
             <br />
             In Your Inbox
           </h1>
           
           {/* Subtext */}
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-tight">
             AI-powered MOIC projections and market insights in your inbox.
           </p>
           
@@ -65,10 +59,10 @@ export default async function LandingPage() {
       {/* Features Grid */}
       <section className="container mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-medium text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-none">
             Intelligent Analytics Platform
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-snug">
             Leverage cutting-edge AI to transform complex market data into actionable investment insights.
           </p>
         </div>
@@ -79,10 +73,10 @@ export default async function LandingPage() {
             <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <Brain className="h-6 w-6 text-secondary-foreground" />
             </div>
-            <h3 className="text-xl font-medium text-foreground mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2 leading-none">
               AI-Driven Analysis
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground leading-snug">
               Advanced machine learning algorithms analyze market patterns and identify high-potential investment opportunities.
             </p>
           </div>
@@ -92,10 +86,10 @@ export default async function LandingPage() {
             <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <Shield className="h-6 w-6 text-secondary-foreground" />
             </div>
-            <h3 className="text-xl font-medium text-foreground mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2 leading-none">
               Risk Assessment
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground leading-snug">
               Comprehensive risk analysis and portfolio optimization to protect and grow your investments.
             </p>
           </div>
@@ -105,10 +99,10 @@ export default async function LandingPage() {
             <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-4">
               <Zap className="h-6 w-6 text-secondary-foreground" />
             </div>
-            <h3 className="text-xl font-medium text-foreground mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2 leading-none">
               Real-Time Updates
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground leading-snug">
               Stay informed with weekly digests and real-time alerts on critical market movements.
             </p>
           </div>
@@ -120,10 +114,10 @@ export default async function LandingPage() {
         <div className="bg-muted/30 backdrop-blur-sm border border-border rounded-2xl p-12">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-medium text-foreground mb-6">
+              <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-6 leading-none">
                 Professional-Grade Analytics
               </h2>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-6 leading-snug">
                 Access the same analytical tools used by professional investors and hedge funds. Our platform provides deep insights into market dynamics, sector rotations, and emerging opportunities.
               </p>
               <ul className="space-y-3">
@@ -160,10 +154,10 @@ export default async function LandingPage() {
       {/* Blog Preview Section */}
       <section className="container mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-medium text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-none">
             Latest Investment Insights
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8 leading-snug">
             Explore our AI-powered analysis and stay ahead of market trends with comprehensive investment research.
           </p>
           <Link href="/blogs">
@@ -178,10 +172,10 @@ export default async function LandingPage() {
       {/* CTA Section */}
       <section className="container mx-auto px-6 py-24">
         <div className="bg-gradient-to-r from-muted to-secondary rounded-2xl p-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-medium text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-none">
             Start Your Investment Journey Today
           </h2>
-          <p className="text-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-foreground mb-8 max-w-2xl mx-auto leading-snug">
             Join thousands of investors who trust our AI-powered platform for market insights and investment strategies.
           </p>
           <Link href="/signup">

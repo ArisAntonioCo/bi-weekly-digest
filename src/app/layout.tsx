@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Figtree, Geist_Mono } from "next/font/google";
+import { Instrument_Sans, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/ui/navbar";
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
 
-const figtree = Figtree({
-  variable: "--font-figtree",
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${figtree.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background`}
+        className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background`}
       >
         <ThemeProvider defaultTheme="light" storageKey="bi-weekly-digest-theme">
           <Navbar />
