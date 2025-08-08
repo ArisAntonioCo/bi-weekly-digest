@@ -18,18 +18,20 @@ export function FeatureCard({ title, subtitle, bottomContent, className }: Featu
         <h3 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
           {title}
         </h3>
+      </div>
+      
+      <div>
         {subtitle && (
-          <p className="text-base sm:text-lg text-muted-foreground mt-2">
+          <p className="text-base sm:text-lg text-muted-foreground">
             {subtitle}
           </p>
         )}
+        {bottomContent && (
+          <div className="text-foreground mt-4">
+            {bottomContent}
+          </div>
+        )}
       </div>
-      
-      {bottomContent && (
-        <div className="text-foreground">
-          {bottomContent}
-        </div>
-      )}
     </div>
   )
 }

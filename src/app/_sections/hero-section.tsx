@@ -42,7 +42,7 @@ export function HeroSection() {
         </div>
 
         {/* Hero Images Container */}
-        <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 sm:gap-3">
           {/* Main Hero Video */}
           <div className="rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 overflow-hidden relative">
             <video 

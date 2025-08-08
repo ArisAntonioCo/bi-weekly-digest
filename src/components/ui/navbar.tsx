@@ -122,7 +122,7 @@ export default function Navbar({ className }: NavbarProps) {
             href={user ? '/dashboard' : '/'} 
             className="flex items-center gap-2 transition-opacity hover:opacity-80"
           >
-            <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
+            <div className="bg-brand text-white flex size-8 items-center justify-center rounded-md">
               <TrendingUp className="size-5" />
             </div>
             <span className="text-lg sm:text-xl font-semibold text-foreground">Weekly Digest</span>
