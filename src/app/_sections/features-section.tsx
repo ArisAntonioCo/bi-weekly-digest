@@ -1,5 +1,19 @@
 import { FeatureCard } from '@/components/feature-card'
-import { TrendingUp, Brain, Shield } from 'lucide-react'
+
+const features = [
+  {
+    title: "Comprehensive 3-Year Forward MOIC",
+    subtitle: "Base, Bear & Bull Cases"
+  },
+  {
+    title: "World-Class Equity Frameworks",
+    subtitle: "Analysis from Industry Experts"
+  },
+  {
+    title: "Current & Thoughtful Insights",
+    subtitle: "Compounding & Risk Assessment"
+  }
+]
 
 export function FeaturesSection() {
   return (
@@ -13,53 +27,13 @@ export function FeaturesSection() {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3">
-        {/* Feature 1 - Comprehensive MOIC Analysis */}
-        <FeatureCard
-          title="Comprehensive 3-Year Forward MOIC"
-          subtitle="Base, Bear & Bull Cases"
-          bottomContent={
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-brand/20 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-brand" />
-              </div>
-              <div className="text-sm text-background/70">
-                Multiple scenario analysis with probability weightings
-              </div>
-            </div>
-          }
-        />
-
-        {/* Feature 2 - Expert-Level Analysis */}
-        <FeatureCard
-          title="World-Class Equity Frameworks"
-          subtitle="Analysis from Industry Experts"
-          bottomContent={
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-brand/20 flex items-center justify-center">
-                <Brain className="h-6 w-6 text-brand" />
-              </div>
-              <div className="text-sm text-background/70">
-                Institutional-grade methods and actionable insights
-              </div>
-            </div>
-          }
-        />
-
-        {/* Feature 3 - Risk & Opportunity Insights */}
-        <FeatureCard
-          title="Current & Thoughtful Insights"
-          subtitle="Compounding & Risk Assessment"
-          bottomContent={
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-brand/20 flex items-center justify-center">
-                <Shield className="h-6 w-6 text-brand" />
-              </div>
-              <div className="text-sm text-background/70">
-                Weekly updates on opportunities and risk factors
-              </div>
-            </div>
-          }
-        />
+        {features.map((feature, index) => (
+          <FeatureCard
+            key={index}
+            title={feature.title}
+            subtitle={feature.subtitle}
+          />
+        ))}
       </div>
     </section>
   )
