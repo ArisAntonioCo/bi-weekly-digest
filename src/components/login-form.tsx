@@ -32,17 +32,17 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md bg-card border-border shadow-sm">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center text-card-foreground">
-          Welcome back
-        </CardTitle>
-        <CardDescription className="text-center text-muted-foreground">
+    <div className="w-full">
+      <div className="space-y-1 mb-8">
+        <h2 className="text-2xl font-bold text-center text-foreground">
+          Sign In
+        </h2>
+        <p className="text-center text-muted-foreground">
           Enter your email to sign in to your account
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+        <div className="space-y-4">
           {error && (
             <Alert className="bg-destructive/10 border-destructive/20">
               <AlertDescription className="text-destructive">
@@ -78,8 +78,8 @@ export function LoginForm() {
               className="bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4 pt-6">
+        </div>
+        <div className="flex flex-col space-y-4 pt-6">
           <Button
             type="submit"
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
@@ -103,8 +103,8 @@ export function LoginForm() {
               Sign Up
             </Link>
           </p>
-        </CardFooter>
+        </div>
       </form>
-    </Card>
+    </div>
   )
 }
