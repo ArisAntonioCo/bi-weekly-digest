@@ -114,7 +114,7 @@ export default function Navbar({ className }: NavbarProps) {
   if (isAuthPage || isAdminPage) return null
 
   return (
-    <nav className={`border-b border-border ${className || ''}`}>
+    <nav className={className || ''}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -214,21 +214,25 @@ export default function Navbar({ className }: NavbarProps) {
               </DropdownMenu>
             ) : (
               // Unauthenticated user navigation
-              <>
+              <div className="flex">
                 <Link href="/login">
                   <Button 
-                    variant="ghost" 
-                    className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                    variant="default" 
+                    size="lg"
+                    className="rounded-full"
                   >
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-primary text-primary-foreground hover:bg-primary/80">
+                  <Button 
+                    variant="brand"
+                    size="lg"
+                  >
                     Get Started
                   </Button>
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>
