@@ -290,8 +290,8 @@ export class NewsletterService {
       </div>
       
       <div class="footer">
-        <p>This analysis was generated using AI-powered investment research</p>
-        <p class="footer-logo">Weekly Digest</p>
+        <p>This analysis was generated using our 3-Year MOIC framework powered by elite investor insights</p>
+        <p class="footer-logo">MOIC Mastery</p>
       </div>
     </div>
   </div>
@@ -321,11 +321,12 @@ export class NewsletterService {
     const analysisType = getAnalysisType(content)
 
     // Format the text content for email
-    const markdownContent = `# AI Analysis Report
+    const markdownContent = `# 3-Year MOIC Investment Analysis
 
 **Generated:** ${new Date().toLocaleString()}
-**Model:** GPT-4o
+**Model:** GPT-4o with Web Search
 **Type:** ${analysisType.type}
+**Framework:** Elite Investor Perspectives
 
 ## Analysis
 
@@ -333,11 +334,11 @@ ${content}
 
 ---
 
-*This analysis was generated using the current system prompt configuration.*
-*Weekly Digest - AI-Powered Content Assistant*`
+*This analysis leverages the thinking framework of world-class investors including Bill Gurley, Brad Gerstner, Stan Druckenmiller, Mary Meeker, and Brian Birtwistle.*
+*MOIC Mastery - 3-Year Investment Projections*`
 
     return await resend.emails.send({
-      from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
+      from: 'MOIC Mastery <noreply@updates.fitzsixto.com>',
       to,
       subject: isTest ? `[TEST] ${subject}` : subject,
       html: emailTemplate,
@@ -351,10 +352,36 @@ ${content}
   static async storeNewsletter(content: string, title?: string): Promise<void> {
     const supabase = await createClient()
     
+    // Extract company name or ticker from content for better title generation
+    const extractCompanyInfo = (text: string): string => {
+      // Look for patterns like "For APPLE (AAPL)" or "## What [Company Name] Does"
+      const tickerMatch = text.match(/For\s+([A-Z][A-Za-z\s&]+)\s*\(([A-Z]+)\)/i)
+      const companyMatch = text.match(/##\s*What\s+([A-Za-z\s&]+)\s+Does/i)
+      
+      if (tickerMatch) {
+        return `${tickerMatch[1].trim()} (${tickerMatch[2]})`
+      } else if (companyMatch) {
+        return companyMatch[1].trim()
+      }
+      
+      // Fallback: look for common company names in the content
+      const companies = ['Apple', 'Microsoft', 'Google', 'Amazon', 'Tesla', 'NVIDIA', 'Meta', 'Netflix']
+      for (const company of companies) {
+        if (text.includes(company)) {
+          return company
+        }
+      }
+      
+      return 'Investment'
+    }
+    
+    const companyInfo = extractCompanyInfo(content)
+    const generatedTitle = `${companyInfo} 3-Year MOIC Analysis: Leveraging the Framework of World-Class Investors`
+    
     const { error } = await supabase
       .from('blogs')
       .insert({
-        title: title || `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
+        title: title || generatedTitle,
         content,
       })
 
