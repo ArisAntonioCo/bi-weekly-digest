@@ -115,7 +115,7 @@ export default function Navbar({ className }: NavbarProps) {
 
   return (
     <nav className={className || ''}>
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link 
@@ -125,12 +125,12 @@ export default function Navbar({ className }: NavbarProps) {
             <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
               <TrendingUp className="size-5" />
             </div>
-            <span className="text-xl font-semibold text-foreground">Weekly Digest</span>
+            <span className="text-lg sm:text-xl font-semibold text-foreground">Weekly Digest</span>
           </Link>
 
           {/* Navigation */}
           <div className="flex items-center gap-4">
-            <ThemeToggle />
+            {pathname !== '/' && <ThemeToggle />}
             {loading ? (
               <div className="h-8 w-20 bg-muted animate-pulse rounded-md" />
             ) : user ? (
@@ -214,12 +214,12 @@ export default function Navbar({ className }: NavbarProps) {
               </DropdownMenu>
             ) : (
               // Unauthenticated user navigation
-              <div className="flex">
+              <div className="flex gap-2">
                 <Link href="/login">
                   <Button 
                     variant="default" 
-                    size="lg"
-                    className="rounded-full"
+                    size="default"
+                    className="rounded-full text-sm sm:text-base"
                   >
                     Sign In
                   </Button>
@@ -227,7 +227,8 @@ export default function Navbar({ className }: NavbarProps) {
                 <Link href="/signup">
                   <Button 
                     variant="brand"
-                    size="lg"
+                    size="default"
+                    className="text-sm sm:text-base"
                   >
                     Get Started
                   </Button>
