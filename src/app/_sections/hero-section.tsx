@@ -39,12 +39,12 @@ export function HeroSection() {
         {/* Hero Images Container */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Main Hero Image */}
-          <div className="bg-muted rounded-2xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 flex items-center justify-center">
+          <div className="bg-muted rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 flex items-center justify-center">
             <p className="text-muted-foreground text-center px-4">Hero Image Coming Soon</p>
           </div>
           
           {/* Square Newsletter Updates Card */}
-          <div className="bg-foreground rounded-2xl w-full lg:w-[500px] h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col overflow-hidden">
+          <div className="bg-foreground rounded-3xl w-full lg:w-[500px] h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col overflow-hidden">
             <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4">
               <h3 className="text-xl sm:text-2xl font-bold text-background leading-tight">Weekly 3Y MOIC<br />Predictions Delivered</h3>
             </div>
