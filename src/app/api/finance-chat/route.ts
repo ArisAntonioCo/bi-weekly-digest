@@ -69,114 +69,84 @@ export async function POST(request: NextRequest) {
       /\b[A-Z]{1,5}\b/.test(lastMessage.content) // Stock ticker pattern
     )
 
-    try {
-      // Use the Responses API with web search for financial data
-      if (needsFinancialData) {
-        // Build conversation history
-        const conversationHistory = messages.slice(0, -1).map(msg => 
-          `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
-        ).join('\n\n')
-
+    // Use Responses API with web search for financial data that needs current information
+    if (needsFinancialData) {
+      try {
+        console.log('Using Responses API with web_search_preview for real-time finance data...')
+        
+        // Build conversation context for the instructions
+        const previousMessages = messages.slice(0, -1)
+        let conversationContext = ''
+        if (previousMessages.length > 0) {
+          conversationContext = '\n\nConversation history:\n'
+          previousMessages.forEach(msg => {
+            conversationContext += `${msg.role.toUpperCase()}: ${msg.content}\n\n`
+          })
+        }
+        
+        // Create instructions that include the system prompt and conversation history
         const instructions = `${FINANCE_SYSTEM_PROMPT}
 
-Previous conversation:
-${conversationHistory}
-
-Use the web search tool to find the latest financial information, stock prices, market data, and company financials when answering questions. Provide specific numbers and data points when available.`
-
+IMPORTANT: Use web search to get the most current stock prices, market data, and financial news for accurate analysis.${conversationContext}`
+        
+        // Use Responses API with web_search_preview tool
         const response = await openai.responses.create({
-          model: 'o1-mini',
-          temperature: 0.45,
+          model: 'gpt-4o-search-preview',
           instructions: instructions,
           input: lastMessage.content,
           tools: [{ type: 'web_search_preview' }],
         })
-
+        
+        console.log('Responses API with web search succeeded')
+        
+        // The response will include web search results integrated into the output
+        const responseContent = response.output_text || 'Unable to generate response.'
+        
         return NextResponse.json({
           message: {
             id: Date.now().toString(),
-            content: response.output_text || 'I apologize, but I was unable to generate a response.',
+            content: responseContent,
             role: 'assistant',
             timestamp: new Date(),
           }
         })
-      } else {
-        // For general finance questions that don't need real-time data
-        // Note: o1-mini doesn't support system role, so we include it in the first user message
-        const messagesForO1 = messages.map((msg, index) => {
-          if (index === 0 && msg.role === 'user') {
-            return {
-              role: 'user' as const,
-              content: FINANCE_SYSTEM_PROMPT + '\n\n' + msg.content
-            }
-          }
-          return {
-            role: msg.role as 'user' | 'assistant',
-            content: msg.content
-          }
-        })
-
-        const completion = await openai.chat.completions.create({
-          model: 'o1-mini',
-          messages: messagesForO1,
-          max_completion_tokens: 8000,
-        })
-
-        const assistantMessage = completion.choices[0].message
-
-        return NextResponse.json({
-          message: {
-            id: Date.now().toString(),
-            content: assistantMessage.content || '',
-            role: 'assistant',
-            timestamp: new Date(),
-          }
-        })
+      } catch (responsesError) {
+        console.error('Responses API with web search error:', responsesError)
+        console.log('Falling back to Chat Completions...')
+        // Fall through to standard approach
       }
-    } catch (apiError: unknown) {
-      // Fallback to chat completions if Responses API fails
-      console.log('Responses API failed, falling back to Chat Completions:', apiError instanceof Error ? apiError.message : 'Unknown error')
-      
-      const fallbackSystemPrompt = `${FINANCE_SYSTEM_PROMPT}
-
-Note: Real-time financial data is currently unavailable. I'll provide analysis based on my training data and financial principles.
-
-Remember to use proper LaTeX formatting:
-- Inline math: $equation$
-- Display math: $$equation$$
-- Never use [ ] brackets for math`
-
-      // Note: o1-mini doesn't support system role, so we include it in the first user message
-      const messagesForO1 = messages.map((msg, index) => {
-        if (index === 0 && msg.role === 'user') {
-          return {
-            role: 'user' as const,
-            content: fallbackSystemPrompt + '\n\n' + msg.content
-          }
-        }
-        return {
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content
-        }
-      })
-
-      const completion = await openai.chat.completions.create({
-        model: 'o1-mini',
-        messages: messagesForO1,
-        max_completion_tokens: 8000,
-      })
-
-      const assistantMessage = completion.choices[0].message
-
-      return NextResponse.json({
-        message: {
-          id: Date.now().toString(),
-          content: assistantMessage.content || '',
-          role: 'assistant',
-          timestamp: new Date(),
-        }
-      })
     }
+    
+    // Fallback to Chat Completions
+    const systemPrompt = needsFinancialData 
+      ? `${FINANCE_SYSTEM_PROMPT}\n\nNote: I'll provide analysis based on my training data. For real-time prices, please check financial websites.`
+      : FINANCE_SYSTEM_PROMPT
+
+    const messagesWithSystem = [
+      { role: 'system' as const, content: systemPrompt },
+      ...messages.map(msg => ({
+        role: msg.role as 'user' | 'assistant' | 'system',
+        content: msg.content
+      }))
+    ]
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: messagesWithSystem,
+      temperature: 0.45,
+      max_tokens: 8000,
+    })
+
+    const assistantMessage = completion.choices[0].message
+
+    return NextResponse.json({
+      message: {
+        id: Date.now().toString(),
+        content: assistantMessage.content || '',
+        role: 'assistant',
+        timestamp: new Date(),
+      }
+    })
   } catch (error) {
     console.error('Finance Chat API error:', error)
     

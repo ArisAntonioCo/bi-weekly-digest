@@ -37,7 +37,9 @@
       "Bash(npm run dev:*)",
       "Bash(pkill:*)",
       "Bash(npm run list-models:*)",
-      "Bash(npm run test-o1-mini:*)"
+      "Bash(npm run test-o1-mini:*)",
+      "mcp__supabase__get_logs",
+      "WebFetch(domain:platform.openai.com)"
     ],
     "deny": []
   },

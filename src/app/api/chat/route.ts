@@ -45,10 +45,9 @@ export async function POST(request: NextRequest) {
       
       // Use AI to intelligently refine the system prompt based on user's request
       try {
-        // Note: o1-mini doesn't support system role, so we include it in the user message
         const refinementMessages = [
           {
-            role: 'user' as const,
+            role: 'system' as const,
             content: `You are an expert at refining and improving system prompts. Your task is to take an existing system prompt and modify it based on the user's request. 
             
             Guidelines:
@@ -59,9 +58,11 @@ export async function POST(request: NextRequest) {
             - If the user asks for additions or modifications, merge them thoughtfully
             - Keep the refined prompt clear, concise, and effective
             
-            Return ONLY the refined system prompt without any explanation or metadata.
-
-Current system prompt:
+            Return ONLY the refined system prompt without any explanation or metadata.`
+          },
+          {
+            role: 'user' as const,
+            content: `Current system prompt:
 ${currentPrompt}
 
 User's request: ${lastMessage.content}
@@ -71,9 +72,10 @@ Please refine the system prompt based on this request.`
         ]
         
         const refinementResponse = await openai.chat.completions.create({
-          model: 'o1-mini',
+          model: 'gpt-4o',
           messages: refinementMessages,
-          max_completion_tokens: 8000,
+          temperature: 0.45,
+          max_tokens: 8000,
         })
         
         const refinedPrompt = refinementResponse.choices[0].message.content?.trim()
@@ -90,18 +92,22 @@ Please refine the system prompt based on this request.`
 
           if (!error) {
             // Create a summary of the changes
-            // Note: o1-mini doesn't support system role, so we include it in the user message
             const summaryMessages = [
               {
+                role: 'system' as const,
+                content: 'Summarize the key changes made to the system prompt in 2-3 bullet points. Be specific about what was added, modified, or emphasized.'
+              },
+              {
                 role: 'user' as const,
-                content: `Summarize the key changes made to the system prompt in 2-3 bullet points. Be specific about what was added, modified, or emphasized.\n\nOriginal prompt: ${currentPrompt}\n\nUpdated prompt: ${refinedPrompt}\n\nUser request: ${lastMessage.content}`
+                content: `Original prompt: ${currentPrompt}\n\nUpdated prompt: ${refinedPrompt}\n\nUser request: ${lastMessage.content}`
               }
             ]
             
             const summaryResponse = await openai.chat.completions.create({
-              model: 'o1-mini',
+              model: 'gpt-4o',
               messages: summaryMessages,
-              max_completion_tokens: 8000,
+              temperature: 0.45,
+              max_tokens: 8000,
             })
             
             const changeSummary = summaryResponse.choices[0].message.content || 'System prompt has been updated based on your request.'
@@ -178,161 +184,65 @@ Please refine the system prompt based on this request.`
       content.toLowerCase().includes('recent')
     ))
 
-    try {
-      // Use the Responses API with web search tool when needed
-      if (needsWebSearch) {
-        // Build conversation history for context
-        const conversationHistory = messages.slice(0, -1).map(msg => 
-          `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
-        ).join('\n\n')
-
-        const instructions = `${systemPrompt}
-
-Additionally, you can help the user update your system prompt. If they ask to update, change, or modify the system prompt, acknowledge their request and explain that they need to provide the new prompt in quotes or after a colon.
-
-Previous conversation:
-${conversationHistory}
-
-Use the web search tool to find the latest information when answering questions about current events, stock prices, or recent news.`
-
-        const response = await openai.responses.create({
-          model: 'o1-mini',
-          temperature: 0.45,
-          instructions: instructions,
-          input: content,
-          tools: [{ type: 'web_search_preview' }],
-        })
-
-        return NextResponse.json({
-          message: {
-            id: Date.now().toString(),
-            content: response.output_text || 'I apologize, but I was unable to generate a response.',
-            sender: 'assistant',
-            timestamp: new Date(),
-          }
-        })
-      } else {
-        // Handle different input modes
-        let enhancedSystemPrompt = `${systemPrompt}
+    // Generate response using Chat Completions
+    // Note: Real-time web search is currently unavailable
+    let enhancedSystemPrompt = `${systemPrompt}
 
 Additionally, you can help the user update your system prompt. If they ask to update, change, or modify the system prompt, acknowledge their request and explain that they need to provide the new prompt in quotes or after a colon.`
-        
-        if (mode === 'think') {
-          enhancedSystemPrompt += `\n\nIMPORTANT: The user has activated "Think" mode. This requires deep, analytical thinking with enhanced processing time and thoroughness. Please:
-
-1. **Deep Analysis**: Provide comprehensive, step-by-step reasoning with detailed explanations
-2. **Multiple Perspectives**: Consider various angles, potential alternatives, and edge cases
-3. **Structured Thinking**: Break down complex problems into logical components
-4. **Evidence-Based**: Support conclusions with reasoning and examples where applicable
-5. **Comprehensive Coverage**: Be thorough and exhaustive in your analysis
-6. **Show Your Work**: Explain your thought process, assumptions, and decision-making steps
-7. **Consider Implications**: Think about consequences, trade-offs, and broader impacts
-
-Take your time to think deeply about this request and provide a thoughtful, well-reasoned response that demonstrates enhanced analytical processing.`
-        }
-        
-        // Handle files if present
-        if (files && files.length > 0) {
-          enhancedSystemPrompt += `\n\nNote: The user has uploaded ${files.length} file(s). Currently, file analysis is not fully implemented, but acknowledge the files and provide relevant assistance based on the text content.`
-        }
-
-        // Update the last message to use cleaned content
-        const processedMessages = messages.map((msg, index) => {
-          if (index === messages.length - 1) {
-            return { ...msg, content }
-          }
-          return msg
-        })
-        
-        // Note: o1-mini doesn't support system role, so we include it in the first user message
-        const messagesForO1 = processedMessages.map((msg, index) => {
-          if (index === 0 && msg.role === 'user') {
-            return {
-              ...msg,
-              content: enhancedSystemPrompt + '\n\n' + msg.content
-            }
-          }
-          return msg
-        })
-
-        const completion = await openai.chat.completions.create({
-          model: 'o1-mini',
-          messages: messagesForO1,
-          max_completion_tokens: 8000,
-        })
-
-        const assistantMessage = completion.choices[0].message
-
-        return NextResponse.json({
-          message: {
-            id: Date.now().toString(),
-            content: assistantMessage.content || '',
-            sender: 'assistant',
-            timestamp: new Date(),
-          }
-        })
-      }
-    } catch (apiError: unknown) {
-      // Fallback to chat completions if Responses API fails
-      console.log('Responses API failed, falling back to Chat Completions:', apiError instanceof Error ? apiError.message : 'Unknown error')
-      
-      let enhancedSystemPrompt = `${systemPrompt}
-
-Additionally, you can help the user update your system prompt. If they ask to update, change, or modify the system prompt, acknowledge their request and explain that they need to provide the new prompt in quotes or after a colon.
-
-Note: Real-time web search is currently unavailable. I'll provide the best information based on my training data.`
-
-      // Apply thinking mode enhancements even in fallback
-      if (mode === 'think') {
-        enhancedSystemPrompt += `\n\nIMPORTANT: The user has activated "Think" mode. This requires deep, analytical thinking with enhanced processing time and thoroughness. Please:
-
-1. **Deep Analysis**: Provide comprehensive, step-by-step reasoning with detailed explanations
-2. **Multiple Perspectives**: Consider various angles, potential alternatives, and edge cases
-3. **Structured Thinking**: Break down complex problems into logical components
-4. **Evidence-Based**: Support conclusions with reasoning and examples where applicable
-5. **Comprehensive Coverage**: Be thorough and exhaustive in your analysis
-6. **Show Your Work**: Explain your thought process, assumptions, and decision-making steps
-7. **Consider Implications**: Think about consequences, trade-offs, and broader impacts
-
-Take your time to think deeply about this request and provide a thoughtful, well-reasoned response that demonstrates enhanced analytical processing.`
-      }
-
-      // Update the last message to use cleaned content for fallback
-      const processedMessages = messages.map((msg, index) => {
-        if (index === messages.length - 1) {
-          return { ...msg, content }
-        }
-        return msg
-      })
-      
-      // Note: o1-mini doesn't support system role, so we include it in the first user message
-      const messagesForO1 = processedMessages.map((msg, index) => {
-        if (index === 0 && msg.role === 'user') {
-          return {
-            ...msg,
-            content: enhancedSystemPrompt + '\n\n' + msg.content
-          }
-        }
-        return msg
-      })
-
-      const completion = await openai.chat.completions.create({
-        model: 'o1-mini',
-        messages: messagesForO1,
-        max_completion_tokens: 8000,
-      })
-
-      const assistantMessage = completion.choices[0].message
-
-      return NextResponse.json({
-        message: {
-          id: Date.now().toString(),
-          content: assistantMessage.content || '',
-          sender: 'assistant',
-          timestamp: new Date(),
-        }
-      })
+    
+    if (needsWebSearch) {
+      enhancedSystemPrompt += `\n\nNote: Real-time web search is currently unavailable. I'll provide the best information based on my training data.`
     }
+    
+    if (mode === 'think') {
+      enhancedSystemPrompt += `\n\nIMPORTANT: The user has activated "Think" mode. This requires deep, analytical thinking with enhanced processing time and thoroughness. Please:
+
+1. **Deep Analysis**: Provide comprehensive, step-by-step reasoning with detailed explanations
+2. **Multiple Perspectives**: Consider various angles, potential alternatives, and edge cases
+3. **Structured Thinking**: Break down complex problems into logical components
+4. **Evidence-Based**: Support conclusions with reasoning and examples where applicable
+5. **Comprehensive Coverage**: Be thorough and exhaustive in your analysis
+6. **Show Your Work**: Explain your thought process, assumptions, and decision-making steps
+7. **Consider Implications**: Think about consequences, trade-offs, and broader impacts
+
+Take your time to think deeply about this request and provide a thoughtful, well-reasoned response that demonstrates enhanced analytical processing.`
+    }
+    
+    // Handle files if present
+    if (files && files.length > 0) {
+      enhancedSystemPrompt += `\n\nNote: The user has uploaded ${files.length} file(s). Currently, file analysis is not fully implemented, but acknowledge the files and provide relevant assistance based on the text content.`
+    }
+
+    // Update the last message to use cleaned content
+    const processedMessages = messages.map((msg, index) => {
+      if (index === messages.length - 1) {
+        return { ...msg, content }
+      }
+      return msg
+    })
+    
+    const messagesWithSystem = [
+      { role: 'system' as const, content: enhancedSystemPrompt },
+      ...processedMessages
+    ]
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: messagesWithSystem,
+      temperature: 0.45,
+      max_tokens: 8000,
+    })
+
+    const assistantMessage = completion.choices[0].message
+
+    return NextResponse.json({
+      message: {
+        id: Date.now().toString(),
+        content: assistantMessage.content || '',
+        sender: 'assistant',
+        timestamp: new Date(),
+      }
+    })
   } catch (error) {
     console.error('Chat API error:', error)
     

@@ -31,50 +31,58 @@ export async function POST() {
       }
     }
 
-    // Generate new blog content
+    // Try Responses API with web search first for real-time data
     let aiResponse = ''
-    
     try {
-      // Use Responses API for dynamic content generation
+      console.log('Attempting Responses API with web_search_preview for blog generation...')
       const response = await openai.responses.create({
-        model: 'o1-mini',
-        temperature: 0.45,
-        instructions: systemPrompt,
-        input: 'Generate comprehensive investment analysis content based on current market data.',
+        model: 'gpt-4o-search-preview',
+        instructions: `${systemPrompt}\n\nIMPORTANT: Use web search to get the most current market data, stock prices, and financial news for the investment analysis.`,
+        input: 'Generate comprehensive investment analysis content with current market data and recent developments.',
         tools: [{ type: 'web_search_preview' }],
       })
       
+      console.log('Responses API with web search succeeded for blog')
       aiResponse = response.output_text || 'No response generated'
-    } catch {
-      console.log('Responses API failed, falling back to Chat Completions')
+    } catch (responsesError) {
+      console.error('Responses API with web search error:', responsesError)
+      console.log('Falling back to Chat Completions...')
       
       // Fallback to regular chat completions
-      // Note: o1-mini doesn't support system role, so we include it in the user message
       const completion = await openai.chat.completions.create({
-        model: 'o1-mini',
+        model: 'gpt-4o',
+        temperature: 0.45,
         messages: [
+          { 
+            role: 'system', 
+            content: systemPrompt 
+          },
           {
             role: 'user',
-            content: systemPrompt + '\n\nGenerate comprehensive investment analysis content.'
+            content: 'Generate comprehensive investment analysis content.'
           }
         ],
-        max_completion_tokens: 8000,
+        max_tokens: 8000,
       })
       
       aiResponse = completion.choices[0].message.content || 'No response generated'
     }
 
     // Generate a title based on the content
-    // Note: o1-mini doesn't support system role, so we include it in the user message
     const titleCompletion = await openai.chat.completions.create({
-      model: 'o1-mini',
+      model: 'gpt-4o',
+      temperature: 0.3,
       messages: [
         {
+          role: 'system',
+          content: 'Generate a concise, engaging title for this analysis content. Maximum 60 characters.'
+        },
+        {
           role: 'user',
-          content: 'Generate a concise, engaging title for this analysis content. Maximum 60 characters.\n\n' + aiResponse.substring(0, 500)
+          content: aiResponse.substring(0, 500)
         }
       ],
-      max_completion_tokens: 50,
+      max_tokens: 50,
     })
 
     const title = titleCompletion.choices[0].message.content || 'Investment Analysis Update'

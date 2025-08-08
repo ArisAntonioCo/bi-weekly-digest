@@ -40,29 +40,39 @@ export class NewsletterService {
    */
   static async generateContent(systemPrompt: string): Promise<string> {
     try {
-      // Try Responses API first
+      // Try Responses API with web search first for real-time market data
       try {
+        console.log('Attempting Responses API with web_search_preview for newsletter generation...')
         const response = await openai.responses.create({
-          model: 'o1-mini',
-          temperature: 0.45,
-          instructions: systemPrompt,
-          input: '',
+          model: 'gpt-4o-search-preview',
+          instructions: `${systemPrompt}\n\nIMPORTANT: Use web search to get the most current market data, stock prices, and financial news for the investment analysis.`,
+          input: 'Generate comprehensive investment analysis based on current market conditions. Include real-time stock prices and recent market developments.',
           tools: [{ type: 'web_search_preview' }],
         })
         
+        console.log('Responses API with web search succeeded for newsletter')
+        
+        // The response will include web search results integrated into the output
         return response.output_text || 'No response generated'
-      } catch {
+      } catch (responsesError) {
+        console.error('Responses API with web search error:', responsesError)
+        console.log('Falling back to Chat Completions...')
+        
         // Fallback to regular chat completions
-        // Note: o1-mini doesn't support system role, so we include it in the user message
         const completion = await openai.chat.completions.create({
-          model: 'o1-mini',
+          model: 'gpt-4o',
+          temperature: 0.45,
           messages: [
+            { 
+              role: 'system', 
+              content: systemPrompt 
+            },
             {
               role: 'user',
-              content: systemPrompt + '\n\nGenerate comprehensive investment analysis content based on current market data.'
+              content: 'Generate comprehensive investment analysis based on available market data. Note that real-time prices may not be available.'
             }
           ],
-          max_completion_tokens: 8000,
+          max_tokens: 8000,
         })
         
         return completion.choices[0].message.content || 'No response generated'
