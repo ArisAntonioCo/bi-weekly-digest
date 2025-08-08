@@ -10,18 +10,36 @@ export function AuthPanel({ children }: AuthPanelProps) {
     <div className="min-h-screen bg-muted/30 p-2">
       <div className="h-[calc(100vh-1rem)] grid lg:grid-cols-2 gap-2">
         {/* Left Panel - Branding */}
-        <div className="bg-gradient-to-br from-primary via-primary/80 to-primary/60 rounded-2xl p-12 flex flex-col justify-center text-primary-foreground">
-          <Link href="/" className="flex items-center gap-2 mb-12">
-            <div className="bg-primary-foreground text-primary flex size-10 items-center justify-center rounded-md">
-              <TrendingUp className="size-6" />
-            </div>
-            <span className="text-2xl font-semibold">Weekly Digest</span>
-          </Link>
+        <div 
+          className="rounded-2xl p-12 flex flex-col justify-between text-white relative overflow-hidden"
+          style={{
+            backgroundImage: 'url(/AuthBG.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/40 rounded-2xl" />
           
-          <h1 className="text-5xl font-bold mb-4">Predictive Finance</h1>
-          <p className="text-xl opacity-90">
-            AI-powered investment insights and market analysis delivered to your inbox.
-          </p>
+          <div className="relative z-10">
+            {/* Logo at top */}
+            <Link href="/" className="flex items-center gap-2">
+              <div className="bg-white text-black flex size-10 items-center justify-center rounded-md">
+                <TrendingUp className="size-6" />
+              </div>
+              <span className="text-2xl font-semibold">Weekly Digest</span>
+            </Link>
+          </div>
+          
+          <div className="relative z-10">
+            {/* Heading at bottom */}
+            <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+              Your AI-Powered Edge in
+              <br />
+              3-Year Investment Returns
+            </h1>
+          </div>
         </div>
 
         {/* Right Panel - Auth Forms */}

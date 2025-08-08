@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background`}
       >
         <ThemeProvider defaultTheme="light" storageKey="bi-weekly-digest-theme">
-          <Navbar />
+          <Navbar className="sticky top-0 z-50 bg-background" />
           {children}
         </ThemeProvider>
       </body>

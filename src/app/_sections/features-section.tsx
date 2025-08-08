@@ -5,7 +5,7 @@ export function FeaturesSection() {
   return (
     <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 leading-none max-w-4xl">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground mb-4 leading-none max-w-4xl">
           World Class Investment Intelligence, Optimized for
           <br />
           3-Year Hold Periods
