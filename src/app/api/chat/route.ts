@@ -45,9 +45,10 @@ export async function POST(request: NextRequest) {
       
       // Use AI to intelligently refine the system prompt based on user's request
       try {
+        // Note: o1-mini doesn't support system role, so we include it in the user message
         const refinementMessages = [
           {
-            role: 'system' as const,
+            role: 'user' as const,
             content: `You are an expert at refining and improving system prompts. Your task is to take an existing system prompt and modify it based on the user's request. 
             
             Guidelines:
@@ -58,11 +59,9 @@ export async function POST(request: NextRequest) {
             - If the user asks for additions or modifications, merge them thoughtfully
             - Keep the refined prompt clear, concise, and effective
             
-            Return ONLY the refined system prompt without any explanation or metadata.`
-          },
-          {
-            role: 'user' as const,
-            content: `Current system prompt:
+            Return ONLY the refined system prompt without any explanation or metadata.
+
+Current system prompt:
 ${currentPrompt}
 
 User's request: ${lastMessage.content}
@@ -72,10 +71,9 @@ Please refine the system prompt based on this request.`
         ]
         
         const refinementResponse = await openai.chat.completions.create({
-          model: 'gpt-4o',
+          model: 'o1-mini',
           messages: refinementMessages,
-          temperature: 0.45,
-          max_tokens: 8000,
+          max_completion_tokens: 8000,
         })
         
         const refinedPrompt = refinementResponse.choices[0].message.content?.trim()
@@ -92,22 +90,18 @@ Please refine the system prompt based on this request.`
 
           if (!error) {
             // Create a summary of the changes
+            // Note: o1-mini doesn't support system role, so we include it in the user message
             const summaryMessages = [
               {
-                role: 'system' as const,
-                content: 'Summarize the key changes made to the system prompt in 2-3 bullet points. Be specific about what was added, modified, or emphasized.'
-              },
-              {
                 role: 'user' as const,
-                content: `Original prompt: ${currentPrompt}\n\nUpdated prompt: ${refinedPrompt}\n\nUser request: ${lastMessage.content}`
+                content: `Summarize the key changes made to the system prompt in 2-3 bullet points. Be specific about what was added, modified, or emphasized.\n\nOriginal prompt: ${currentPrompt}\n\nUpdated prompt: ${refinedPrompt}\n\nUser request: ${lastMessage.content}`
               }
             ]
             
             const summaryResponse = await openai.chat.completions.create({
-              model: 'gpt-4o',
+              model: 'o1-mini',
               messages: summaryMessages,
-              temperature: 0.45,
-              max_tokens: 8000,
+              max_completion_tokens: 8000,
             })
             
             const changeSummary = summaryResponse.choices[0].message.content || 'System prompt has been updated based on your request.'
@@ -202,7 +196,7 @@ ${conversationHistory}
 Use the web search tool to find the latest information when answering questions about current events, stock prices, or recent news.`
 
         const response = await openai.responses.create({
-          model: 'gpt-4o',
+          model: 'o1-mini',
           temperature: 0.45,
           instructions: instructions,
           input: content,
@@ -250,16 +244,21 @@ Take your time to think deeply about this request and provide a thoughtful, well
           return msg
         })
         
-        const messagesWithSystem = [
-          { role: 'system' as const, content: enhancedSystemPrompt },
-          ...processedMessages
-        ]
+        // Note: o1-mini doesn't support system role, so we include it in the first user message
+        const messagesForO1 = processedMessages.map((msg, index) => {
+          if (index === 0 && msg.role === 'user') {
+            return {
+              ...msg,
+              content: enhancedSystemPrompt + '\n\n' + msg.content
+            }
+          }
+          return msg
+        })
 
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: messagesWithSystem,
-          temperature: 0.45,
-          max_tokens: 8000,
+          model: 'o1-mini',
+          messages: messagesForO1,
+          max_completion_tokens: 8000,
         })
 
         const assistantMessage = completion.choices[0].message
@@ -306,16 +305,21 @@ Take your time to think deeply about this request and provide a thoughtful, well
         return msg
       })
       
-      const messagesWithSystem = [
-        { role: 'system' as const, content: enhancedSystemPrompt },
-        ...processedMessages
-      ]
+      // Note: o1-mini doesn't support system role, so we include it in the first user message
+      const messagesForO1 = processedMessages.map((msg, index) => {
+        if (index === 0 && msg.role === 'user') {
+          return {
+            ...msg,
+            content: enhancedSystemPrompt + '\n\n' + msg.content
+          }
+        }
+        return msg
+      })
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: messagesWithSystem,
-        temperature: 0.45,
-        max_tokens: 8000,
+        model: 'o1-mini',
+        messages: messagesForO1,
+        max_completion_tokens: 8000,
       })
 
       const assistantMessage = completion.choices[0].message

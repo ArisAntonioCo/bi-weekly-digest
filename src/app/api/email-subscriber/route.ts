@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     try {
       // Use Responses API with focused analysis
       const response = await openai.responses.create({
-        model: 'gpt-4o',
+        model: 'o1-mini',
         temperature: 0.45,
         instructions: config.system_prompt,
         input: '',
@@ -54,20 +54,16 @@ export async function POST(request: Request) {
       console.log('Responses API failed, falling back to Chat Completions')
       
       // Fallback to regular chat completions
+      // Note: o1-mini doesn't support system role, so we include it in the user message
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        temperature: 0.45,
+        model: 'o1-mini',
         messages: [
-          { 
-            role: 'system', 
-            content: config.system_prompt
-          },
           {
             role: 'user',
-            content: ''
+            content: config.system_prompt + '\n\nGenerate comprehensive investment analysis content based on current market data.'
           }
         ],
-        max_tokens: 8000,
+        max_completion_tokens: 8000,
       })
       
       aiResponse = completion.choices[0].message.content || 'No response generated'

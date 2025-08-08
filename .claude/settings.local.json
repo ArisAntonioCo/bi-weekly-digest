@@ -35,7 +35,9 @@
       "Bash(npm run typecheck:*)",
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(npm run dev:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(npm run list-models:*)",
+      "Bash(npm run test-o1-mini:*)"
     ],
     "deny": []
   },
