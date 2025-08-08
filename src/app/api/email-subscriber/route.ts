@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     // Generate AI content using Chat Completions
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-5-mini',
       temperature: 0.45,
       messages: [
         { 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     const markdownContent = `# AI Analysis Report
 
 **Generated:** ${new Date().toLocaleString()}
-**Model:** GPT-4o
+**Model:** GPT-5-mini
 **Type:** ${analysisType.type}
 
 ## Analysis
