@@ -32,26 +32,26 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+    <Card className="w-full max-w-md bg-card border-border shadow-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center text-zinc-100">
+        <CardTitle className="text-2xl font-bold text-center text-card-foreground">
           Welcome back
         </CardTitle>
-        <CardDescription className="text-center text-zinc-400">
+        <CardDescription className="text-center text-muted-foreground">
           Enter your email to sign in to your account
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
-            <Alert className="bg-red-900/20 border-red-900">
-              <AlertDescription className="text-red-400">
+            <Alert className="bg-destructive/10 border-destructive/20">
+              <AlertDescription className="text-destructive">
                 {error}
               </AlertDescription>
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-zinc-300">
+            <Label htmlFor="email" className="text-foreground">
               Email
             </Label>
             <Input
@@ -61,11 +61,11 @@ export function LoginForm() {
               placeholder="name@example.com"
               required
               disabled={isLoading}
-              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
+              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-zinc-300">
+            <Label htmlFor="password" className="text-foreground">
               Password
             </Label>
             <Input
@@ -75,14 +75,14 @@ export function LoginForm() {
               placeholder="••••••••"
               required
               disabled={isLoading}
-              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
+              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 pt-6">
           <Button
             type="submit"
-            className="w-full bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             disabled={isLoading}
           >
             {isLoading ? (

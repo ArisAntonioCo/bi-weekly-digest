@@ -59,7 +59,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-accent/10 to-background">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Link href="/" className="flex items-center gap-2 self-center font-medium">
           <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
@@ -67,7 +67,7 @@ export default function SignUpPage() {
           </div>
           <span className="text-xl font-semibold text-foreground">Weekly Digest</span>
         </Link>
-        <Card className="w-full max-w-md bg-card/50 backdrop-blur-sm border-border">
+        <Card className="w-full max-w-md bg-card border-border shadow-sm">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-card-foreground">
             Create an account
@@ -79,7 +79,7 @@ export default function SignUpPage() {
         <form onSubmit={handleSignUp}>
           <CardContent className="space-y-4">
             {error && (
-              <Alert className="bg-destructive/20 border-destructive">
+              <Alert className="bg-destructive/10 border-destructive/20">
                 <AlertDescription className="text-destructive">
                   {error}
                 </AlertDescription>
@@ -97,7 +97,7 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
-                className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
+                className="bg-background border-input text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -112,7 +112,7 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={loading}
-                className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
+                className="bg-background border-input text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -127,7 +127,7 @@ export default function SignUpPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={loading}
-                className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
+                className="bg-background border-input text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </CardContent>
@@ -150,7 +150,7 @@ export default function SignUpPage() {
               Already have an account?{' '}
               <Link
                 href="/login"
-                className="text-zinc-100 hover:text-zinc-300 underline underline-offset-4"
+                className="text-foreground hover:text-primary underline underline-offset-4"
               >
                 Sign In
               </Link>
