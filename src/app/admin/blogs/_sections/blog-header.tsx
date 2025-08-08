@@ -1,39 +1,13 @@
 "use client"
 
-import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { TrendingUp, BookOpen, RefreshCw } from 'lucide-react'
-import { toast } from 'sonner'
+import { TrendingUp, BookOpen } from 'lucide-react'
 
 interface BlogHeaderProps {
   systemPromptSummary?: string
 }
 
 export function BlogHeader({ systemPromptSummary }: BlogHeaderProps) {
-  const [isRegenerating, setIsRegenerating] = useState(false)
-
-  const handleRegenerate = async () => {
-    setIsRegenerating(true)
-    try {
-      const response = await fetch('/api/blogs/regenerate', {
-        method: 'POST',
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to regenerate blog content')
-      }
-
-      toast.success('Blog content regenerated successfully!')
-      // Reload the page to show new content
-      window.location.reload()
-    } catch (error) {
-      toast.error('Failed to regenerate blog content')
-      console.error('Regeneration error:', error)
-    } finally {
-      setIsRegenerating(false)
-    }
-  }
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -48,15 +22,6 @@ export function BlogHeader({ systemPromptSummary }: BlogHeaderProps) {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRegenerate}
-          disabled={isRegenerating}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isRegenerating ? 'animate-spin' : ''}`} />
-          {isRegenerating ? 'Regenerating...' : 'Refresh Content'}
-        </Button>
       </div>
       
       <div className="flex items-center gap-2">
