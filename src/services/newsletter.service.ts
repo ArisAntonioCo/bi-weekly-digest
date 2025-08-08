@@ -43,7 +43,7 @@ export class NewsletterService {
       // Try Responses API first
       try {
         const response = await openai.responses.create({
-          model: 'gpt-4o',
+          model: 'o1-mini',
           temperature: 0.45,
           instructions: systemPrompt,
           input: '',
@@ -53,20 +53,16 @@ export class NewsletterService {
         return response.output_text || 'No response generated'
       } catch {
         // Fallback to regular chat completions
+        // Note: o1-mini doesn't support system role, so we include it in the user message
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o',
-          temperature: 0.45,
+          model: 'o1-mini',
           messages: [
-            { 
-              role: 'system', 
-              content: systemPrompt 
-            },
             {
               role: 'user',
-              content: ''
+              content: systemPrompt + '\n\nGenerate comprehensive investment analysis content based on current market data.'
             }
           ],
-          max_tokens: 8000,
+          max_completion_tokens: 8000,
         })
         
         return completion.choices[0].message.content || 'No response generated'

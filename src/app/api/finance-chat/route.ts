@@ -85,7 +85,7 @@ ${conversationHistory}
 Use the web search tool to find the latest financial information, stock prices, market data, and company financials when answering questions. Provide specific numbers and data points when available.`
 
         const response = await openai.responses.create({
-          model: 'gpt-4o',
+          model: 'o1-mini',
           temperature: 0.45,
           instructions: instructions,
           input: lastMessage.content,
@@ -102,19 +102,24 @@ Use the web search tool to find the latest financial information, stock prices, 
         })
       } else {
         // For general finance questions that don't need real-time data
-        const messagesWithSystem = [
-          { role: 'system' as const, content: FINANCE_SYSTEM_PROMPT },
-          ...messages.map(msg => ({
-            role: msg.role as 'user' | 'assistant' | 'system',
+        // Note: o1-mini doesn't support system role, so we include it in the first user message
+        const messagesForO1 = messages.map((msg, index) => {
+          if (index === 0 && msg.role === 'user') {
+            return {
+              role: 'user' as const,
+              content: FINANCE_SYSTEM_PROMPT + '\n\n' + msg.content
+            }
+          }
+          return {
+            role: msg.role as 'user' | 'assistant',
             content: msg.content
-          }))
-        ]
+          }
+        })
 
         const completion = await openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: messagesWithSystem,
-          temperature: 0.45,
-          max_tokens: 8000,
+          model: 'o1-mini',
+          messages: messagesForO1,
+          max_completion_tokens: 8000,
         })
 
         const assistantMessage = completion.choices[0].message
@@ -141,19 +146,24 @@ Remember to use proper LaTeX formatting:
 - Display math: $$equation$$
 - Never use [ ] brackets for math`
 
-      const messagesWithSystem = [
-        { role: 'system' as const, content: fallbackSystemPrompt },
-        ...messages.map(msg => ({
-          role: msg.role as 'user' | 'assistant' | 'system',
+      // Note: o1-mini doesn't support system role, so we include it in the first user message
+      const messagesForO1 = messages.map((msg, index) => {
+        if (index === 0 && msg.role === 'user') {
+          return {
+            role: 'user' as const,
+            content: fallbackSystemPrompt + '\n\n' + msg.content
+          }
+        }
+        return {
+          role: msg.role as 'user' | 'assistant',
           content: msg.content
-        }))
-      ]
+        }
+      })
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: messagesWithSystem,
-        temperature: 0.45,
-        max_tokens: 8000,
+        model: 'o1-mini',
+        messages: messagesForO1,
+        max_completion_tokens: 8000,
       })
 
       const assistantMessage = completion.choices[0].message

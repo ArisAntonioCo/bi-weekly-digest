@@ -37,7 +37,7 @@ export async function POST() {
     try {
       // Use Responses API for dynamic content generation
       const response = await openai.responses.create({
-        model: 'gpt-4o',
+        model: 'o1-mini',
         temperature: 0.45,
         instructions: systemPrompt,
         input: 'Generate comprehensive investment analysis content based on current market data.',
@@ -49,40 +49,32 @@ export async function POST() {
       console.log('Responses API failed, falling back to Chat Completions')
       
       // Fallback to regular chat completions
+      // Note: o1-mini doesn't support system role, so we include it in the user message
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        temperature: 0.45,
+        model: 'o1-mini',
         messages: [
-          { 
-            role: 'system', 
-            content: systemPrompt 
-          },
           {
             role: 'user',
-            content: 'Generate comprehensive investment analysis content.'
+            content: systemPrompt + '\n\nGenerate comprehensive investment analysis content.'
           }
         ],
-        max_tokens: 8000,
+        max_completion_tokens: 8000,
       })
       
       aiResponse = completion.choices[0].message.content || 'No response generated'
     }
 
     // Generate a title based on the content
+    // Note: o1-mini doesn't support system role, so we include it in the user message
     const titleCompletion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      temperature: 0.3,
+      model: 'o1-mini',
       messages: [
         {
-          role: 'system',
-          content: 'Generate a concise, engaging title for this analysis content. Maximum 60 characters.'
-        },
-        {
           role: 'user',
-          content: aiResponse.substring(0, 500)
+          content: 'Generate a concise, engaging title for this analysis content. Maximum 60 characters.\n\n' + aiResponse.substring(0, 500)
         }
       ],
-      max_tokens: 50,
+      max_completion_tokens: 50,
     })
 
     const title = titleCompletion.choices[0].message.content || 'Investment Analysis Update'
