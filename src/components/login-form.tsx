@@ -51,7 +51,7 @@ export function LoginForm() {
             </Alert>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-foreground">
+            <Label htmlFor="email" className="text-foreground text-base">
               Email
             </Label>
             <Input
@@ -61,11 +61,11 @@ export function LoginForm() {
               placeholder="name@example.com"
               required
               disabled={isLoading}
-              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+              className="h-12 text-base bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-foreground">
+            <Label htmlFor="password" className="text-foreground text-base">
               Password
             </Label>
             <Input
@@ -75,13 +75,14 @@ export function LoginForm() {
               placeholder="••••••••"
               required
               disabled={isLoading}
-              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+              className="h-12 text-base bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </div>
         <div className="flex flex-col space-y-4 pt-6">
           <Button
             type="submit"
+            size="lg"
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             disabled={isLoading}
           >
