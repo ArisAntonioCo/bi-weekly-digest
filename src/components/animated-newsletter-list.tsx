@@ -39,7 +39,7 @@ let notifications = [
 ]
 
 // Repeat array for continuous scrolling effect
-notifications = Array.from({ length: 5 }, () => notifications).flat()
+notifications = Array.from({ length: 3 }, () => notifications).flat()
 
 const Notification = ({ text, date, time }: NotificationItem) => {
   return (
@@ -95,7 +95,7 @@ export function AnimatedNewsletterList({
         className,
       )}
     >
-      <AnimatedList>
+      <AnimatedList delay={2000}>
         {notifications.map((item, idx) => (
           <Notification {...item} key={idx} />
         ))}

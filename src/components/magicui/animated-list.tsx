@@ -37,17 +37,21 @@ export const AnimatedList = React.memo(
     );
 
     useEffect(() => {
-      if (index < childrenArray.length) {
-        const timeout = setTimeout(() => {
-          setIndex((prevIndex) => prevIndex + 1);
-        }, delay);
-        return () => clearTimeout(timeout);
-      }
-    }, [index, delay, childrenArray.length]);
+      const interval = setInterval(() => {
+        setIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
+      }, delay);
+      return () => clearInterval(interval);
+    }, [delay, childrenArray.length]);
 
     const itemsToShow = useMemo(() => {
-      // Show all items in order they appear (0 to index)
-      return childrenArray.slice(0, Math.min(index + 1, childrenArray.length));
+      // Show items pushing from top (newest first)
+      const itemCount = 5;
+      const items = [];
+      for (let i = 0; i < itemCount; i++) {
+        const itemIndex = (index + i) % childrenArray.length;
+        items.push(childrenArray[itemIndex]);
+      }
+      return items.reverse(); // Reverse to show newest at top
     }, [index, childrenArray]);
 
     return (

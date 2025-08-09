@@ -120,12 +120,9 @@ export default function Navbar({ className }: NavbarProps) {
           {/* Logo */}
           <Link 
             href={user ? '/dashboard' : '/'} 
-            className="flex items-center gap-2 transition-opacity hover:opacity-80"
+            className="transition-opacity hover:opacity-80"
           >
-            <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
-              <TrendingUp className="size-5" />
-            </div>
-            <span className="text-lg sm:text-xl font-semibold text-foreground">Weekly Digest</span>
+            <span className="text-lg sm:text-xl font-semibold text-foreground">WeeklyDigest</span>
           </Link>
 
           {/* Navigation */}
