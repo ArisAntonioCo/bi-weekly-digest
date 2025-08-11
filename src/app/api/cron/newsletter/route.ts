@@ -5,9 +5,12 @@ import { NewsletterSchedule } from '@/types/newsletter'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('Newsletter cron triggered:', new Date().toISOString())
+    
     // Verify this is a Vercel cron job or authorized request
     const authHeader = request.headers.get('authorization')
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      console.log('Unauthorized cron request')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -20,8 +23,11 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (scheduleError || !schedule) {
+      console.log('Schedule not found:', scheduleError)
       return NextResponse.json({ error: 'Schedule not found' }, { status: 404 })
     }
+
+    console.log('Found schedule:', { is_active: schedule.is_active, frequency: schedule.frequency })
 
     // Check if schedule is active
     if (!schedule.is_active) {
