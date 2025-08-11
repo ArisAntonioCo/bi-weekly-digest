@@ -11,7 +11,7 @@ interface FeatureCardProps {
 export function FeatureCard({ title, subtitle, bottomContent, className }: FeatureCardProps) {
   return (
     <div className={cn(
-      "bg-muted rounded-3xl h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col justify-between overflow-hidden p-8 sm:p-10",
+      "bg-muted rounded-3xl h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col justify-between overflow-hidden p-8 sm:p-10 relative",
       className
     )}>
       <div>
