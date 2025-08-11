@@ -9,17 +9,29 @@ import { Separator } from '@/components/ui/separator'
 import { Save, TestTube, Calendar, Info, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
+interface ScheduleSettings {
+  is_active: boolean
+  frequency: string
+  hour: number
+  minute: number
+  day_of_week?: number
+  day_of_month?: number
+  timezone: string
+  next_scheduled_at?: string
+}
+
 interface ScheduleFormProps {
-  cronExpression: string
-  onCronChange: (expression: string) => void
+  scheduleSettings: ScheduleSettings | null
   isActive: boolean
   onActiveChange: (active: boolean) => void
+  onScheduleChange: (settings: ScheduleSettings) => void
 }
 
 export function ScheduleForm({ 
-  onCronChange, 
+  scheduleSettings,
   isActive, 
-  onActiveChange 
+  onActiveChange,
+  onScheduleChange
 }: ScheduleFormProps) {
   const [dayOfMonth, setDayOfMonth] = useState('1')
   const [dayOfWeek, setDayOfWeek] = useState('1')
@@ -33,40 +45,13 @@ export function ScheduleForm({
   const minute = 0
 
   useEffect(() => {
-    // Load existing schedule settings
-    loadScheduleSettings()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    updateCronExpression()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frequency, dayOfWeek, dayOfMonth])
-
-  const loadScheduleSettings = async () => {
-    try {
-      const response = await fetch('/api/newsletter/schedule')
-      if (response.ok) {
-        const data = await response.json()
-        setDayOfMonth(data.day_of_month?.toString() || '1')
-        setDayOfWeek(data.day_of_week?.toString() || '1')
-        setFrequency(data.frequency || 'weekly')
-        onActiveChange(data.is_active || false)
-      }
-    } catch (error) {
-      console.error('Failed to load schedule settings:', error)
-      toast.error('Failed to load schedule settings')
-    } finally {
+    if (scheduleSettings) {
+      setDayOfMonth(scheduleSettings.day_of_month?.toString() || '1')
+      setDayOfWeek(scheduleSettings.day_of_week?.toString() || '1')
+      setFrequency(scheduleSettings.frequency || 'weekly')
       setIsLoading(false)
     }
-  }
-
-  const updateCronExpression = () => {
-    // Fixed to 9 AM EST (14:00 UTC) - Vercel cron runs daily
-    // The actual sending logic is handled in the route based on frequency
-    const expression = `${minute} ${hour} * * *`
-    onCronChange(expression)
-  }
+  }, [scheduleSettings])
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -91,6 +76,8 @@ export function ScheduleForm({
 
       if (response.ok) {
         toast.success('Schedule saved successfully!')
+        // Update parent component with new settings
+        onScheduleChange(data)
       } else {
         toast.error(data.error || 'Failed to save schedule')
       }

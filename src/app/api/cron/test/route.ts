@@ -4,7 +4,7 @@ import { NewsletterService } from '@/services/newsletter.service'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('TEST Cron triggered (ignores schedule):', new Date().toISOString())
+    console.log('Cron triggered (test mode, ignores schedule):', new Date().toISOString())
     console.log('Headers:', Object.fromEntries(request.headers.entries()))
     
     // Verify this is a Vercel cron job or authorized request
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
       await NewsletterService.sendEmail({
         to: subscribers, // Send to all subscribers at once
         subject: 'AI Analysis Report - Weekly Digest',
-        isTest: true // This will add [TEST] prefix automatically
+        isTest: false
       }, aiResponse)
       
       // Single API call success - all emails delivered
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Store newsletter (same as production but marked as test)
-    await NewsletterService.storeNewsletter(aiResponse, `TEST AI Analysis Report - Weekly Digest`, supabase)
+    await NewsletterService.storeNewsletter(aiResponse, `AI Analysis Report - Weekly Digest`, supabase)
 
     // Log test event
     await NewsletterService.logNewsletterEvent('test', subscribers.length, {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'TEST newsletter sent successfully (ignores schedule)',
+      message: 'Newsletter sent successfully (test mode, ignores schedule)',
       stats: {
         totalSubscribers: subscribers.length,
         successfulSends: successCount,

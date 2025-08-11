@@ -310,7 +310,7 @@ export class NewsletterService {
    * Sends an email using Resend
    */
   static async sendEmail(options: EmailOptions, content: string) {
-    const { to, subject, isTest = false } = options
+    const { to, subject } = options
     const htmlContent = this.convertMarkdownToHtml(content)
     const emailTemplate = this.createEmailTemplate(htmlContent)
 
@@ -346,7 +346,7 @@ ${content}
     return await resend.emails.send({
       from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
       to,
-      subject: isTest ? `[TEST] ${subject}` : subject,
+      subject,
       html: emailTemplate,
       text: markdownContent,
     })

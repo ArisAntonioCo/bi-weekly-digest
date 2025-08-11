@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { NewsletterService } from '@/services/newsletter.service'
 
-// Test email recipients
-const TEST_RECIPIENTS = [
+// Email recipients
+const RECIPIENTS = [
   'kulaizke@gmail.com',
   'arisantonioco@gmail.com'
 ]
@@ -22,8 +22,8 @@ export async function POST() {
     const config = await NewsletterService.getConfiguration()
     const aiResponse = await NewsletterService.generateContent(config.system_prompt)
 
-    // Send emails to test recipients
-    const emailPromises = TEST_RECIPIENTS.map(email => 
+    // Send emails to recipients
+    const emailPromises = RECIPIENTS.map(email => 
       NewsletterService.sendEmail({
         to: email,
         subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`
@@ -38,10 +38,10 @@ export async function POST() {
     await NewsletterService.storeNewsletter(aiResponse)
 
     // Log the event
-    await NewsletterService.logNewsletterEvent('sent', TEST_RECIPIENTS.length, {
+    await NewsletterService.logNewsletterEvent('sent', RECIPIENTS.length, {
       success: successCount,
       failed: failureCount,
-      recipients: TEST_RECIPIENTS
+      recipients: RECIPIENTS
     })
 
     return NextResponse.json({
@@ -50,7 +50,7 @@ export async function POST() {
       details: {
         sent: successCount,
         failed: failureCount,
-        total: TEST_RECIPIENTS.length
+        total: RECIPIENTS.length
       }
     })
   } catch (error) {

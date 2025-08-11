@@ -94,7 +94,7 @@ The schedule page (`/newsletter/schedule`) provides:
 - Check function logs for debugging
 
 ### Admin Panel
-- View sent newsletters in `/blogs` (marked with [TEST] for test sends)
+- View sent newsletters in `/blogs`
 - Check schedule configuration status
 
 ### Database

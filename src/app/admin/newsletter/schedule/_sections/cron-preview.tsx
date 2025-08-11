@@ -4,27 +4,37 @@ import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { CalendarCheck, Clock, Globe, Timer } from 'lucide-react'
-import { format, addDays, addWeeks, addMonths, setHours, setMinutes, startOfDay } from 'date-fns'
+import { format, addDays, addMonths, setHours, setMinutes, startOfDay } from 'date-fns'
 import { TZDate } from '@date-fns/tz'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { COMMON_TIMEZONES } from '@/utils/timezone'
 
+interface ScheduleSettings {
+  is_active: boolean
+  frequency: string
+  hour: number
+  minute: number
+  day_of_week?: number
+  day_of_month?: number
+  timezone: string
+  next_scheduled_at?: string
+}
+
 interface CronPreviewProps {
-  cronExpression: string
+  scheduleSettings: ScheduleSettings | null
   isActive: boolean
 }
 
-export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
+export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
   const [nextRuns, setNextRuns] = useState<Date[]>([])
   const [timeUntilNext, setTimeUntilNext] = useState<string>('')
   const [previewTimezone, setPreviewTimezone] = useState('America/New_York')
 
   useEffect(() => {
     const calculateNextRuns = () => {
-      const parts = cronExpression.split(' ')
-      if (parts.length !== 5) return []
+      if (!scheduleSettings) return []
 
-      const [minute, hour, dayOfMonth, , dayOfWeek] = parts
+      const { frequency, hour, minute, day_of_week, day_of_month } = scheduleSettings
       const runs: Date[] = []
       const now = new Date()
       
@@ -33,16 +43,25 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
       for (let i = 0; i < 5; i++) {
         let nextRun: Date | null = null
         
-        if (dayOfWeek !== '*') {
-          const targetDay = parseInt(dayOfWeek)
+        if (frequency === 'daily') {
+          nextRun = setMinutes(setHours(baseDate, hour || 9), minute || 0)
+          if (nextRun <= now && i === 0) {
+            nextRun = addDays(nextRun, 1)
+          }
+          runs.push(nextRun)
+          baseDate = addDays(nextRun, 1)
+        } 
+        else if (frequency === 'weekly' || frequency === 'biweekly') {
+          const targetDay = day_of_week ?? 1 // Default to Monday
           let checkDate = baseDate
           
+          // Find next occurrence of target day
           for (let j = 0; j < 7; j++) {
             if (checkDate.getDay() === targetDay) {
-              nextRun = setMinutes(setHours(checkDate, parseInt(hour) || 0), parseInt(minute) || 0)
+              nextRun = setMinutes(setHours(checkDate, hour || 9), minute || 0)
               if (nextRun <= now && i === 0) {
-                checkDate = addDays(checkDate, 7)
-                nextRun = setMinutes(setHours(checkDate, parseInt(hour) || 0), parseInt(minute) || 0)
+                checkDate = addDays(checkDate, frequency === 'biweekly' ? 14 : 7)
+                nextRun = setMinutes(setHours(checkDate, hour || 9), minute || 0)
               }
               break
             }
@@ -51,26 +70,20 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
           
           if (nextRun) {
             runs.push(nextRun)
-            baseDate = addWeeks(nextRun, dayOfMonth === '*/14' ? 2 : 1)
+            baseDate = addDays(nextRun, frequency === 'biweekly' ? 14 : 7)
           }
-        } else if (dayOfMonth !== '*') {
-          const targetDayOfMonth = dayOfMonth === '*/14' ? 1 : parseInt(dayOfMonth)
+        } 
+        else if (frequency === 'monthly') {
+          const targetDayOfMonth = day_of_month ?? 1
           let checkDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), targetDayOfMonth)
-          checkDate = setMinutes(setHours(checkDate, parseInt(hour) || 0), parseInt(minute) || 0)
+          checkDate = setMinutes(setHours(checkDate, hour || 9), minute || 0)
           
-          if (checkDate <= now) {
+          if (checkDate <= now && i === 0) {
             checkDate = addMonths(checkDate, 1)
           }
           
           runs.push(checkDate)
           baseDate = addMonths(checkDate, 1)
-        } else {
-          nextRun = setMinutes(setHours(baseDate, parseInt(hour) || 0), parseInt(minute) || 0)
-          if (nextRun <= now) {
-            nextRun = addDays(nextRun, 1)
-          }
-          runs.push(nextRun)
-          baseDate = addDays(nextRun, 1)
         }
       }
       
@@ -108,7 +121,7 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
       
       return () => clearInterval(interval)
     }
-  }, [cronExpression])
+  }, [scheduleSettings])
 
   const formatLocalTime = (date: Date, timezone: string) => {
     const tzDate = new TZDate(date.getTime(), timezone)
@@ -205,8 +218,7 @@ export function CronPreview({ cronExpression, isActive }: CronPreviewProps) {
 
       <div className="bg-info/10 rounded-lg p-3">
         <p className="text-xs text-info">
-          <strong>Note:</strong> Newsletter checks run daily at 9:00 AM EST (2:00 PM UTC). 
-          The frequency setting determines which days newsletters are actually sent.
+          <strong>Note:</strong> Newsletter checks run hourly. The schedule above shows when newsletters will actually be sent based on your frequency settings and local time ({scheduleSettings?.timezone || 'America/New_York'}).
         </p>
       </div>
     </div>
