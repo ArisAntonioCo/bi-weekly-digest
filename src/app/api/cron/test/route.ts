@@ -55,7 +55,9 @@ export async function GET(request: NextRequest) {
     const aiResponse = await NewsletterService.generateContent(config.system_prompt)
 
     // Send to all subscribers in batch (single API call)
-    const now = new Date()
+    let successCount: number
+    let failureCount: number
+    
     try {
       await NewsletterService.sendEmail({
         to: subscribers, // Send to all subscribers at once
@@ -64,13 +66,13 @@ export async function GET(request: NextRequest) {
       }, aiResponse)
       
       // Single API call success - all emails delivered
-      var successCount = subscribers.length
-      var failureCount = 0
+      successCount = subscribers.length
+      failureCount = 0
     } catch (error) {
       console.error('Batch email send failed:', error)
       // Single API call failed - no emails delivered
-      var successCount = 0
-      var failureCount = subscribers.length
+      successCount = 0
+      failureCount = subscribers.length
     }
 
     // Store newsletter (same as production but marked as test)
