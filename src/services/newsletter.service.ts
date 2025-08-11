@@ -44,7 +44,7 @@ export class NewsletterService {
       try {
         console.log('Attempting Responses API with web_search_preview for newsletter generation...')
         const response = await openai.responses.create({
-          model: 'o1-mini',
+          model: 'gpt-4o',
           instructions: `${systemPrompt}\n\nIMPORTANT: Use web search to get the most current market data, stock prices, and financial news for the investment analysis.`,
           input: 'Generate comprehensive investment analysis based on current market conditions. Include real-time stock prices and recent market developments.',
           tools: [{ type: 'web_search_preview' }],
@@ -60,7 +60,7 @@ export class NewsletterService {
         
         // Fallback to regular chat completions
         const completion = await openai.chat.completions.create({
-          model: 'o1-mini',
+          model: 'gpt-4o',
           temperature: 0.45,
           messages: [
             { 
@@ -324,7 +324,7 @@ export class NewsletterService {
     const markdownContent = `# 3-Year MOIC Investment Analysis
 
 **Generated:** ${new Date().toLocaleString()}
-**Model:** o1-mini with Web Search
+**Model:** gpt-4o with Web Search
 **Type:** ${analysisType.type}
 **Framework:** Elite Investor Perspectives
 
