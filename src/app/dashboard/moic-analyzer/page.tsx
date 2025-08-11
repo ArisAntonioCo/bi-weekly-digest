@@ -56,7 +56,7 @@ export default function FinancePage() {
       setUser(user)
     }
     loadUser()
-  }, [])
+  }, [supabase.auth])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })

@@ -19,11 +19,8 @@ import {
   ArrowRight, 
   ChevronRight,
   Sparkles,
-  BarChart3,
   Bell,
-  FileText,
-  MessageSquare,
-  PieChart
+  FileText
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { format } from 'date-fns'
@@ -252,7 +249,7 @@ export default function DashboardPage() {
                     <Link href="/blogs">
                       <Button 
                         variant="ghost" 
-                        size="md" 
+                        size="sm" 
                         className="hover:bg-transparent underline underline-offset-4 p-0 h-auto"
                       >
                         View All
