@@ -184,9 +184,9 @@ function calculateNextScheduledDate(schedule: Pick<NewsletterSchedule, 'frequenc
       break
   }
   
-  // Set the specific time
-  next.setHours(schedule.hour)
-  next.setMinutes(schedule.minute)
+  // Set the specific time (default to 9:00 AM if null)
+  next.setHours(schedule.hour ?? 9)
+  next.setMinutes(schedule.minute ?? 0)
   next.setSeconds(0)
   next.setMilliseconds(0)
   
