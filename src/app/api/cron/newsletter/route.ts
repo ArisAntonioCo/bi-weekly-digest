@@ -6,26 +6,62 @@ import { NewsletterSchedule } from '@/types/newsletter'
 export async function GET(request: NextRequest) {
   try {
     console.log('Newsletter cron triggered:', new Date().toISOString())
+    console.log('Headers:', Object.fromEntries(request.headers.entries()))
     
     // Verify this is a Vercel cron job or authorized request
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      console.log('Unauthorized cron request')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const cronSecretFromVercel = request.headers.get('x-vercel-cron-secret')
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
+    
+    console.log('Auth check:', {
+      hasAuthHeader: !!authHeader,
+      hasCronSecretHeader: !!cronSecretFromVercel,
+      hasCronSecret: !!process.env.CRON_SECRET,
+      authMatches: authHeader === expectedAuth,
+      isVercelCron: !!cronSecretFromVercel
+    })
+    
+    // Allow if either proper auth OR it's from Vercel cron
+    const isAuthorized = authHeader === expectedAuth || !!cronSecretFromVercel
+    
+    if (!isAuthorized) {
+      console.log('Unauthorized cron request:', {
+        received: authHeader ? 'Bearer [REDACTED]' : 'none',
+        hasVercelHeader: !!cronSecretFromVercel,
+        expected: process.env.CRON_SECRET ? 'Bearer [REDACTED]' : 'CRON_SECRET not set'
+      })
+      return NextResponse.json({ 
+        error: 'Unauthorized',
+        message: 'Missing or invalid CRON_SECRET' 
+      }, { status: 401 })
     }
 
     const supabase = await createClient()
     
     // Get the schedule configuration
-    const { data: schedule, error: scheduleError } = await supabase
+    const { data: schedules, error: scheduleError } = await supabase
       .from('newsletter_schedule')
       .select('*')
-      .single()
+      .eq('is_active', true)
+      .limit(1)
 
-    if (scheduleError || !schedule) {
-      console.log('Schedule not found:', scheduleError)
-      return NextResponse.json({ error: 'Schedule not found' }, { status: 404 })
+    if (scheduleError) {
+      console.log('Error fetching schedule:', scheduleError)
+      return NextResponse.json({ 
+        error: 'Failed to fetch schedule',
+        details: scheduleError 
+      }, { status: 500 })
     }
+
+    if (!schedules || schedules.length === 0) {
+      console.log('No active schedule found')
+      return NextResponse.json({ 
+        error: 'No active schedule found',
+        message: 'Please configure a newsletter schedule in the database' 
+      }, { status: 404 })
+    }
+
+    const schedule = schedules[0]
 
     console.log('Found schedule:', { is_active: schedule.is_active, frequency: schedule.frequency })
 

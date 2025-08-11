@@ -23,16 +23,22 @@ export class NewsletterService {
   static async getConfiguration() {
     const supabase = await createClient()
     
-    const { data: config, error } = await supabase
+    const { data: configs, error } = await supabase
       .from('configurations')
       .select('system_prompt')
-      .single()
+      .limit(1)
 
-    if (error || !config) {
-      throw new Error('Configuration not found')
+    if (error) {
+      console.error('Error fetching configuration:', error)
+      throw new Error(`Failed to fetch configuration: ${error.message}`)
     }
 
-    return config as NewsletterConfig
+    if (!configs || configs.length === 0) {
+      console.error('No configuration found in database')
+      throw new Error('No configuration found. Please add a configuration record to the database.')
+    }
+
+    return configs[0] as NewsletterConfig
   }
 
   /**
