@@ -13,7 +13,11 @@ export function BlogPreviewSection() {
           Explore our AI-powered analysis and stay ahead of market trends with comprehensive investment research.
         </p>
         <Link href="/blogs">
-          <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted w-full sm:w-auto">
+          <Button 
+            variant="default" 
+            size="lg"
+            className="rounded-full text-sm sm:text-base"
+          >
             View All Insights
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

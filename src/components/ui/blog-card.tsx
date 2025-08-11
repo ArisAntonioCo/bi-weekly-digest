@@ -1,10 +1,8 @@
 "use client"
 
 import { memo } from 'react'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { CalendarDays, TrendingUp, AlertTriangle, ArrowRight, Clock } from 'lucide-react'
+import { CalendarDays, TrendingUp, AlertTriangle, ChevronRight, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { Blog } from '@/types/blog'
@@ -56,47 +54,45 @@ export const BlogCard = memo(function BlogCard({ blog }: BlogCardProps) {
   const Icon = analysisType.icon
 
   return (
-    <Card className="group h-full flex flex-col hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs">
-            <Icon className="h-3 w-3" />
-            {analysisType.type}
-          </Badge>
-        </div>
-        <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
-          {blog.title}
-        </h3>
-      </CardHeader>
-      
-      <CardContent className="flex-1 pt-0">
-        <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
-          {getPreviewText(blog.content)}
-        </p>
-      </CardContent>
-      
-      <CardFooter className="pt-4 flex flex-col gap-3">
-        <div className="flex items-center justify-between w-full text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <CalendarDays className="h-3 w-3" />
-            {format(new Date(blog.created_at), 'MMM d, yyyy')}
+    <Link href={`/blogs/${blog.id}`} className="block h-full">
+      <div className="group h-full flex flex-col bg-muted/50 rounded-3xl p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
+        {/* Header */}
+        <div className="mb-4">
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs rounded-full">
+              <Icon className="h-3 w-3" />
+              {analysisType.type}
+            </Badge>
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {getReadingTime(blog.content)}
-          </div>
+          <h3 className="font-semibold text-lg line-clamp-2 text-foreground group-hover:text-foreground/90 transition-colors">
+            {blog.title}
+          </h3>
         </div>
         
-        <Link href={`/blogs/${blog.id}`} className="w-full">
-          <Button 
-            variant="outline" 
-            className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-          >
-            Read Full Analysis
-            <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </Link>
-      </CardFooter>
-    </Card>
+        {/* Content Preview */}
+        <div className="flex-1 mb-4">
+          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+            {getPreviewText(blog.content)}
+          </p>
+        </div>
+        
+        {/* Footer */}
+        <div className="pt-4 border-t border-border/50">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <CalendarDays className="h-3 w-3" />
+                {format(new Date(blog.created_at), 'MMM d')}
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {getReadingTime(blog.content)}
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+          </div>
+        </div>
+      </div>
+    </Link>
   )
 })

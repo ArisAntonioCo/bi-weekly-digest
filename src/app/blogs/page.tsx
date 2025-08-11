@@ -21,38 +21,31 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   ])
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Investment Insights</h1>
-          <p className="text-muted-foreground">AI-Powered Market Analysis</p>
-        </div>
-        
-        {/* System Prompt Summary */}
-        {systemPromptSummary && (
-          <div className="mb-8 p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-border">
-            <p className="text-sm text-muted-foreground text-center">
-              {systemPromptSummary}
-            </p>
+      <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-10">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Investment Insights</h1>
+            <p className="text-muted-foreground mt-1">AI-Powered Market Analysis & Strategies</p>
           </div>
-        )}
+          
+          {/* System Prompt Summary - Simplified */}
+          {systemPromptSummary && (
+            <div className="mb-8 p-4 bg-muted/30 rounded-2xl">
+              <p className="text-sm text-muted-foreground text-center">
+                {systemPromptSummary}
+              </p>
+            </div>
+          )}
 
-        {/* Blog Content with Search and Suspense */}
-        <BlogSearchClient totalCount={totalCount}>
-          <BlogListWrapper searchParams={params} />
-        </BlogSearchClient>
+          {/* Blog Content with Search and Suspense */}
+          <BlogSearchClient totalCount={totalCount}>
+            <BlogListWrapper searchParams={params} />
+          </BlogSearchClient>
+        </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border mt-auto">
-        <div className="container mx-auto px-6 py-8">
-          <div className="text-center text-muted-foreground text-sm">
-            © 2024 Weekly Digest. All rights reserved.
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
