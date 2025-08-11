@@ -2,7 +2,6 @@
 
 import { memo } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { CalendarDays, TrendingUp, AlertTriangle, ChevronRight, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import Link from 'next/link'
