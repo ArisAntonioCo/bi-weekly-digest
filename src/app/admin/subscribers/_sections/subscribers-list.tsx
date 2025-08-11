@@ -91,9 +91,9 @@ export function SubscribersList({
   }
 
   return (
-    <Card>
+    <Card className="border-0 bg-muted/30 rounded-2xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg font-medium">
           <Users className="h-5 w-5" />
           Subscriber List
         </CardTitle>
@@ -109,7 +109,7 @@ export function SubscribersList({
         ) : (
           <>
             {/* Desktop Table View */}
-            <div className="hidden md:block rounded-md border overflow-hidden">
+            <div className="hidden md:block rounded-xl border-0 bg-background/50 overflow-hidden">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -125,8 +125,8 @@ export function SubscribersList({
                       <TableRow key={subscriber.id}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                              <Mail className="h-4 w-4 text-primary" />
+                            <div className="h-8 w-8 rounded-full bg-black/5 flex items-center justify-center">
+                              <Mail className="h-4 w-4 text-foreground/70" />
                             </div>
                             <span className="truncate">{subscriber.email}</span>
                           </div>
@@ -134,7 +134,7 @@ export function SubscribersList({
                         <TableCell>
                           <Badge 
                             variant={subscriber.subscribed ? "default" : "secondary"}
-                            className={subscriber.subscribed ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}
+                            className={subscriber.subscribed ? "bg-green-500/10 text-green-600 border-0" : "bg-yellow-500/10 text-yellow-600 border-0"}
                           >
                             {subscriber.subscribed ? 'Active' : 'Inactive'}
                           </Badge>
@@ -149,7 +149,7 @@ export function SubscribersList({
                               size="sm"
                               onClick={() => handleSendEmail(subscriber)}
                               disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
-                              className="h-8 px-3"
+                              className="h-8 px-3 border-border/50 bg-background/50 hover:bg-background"
                               title="Send AI Analysis"
                             >
                               {sendingEmail === subscriber.id ? (
@@ -167,7 +167,7 @@ export function SubscribersList({
                               size="sm"
                               onClick={() => handleToggleSubscription(subscriber)}
                               disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
-                              className="h-8 px-3"
+                              className="h-8 px-3 border-border/50 bg-background/50 hover:bg-background"
                             >
                               {actionLoading === subscriber.id ? (
                                 <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
@@ -184,7 +184,7 @@ export function SubscribersList({
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3 border-border/50"
                                   disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
                                 >
                                   <Trash2 className="h-3 w-3" />
@@ -221,12 +221,12 @@ export function SubscribersList({
             {/* Mobile Card View */}
             <div className="md:hidden space-y-3">
               {subscribers.map((subscriber) => (
-                <Card key={subscriber.id} className="p-4">
+                <Card key={subscriber.id} className="p-4 border-0 bg-background/50 rounded-xl">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Mail className="h-4 w-4 text-primary" />
+                        <div className="h-10 w-10 rounded-full bg-black/5 flex items-center justify-center flex-shrink-0">
+                          <Mail className="h-4 w-4 text-foreground/70" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="font-medium text-sm truncate">{subscriber.email}</div>
@@ -237,7 +237,7 @@ export function SubscribersList({
                       </div>
                       <Badge 
                         variant={subscriber.subscribed ? "default" : "secondary"}
-                        className={`ml-2 ${subscriber.subscribed ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}`}
+                        className={`ml-2 ${subscriber.subscribed ? "bg-green-500/10 text-green-600 border-0" : "bg-yellow-500/10 text-yellow-600 border-0"}`}
                       >
                         {subscriber.subscribed ? 'Active' : 'Inactive'}
                       </Badge>
@@ -250,7 +250,7 @@ export function SubscribersList({
                           size="sm"
                           onClick={() => handleSendEmail(subscriber)}
                           disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
-                          className="h-9 text-xs justify-center"
+                          className="h-9 text-xs justify-center border-border/50 bg-background/50 hover:bg-background"
                         >
                           {sendingEmail === subscriber.id ? (
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
@@ -267,7 +267,7 @@ export function SubscribersList({
                           size="sm"
                           onClick={() => handleToggleSubscription(subscriber)}
                           disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
-                          className="h-9 text-xs justify-center"
+                          className="h-9 text-xs justify-center border-border/50 bg-background/50 hover:bg-background"
                         >
                           {actionLoading === subscriber.id ? (
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
@@ -285,7 +285,7 @@ export function SubscribersList({
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-9 text-xs w-full justify-center"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-9 text-xs w-full justify-center border-border/50"
                             disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
                           >
                             <Trash2 className="h-3 w-3 mr-1" />

@@ -101,19 +101,19 @@ export function SubscribersPage() {
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-6xl">
       <div className="space-y-6 sm:space-y-8">
         <div className="space-y-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Subscribers</h1>
+          <h1 className="text-2xl sm:text-3xl font-medium text-foreground">Subscribers</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border">
-              <div className="text-xl sm:text-2xl font-bold text-primary">{subscribers.length}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Total Subscribers</div>
+            <div className="bg-muted/30 rounded-2xl p-4 sm:p-6 border-0">
+              <div className="text-2xl sm:text-3xl font-medium text-foreground">{subscribers.length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Total Subscribers</div>
             </div>
-            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border">
-              <div className="text-xl sm:text-2xl font-bold text-success">{subscribers.filter(s => s.subscribed).length}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Active Subscribers</div>
+            <div className="bg-muted/30 rounded-2xl p-4 sm:p-6 border-0">
+              <div className="text-2xl sm:text-3xl font-medium text-green-600">{subscribers.filter(s => s.subscribed).length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Active Subscribers</div>
             </div>
-            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border sm:col-span-2 lg:col-span-1">
-              <div className="text-xl sm:text-2xl font-bold text-warning">{subscribers.filter(s => !s.subscribed).length}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Inactive Subscribers</div>
+            <div className="bg-muted/30 rounded-2xl p-4 sm:p-6 border-0 sm:col-span-2 lg:col-span-1">
+              <div className="text-2xl sm:text-3xl font-medium text-yellow-600">{subscribers.filter(s => !s.subscribed).length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground mt-1">Inactive Subscribers</div>
             </div>
           </div>
         </div>
