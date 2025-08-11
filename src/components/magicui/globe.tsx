@@ -43,8 +43,8 @@ export function Globe({
   className?: string;
   config?: COBEOptions;
 }) {
-  let phi = 0;
-  let width = 0;
+  const phi = useRef(0);
+  const width = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
@@ -65,6 +65,7 @@ export function Globe({
     if (canvasRef.current) {
       canvasRef.current.style.cursor = value !== null ? "grabbing" : "grab";
     }
+  };
  
   const updateMovement = (clientX: number) => {
     if (pointerInteracting.current !== null) {
@@ -77,7 +78,7 @@ export function Globe({
   useEffect(() => {
     const onResize = () => {
       if (canvasRef.current) {
-        width = canvasRef.current.offsetWidth;
+        width.current = canvasRef.current.offsetWidth;
       }
     };
 
@@ -91,13 +92,13 @@ export function Globe({
       dark: isDarkMode ? 1 : 0,
       mapBrightness: isDarkMode ? 6 : 1.2,
       baseColor: isDarkMode ? [0.3, 0.3, 0.3] : [1, 1, 1],
-      width: width * 2,
-      height: width * 2,
+      width: width.current * 2,
+      height: width.current * 2,
       onRender: (state) => {
-        if (!pointerInteracting.current) phi += 0.005;
-        state.phi = phi + rs.get();
-        state.width = width * 2;
-        state.height = width * 2;
+        if (!pointerInteracting.current) phi.current += 0.005;
+        state.phi = phi.current + rs.get();
+        state.width = width.current * 2;
+        state.height = width.current * 2;
       },
     });
 
@@ -106,7 +107,7 @@ export function Globe({
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, [rs, config]);
+  }, [rs, config, isDarkMode]);
 
   return (
     <div

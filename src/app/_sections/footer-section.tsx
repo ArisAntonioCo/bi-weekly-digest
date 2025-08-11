@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { TrendingUp, Twitter, Linkedin, Mail, ArrowRight } from 'lucide-react'
+import { Twitter, Linkedin, Mail, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export function FooterSection() {

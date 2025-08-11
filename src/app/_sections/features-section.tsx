@@ -3,6 +3,7 @@
 import { FeatureCard } from '@/components/feature-card'
 import { Globe } from '@/components/magicui/globe'
 import { NumberTicker } from '@/components/magicui/number-ticker'
+import { Ripple } from '@/components/magicui/ripple'
 import { TrendingUp, TrendingDown, Zap, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useState, useEffect } from 'react'
@@ -110,7 +111,14 @@ const StackedCards = () => {
   }
   
   return (
-    <div className="relative h-[250px] w-full" style={{ perspective: '1000px' }}>
+    <div className="relative h-[250px] w-full overflow-visible" style={{ perspective: '1000px' }}>
+      <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] z-0 pointer-events-none">
+        <Ripple 
+          mainCircleSize={150}
+          mainCircleOpacity={0.15}
+          numCircles={5}
+        />
+      </div>
       <AnimatePresence mode="popLayout">
         {getVisibleInsights().map((insight, i) => {
           const style = getCardStyle(insight.position)
@@ -154,21 +162,21 @@ const features = [
   {
     title: "Comprehensive 3-Year Forward MOIC",
     bottomContent: (
-      <div className="flex justify-around items-end h-[200px] w-full">
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground mb-2">Bear Case</div>
+      <div className="flex flex-col justify-center h-[200px] w-full space-y-4 px-4">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">Bear Case</div>
           <div className="text-3xl font-bold text-muted-foreground">
             <NumberTicker value={1.8} decimalPlaces={1} delay={0} />x
           </div>
         </div>
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground mb-2">Base Case</div>
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">Base Case</div>
           <div className="text-4xl font-bold text-foreground">
             <NumberTicker value={2.5} decimalPlaces={1} delay={0.2} />x
           </div>
         </div>
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground mb-2">Bull Case</div>
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">Bull Case</div>
           <div className="text-3xl font-bold" style={{ color: 'rgb(34, 197, 94)' }}>
             <NumberTicker value={3.5} decimalPlaces={1} delay={0.4} />x
           </div>
@@ -183,22 +191,6 @@ const features = [
         <div className="relative translate-y-[45%]">
           <Globe 
             className="w-[600px] h-[600px]" 
-            config={{
-              width: 1200,
-              height: 1200,
-              devicePixelRatio: 2,
-              phi: 0,
-              theta: 0.3,
-              markerColor: [255 / 255, 100 / 255, 0 / 255],
-              markers: [
-                { location: [37.7595, -122.4367], size: 0.03 },
-                { location: [40.7128, -74.006], size: 0.04 },
-                { location: [51.5074, -0.1278], size: 0.03 },
-                { location: [35.6762, 139.6503], size: 0.04 },
-                { location: [-33.8688, 151.2093], size: 0.03 },
-                { location: [1.3521, 103.8198], size: 0.03 },
-              ],
-            }}
           />
         </div>
       </div>
@@ -226,7 +218,6 @@ export function FeaturesSection() {
           <FeatureCard
             key={index}
             title={feature.title}
-            subtitle={feature.subtitle}
             bottomContent={feature.bottomContent}
           />
         ))}
