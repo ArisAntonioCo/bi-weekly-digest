@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
     }
 
     const schedule = schedules[0]
-
     console.log('Found schedule:', { is_active: schedule.is_active, frequency: schedule.frequency })
 
     // Check if schedule is active
