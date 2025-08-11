@@ -153,6 +153,19 @@ function shouldSendNewsletter(schedule: NewsletterSchedule, now: Date): boolean 
   const tz = schedule.timezone || 'America/New_York'
   const parts = getTimeParts(now, tz)
 
+  // For testing: if hour/minute are null, allow sending every 5 minutes
+  if (schedule.hour === null && schedule.minute === null) {
+    // Prevent multiple sends within 5 minutes
+    if (schedule.last_sent_at) {
+      const lastSent = new Date(schedule.last_sent_at)
+      const minutesSince = Math.floor((now.getTime() - lastSent.getTime()) / (1000 * 60))
+      if (minutesSince < 5) {
+        return false
+      }
+    }
+    return true // Allow sending for testing
+  }
+
   // Gate by local time: only send at the configured local hour/minute
   const targetHour = schedule.hour ?? 9
   const targetMinute = schedule.minute ?? 0
@@ -194,6 +207,12 @@ function shouldSendNewsletter(schedule: NewsletterSchedule, now: Date): boolean 
 
 function calculateNextScheduledDate(schedule: NewsletterSchedule, from: Date): Date {
   const next = new Date(from)
+  
+  // For testing: if hour/minute are null, schedule for 5 minutes later
+  if (schedule.hour === null && schedule.minute === null) {
+    next.setMinutes(next.getMinutes() + 5)
+    return next
+  }
   
   switch (schedule.frequency) {
     case 'daily':
