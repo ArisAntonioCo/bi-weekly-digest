@@ -1,6 +1,7 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createServiceClient } from '@/utils/supabase/server'
 import { resend } from '@/lib/resend'
 import OpenAI from 'openai'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -20,8 +21,8 @@ export class NewsletterService {
   /**
    * Fetches the newsletter configuration from the database
    */
-  static async getConfiguration() {
-    const supabase = await createClient()
+  static async getConfiguration(supabaseClient?: SupabaseClient) {
+    const supabase = supabaseClient || await createClient()
     
     const { data: configs, error } = await supabase
       .from('configurations')
@@ -355,8 +356,8 @@ ${content}
   /**
    * Stores the newsletter content in the database
    */
-  static async storeNewsletter(content: string, title?: string): Promise<void> {
-    const supabase = await createClient()
+  static async storeNewsletter(content: string, title?: string, supabaseClient?: SupabaseClient): Promise<void> {
+    const supabase = supabaseClient || await createClient()
     
     // Extract company name or ticker from content for better title generation
     const extractCompanyInfo = (text: string): string => {
@@ -399,8 +400,8 @@ ${content}
   /**
    * Gets active subscribers from the database
    */
-  static async getActiveSubscribers(): Promise<string[]> {
-    const supabase = await createClient()
+  static async getActiveSubscribers(supabaseClient?: SupabaseClient): Promise<string[]> {
+    const supabase = supabaseClient || await createClient()
     
     const { data, error } = await supabase
       .from('subscribers')
@@ -420,9 +421,10 @@ ${content}
   static async logNewsletterEvent(
     type: 'sent' | 'failed' | 'test',
     recipientCount: number,
-    metadata?: Record<string, unknown>
+    metadata?: Record<string, unknown>,
+    supabaseClient?: SupabaseClient
   ): Promise<void> {
-    const supabase = await createClient()
+    const supabase = supabaseClient || await createClient()
     
     await supabase
       .from('newsletter_logs')

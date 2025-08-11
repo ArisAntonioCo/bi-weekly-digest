@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
+import { createServiceClient } from '@/utils/supabase/server'
 import { NewsletterService } from '@/services/newsletter.service'
 import { NewsletterSchedule } from '@/types/newsletter'
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       }, { status: 401 })
     }
 
-    const supabase = await createClient()
+    const supabase = createServiceClient()
     
     // Get the schedule configuration
     const { data: schedules, error: scheduleError } = await supabase
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get active subscribers
-    const subscribers = await NewsletterService.getActiveSubscribers()
+    const subscribers = await NewsletterService.getActiveSubscribers(supabase)
     
     if (subscribers.length === 0) {
       return NextResponse.json({ 
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Generate content
-    const config = await NewsletterService.getConfiguration()
+    const config = await NewsletterService.getConfiguration(supabase)
     const aiResponse = await NewsletterService.generateContent(config.system_prompt)
 
     // Send to all subscribers
@@ -126,14 +126,14 @@ export async function GET(request: NextRequest) {
       .eq('id', schedule.id)
 
     // Store newsletter
-    await NewsletterService.storeNewsletter(aiResponse, `Weekly Investment Analysis - ${now.toLocaleDateString()}`)
+    await NewsletterService.storeNewsletter(aiResponse, `Weekly Investment Analysis - ${now.toLocaleDateString()}`, supabase)
 
     // Log event
     await NewsletterService.logNewsletterEvent('sent', subscribers.length, {
       success: successCount,
       failed: failureCount,
       cron: true
-    })
+    }, supabase)
 
     return NextResponse.json({
       success: true,
@@ -147,10 +147,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     
+    // Create service client for error logging
+    const supabase = createServiceClient()
     await NewsletterService.logNewsletterEvent('failed', 0, { 
       error: errorMessage,
       cron: true
-    })
+    }, supabase)
     
     return NextResponse.json(
       { error: errorMessage },
