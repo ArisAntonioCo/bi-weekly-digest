@@ -1,4 +1,4 @@
-import { createClient, createServiceClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/supabase/server'
 import { resend } from '@/lib/resend'
 import OpenAI from 'openai'
 import type { SupabaseClient } from '@supabase/supabase-js'
