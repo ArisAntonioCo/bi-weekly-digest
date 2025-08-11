@@ -47,7 +47,9 @@
       "Bash(vercel link:*)",
       "Bash(vercel env:*)",
       "Bash(vercel inspect:*)",
-      "Bash(vercel project:*)"
+      "Bash(vercel project:*)",
+      "mcp__supabase__get_anon_key",
+      "Bash(true)"
     ],
     "deny": []
   },

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServiceClient } from '@/utils/supabase/server'
 import { NewsletterService } from '@/services/newsletter.service'
 
 export async function GET(request: NextRequest) {
@@ -49,8 +50,11 @@ export async function GET(request: NextRequest) {
       }, { status: 401 })
     }
 
+    // Create service client for database operations
+    const supabase = createServiceClient()
+    
     // Generate test content
-    const config = await NewsletterService.getConfiguration()
+    const config = await NewsletterService.getConfiguration(supabase)
     const aiResponse = await NewsletterService.generateContent(config.system_prompt)
 
     // Send test email
@@ -63,7 +67,7 @@ export async function GET(request: NextRequest) {
     await NewsletterService.logNewsletterEvent('test', 1, {
       recipient: 'kulaizke@gmail.com',
       cron: true
-    })
+    }, supabase)
 
     return NextResponse.json({
       success: true,
@@ -74,10 +78,12 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     
+    // Create service client for error logging
+    const supabase = createServiceClient()
     await NewsletterService.logNewsletterEvent('failed', 0, { 
       error: errorMessage,
       type: 'cron-test'
-    })
+    }, supabase)
     
     return NextResponse.json(
       { error: errorMessage },
