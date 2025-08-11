@@ -297,8 +297,8 @@ export class NewsletterService {
       </div>
       
       <div class="footer">
-        <p>This analysis was generated using our 3-Year MOIC framework powered by elite investor insights</p>
-        <p class="footer-logo">MOIC Mastery</p>
+        <p>This analysis was generated using AI-powered investment research</p>
+        <p class="footer-logo">Weekly Digest</p>
       </div>
     </div>
   </div>
@@ -328,12 +328,11 @@ export class NewsletterService {
     const analysisType = getAnalysisType(content)
 
     // Format the text content for email
-    const markdownContent = `# 3-Year MOIC Investment Analysis
+    const markdownContent = `# AI Analysis Report
 
 **Generated:** ${new Date().toLocaleString()}
 **Model:** gpt-4o with Web Search
 **Type:** ${analysisType.type}
-**Framework:** Elite Investor Perspectives
 
 ## Analysis
 
@@ -341,11 +340,11 @@ ${content}
 
 ---
 
-*This analysis leverages the thinking framework of world-class investors including Bill Gurley, Brad Gerstner, Stan Druckenmiller, Mary Meeker, and Brian Birtwistle.*
-*MOIC Mastery - 3-Year Investment Projections*`
+*This analysis was generated using AI-powered investment research.*
+*Weekly Digest - AI-Powered Content Assistant*`
 
     return await resend.emails.send({
-      from: 'MOIC Mastery <noreply@updates.fitzsixto.com>',
+      from: 'Weekly Digest <noreply@updates.fitzsixto.com>',
       to,
       subject: isTest ? `[TEST] ${subject}` : subject,
       html: emailTemplate,

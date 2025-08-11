@@ -104,17 +104,22 @@ export async function GET(request: NextRequest) {
     const config = await NewsletterService.getConfiguration(supabase)
     const aiResponse = await NewsletterService.generateContent(config.system_prompt)
 
-    // Send to all subscribers
-    const emailPromises = subscribers.map(email => 
-      NewsletterService.sendEmail({
-        to: email,
-        subject: `AI Investment Analysis - ${now.toLocaleDateString()}`
+    // Send to all subscribers in batch (single API call)
+    try {
+      await NewsletterService.sendEmail({
+        to: subscribers, // Send to all subscribers at once
+        subject: 'AI Analysis Report - Weekly Digest'
       }, aiResponse)
-    )
-
-    const results = await Promise.allSettled(emailPromises)
-    const successCount = results.filter(r => r.status === 'fulfilled').length
-    const failureCount = results.filter(r => r.status === 'rejected').length
+      
+      // Single API call success - all emails delivered
+      var successCount = subscribers.length
+      var failureCount = 0
+    } catch (error) {
+      console.error('Batch email send failed:', error)
+      // Single API call failed - no emails delivered
+      var successCount = 0
+      var failureCount = subscribers.length
+    }
 
     // Update schedule
     await supabase
