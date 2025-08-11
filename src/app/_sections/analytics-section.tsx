@@ -26,6 +26,13 @@ export function AnalyticsSection() {
           powered by advanced ML models.
         </p>
       </div>
+      
+      {/* Disclaimer */}
+      <p className="mt-6 text-xs text-muted-foreground leading-relaxed">
+        All financial projections and analysis are generated using proprietary machine learning models trained on historical market data. 
+        Past performance is not indicative of future results. This is not personalized investment advice. 
+        Please consult with qualified financial advisors before making investment decisions.
+      </p>
     </section>
   )
 }
