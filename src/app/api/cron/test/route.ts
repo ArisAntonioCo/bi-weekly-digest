@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     // Send test email
     await NewsletterService.sendEmail({
       to: 'kulaizke@gmail.com',
-      subject: `[CRON TEST] AI Investment Analysis - ${new Date().toLocaleDateString()}`
+      subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`
     }, aiResponse)
 
     // Log test event
