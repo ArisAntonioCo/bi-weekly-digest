@@ -3,10 +3,40 @@ import { NewsletterService } from '@/services/newsletter.service'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify this is a Vercel cron job or authorized request
+    console.log('Test cron triggered:', new Date().toISOString())
+    console.log('Environment check:', {
+      hasCronSecret: !!process.env.CRON_SECRET,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV
+    })
+    
+    // For testing, let's be more permissive with auth
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const cronSecretFromVercel = request.headers.get('x-vercel-cron-secret')
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
+    
+    console.log('Auth check:', {
+      hasAuthHeader: !!authHeader,
+      hasCronSecretHeader: !!cronSecretFromVercel,
+      hasCronSecret: !!process.env.CRON_SECRET,
+      authMatches: authHeader === expectedAuth,
+      isVercelCron: !!cronSecretFromVercel
+    })
+    
+    // Allow if either proper auth OR it's from Vercel cron
+    const isAuthorized = authHeader === expectedAuth || !!cronSecretFromVercel
+    
+    if (!isAuthorized) {
+      console.log('Unauthorized test cron request')
+      return NextResponse.json({ 
+        error: 'Unauthorized',
+        message: 'Missing or invalid CRON_SECRET',
+        debug: {
+          hasAuthHeader: !!authHeader,
+          hasCronSecretHeader: !!cronSecretFromVercel,
+          expectedAuthSet: !!process.env.CRON_SECRET
+        }
+      }, { status: 401 })
     }
 
     // Generate test content

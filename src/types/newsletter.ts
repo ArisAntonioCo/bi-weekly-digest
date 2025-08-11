@@ -2,8 +2,8 @@ export interface NewsletterSchedule {
   id?: string
   is_active: boolean
   frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly'
-  hour: number
-  minute: number
+  hour: number | null  // Allow null for testing mode
+  minute: number | null  // Allow null for testing mode
   day_of_week?: number | null
   day_of_month?: number | null
   timezone: string
