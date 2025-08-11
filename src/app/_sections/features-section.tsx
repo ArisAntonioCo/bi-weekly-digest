@@ -5,7 +5,7 @@ import { Globe } from '@/components/magicui/globe'
 import { NumberTicker } from '@/components/magicui/number-ticker'
 import { Ripple } from '@/components/magicui/ripple'
 import { TrendingUp, TrendingDown, Zap, AlertCircle } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 const insights = [

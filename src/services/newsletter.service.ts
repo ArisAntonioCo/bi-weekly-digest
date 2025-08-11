@@ -399,7 +399,7 @@ ${content}
     const { data, error } = await supabase
       .from('subscribers')
       .select('email')
-      .eq('is_active', true)
+      .eq('subscribed', true)
 
     if (error) {
       throw new Error(`Failed to fetch subscribers: ${error.message}`)
