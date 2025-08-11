@@ -27,7 +27,7 @@ export function DashboardCard({
 
   const variantClasses = {
     default: 'bg-muted/50 min-h-[200px]',
-    highlight: 'bg-muted/30 min-h-[300px]',
+    highlight: 'bg-muted/50 min-h-[300px]',
     compact: 'bg-muted/50 min-h-[140px]'
   }
 
@@ -129,11 +129,9 @@ export function StatCard({ label, value, change, icon, className }: StatCardProp
   return (
     <DashboardCard variant="compact" padding="medium" className={className}>
       <div className="flex flex-col justify-between h-full">
-        {icon && (
-          <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-background/80 flex items-center justify-center mb-6">
-            {icon}
-          </div>
-        )}
+        <div className="mb-6">
+          {icon}
+        </div>
         <div>
           <p className="text-xs text-muted-foreground font-medium mb-1">{label}</p>
           <p className="text-2xl font-bold text-foreground">{value}</p>

@@ -25,6 +25,7 @@ import {
   MessageSquare,
   PieChart
 } from 'lucide-react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
@@ -42,6 +43,15 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
+
+  // Extract user initials for avatar (same as navbar)
+  const getUserInitials = (email: string): string => {
+    const parts = email.split('@')[0].split('.')
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+    }
+    return email.substring(0, 2).toUpperCase()
+  }
 
   useEffect(() => {
     async function loadUserData() {
@@ -161,13 +171,14 @@ export default function DashboardPage() {
                 <Button 
                   variant="outline" 
                   size="icon"
-                  className="rounded-2xl bg-muted/30 hover:bg-muted/50 border-0"
+                  className="rounded-full bg-muted/30 hover:bg-muted/50 border-0"
                 >
                   <Bell className="h-4 w-4" />
                 </Button>
                 <Button 
                   variant="default"
-                  className="rounded-full text-sm sm:text-base"
+                  size="sm"
+                  className="rounded-full"
                   onClick={() => router.push('/dashboard/moic-analyzer')}
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
@@ -182,41 +193,60 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3"
           >
             <StatCard
               label="Total Insights"
               value={blogs.length}
-              icon={<BookOpen className="h-5 w-5 text-foreground" />}
+              icon={
+                <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-foreground" />
+                </div>
+              }
             />
             <StatCard
               label="Newsletter Status"
               value={subscriptionStatus ? "Active" : "Inactive"}
-              icon={<Mail className="h-5 w-5 text-foreground" />}
+              icon={
+                <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
+                  <Mail className="h-5 w-5 text-foreground" />
+                </div>
+              }
             />
             <StatCard
               label="Latest Post"
               value={blogs.length > 0 ? format(new Date(blogs[0].created_at), 'MMM d') : 'None'}
-              icon={<FileText className="h-5 w-5 text-foreground" />}
+              icon={
+                <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-foreground" />
+                </div>
+              }
             />
             <StatCard
               label="Member Since"
               value={user?.created_at ? format(new Date(user.created_at), 'MMM yyyy') : 'N/A'}
-              icon={<User className="h-5 w-5 text-foreground" />}
+              icon={
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="bg-indigo-500 text-white text-sm font-medium">
+                    {user?.email ? getUserInitials(user.email) : 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              }
             />
           </motion.div>
 
           {/* Main Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {/* Left Column - Main Content */}
-            <div className="lg:col-span-2 space-y-3">
+            <div className="lg:col-span-2">
               {/* Latest Investment Insights */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
+                className="h-full"
               >
-                <DashboardCard variant="highlight" padding="medium">
+                <DashboardCard variant="highlight" padding="medium" className="h-full">
                   <CardHeader
                     title="Latest Investment Insights"
                     subtitle="AI-powered market analysis & strategies"
@@ -225,11 +255,11 @@ export default function DashboardPage() {
                       <Link href="/blogs">
                         <Button 
                           variant="ghost" 
-                          size="sm" 
-                          className="rounded-xl hover:bg-muted"
+                          size="md" 
+                          className="rounded-full hover:bg-muted"
                         >
                           View All
-                          <ArrowRight className="h-3 w-3 ml-1" />
+                          <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </Link>
                     }
@@ -277,6 +307,10 @@ export default function DashboardPage() {
                 </DashboardCard>
               </motion.div>
 
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="space-y-3">
               {/* AI Finance Assistant */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -288,58 +322,40 @@ export default function DashboardPage() {
                   clickable 
                   onClick={() => router.push('/dashboard/moic-analyzer')}
                   padding="medium"
-                  className="h-full"
+                  className="relative overflow-hidden"
                 >
-                  <CardHeader
-                    title="AI Finance Assistant"
-                    subtitle="Get instant MOIC projections"
-                    icon={<MessageSquare className="h-5 w-5 text-foreground" />}
-                  />
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0">
-                            <PieChart className="h-4 w-4 text-foreground" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground">3Y MOIC Analysis</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">Instant projections for any stock</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="h-4 w-4 text-foreground" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground">5 Expert Advisors</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">Professional analysis team</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0">
-                            <BarChart3 className="h-4 w-4 text-foreground" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground">Sector Comparison</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">Comparative MOIC analysis</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <div className="flex items-center justify-between p-3 rounded-2xl bg-muted/50 transition-colors">
-                          <span className="text-sm font-medium text-foreground">Start Analysis</span>
-                          <ArrowRight className="h-4 w-4 text-foreground" />
-                        </div>
+                  {/* Decorative Background Shapes */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {/* Dots pattern - top right */}
+                    <div className="absolute right-8 top-8">
+                      <div className="grid grid-cols-3 gap-2">
+                        {[...Array(9)].map((_, i) => (
+                          <div key={i} className="w-1.5 h-1.5 bg-foreground/15 rounded-full" />
+                        ))}
                       </div>
                     </div>
-                  </CardContent>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <CardHeader
+                      title="AI Assistant"
+                      subtitle="Instant MOIC Analysis"
+                    />
+                    <CardContent className="mt-6">
+                      <Button 
+                        variant="default" 
+                        size="lg"
+                        className="w-full rounded-full"
+                      >
+                        Start Analysis
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </CardContent>
+                  </div>
                 </DashboardCard>
               </motion.div>
-            </div>
 
-            {/* Right Column - Sidebar */}
-            <div className="space-y-3">
               {/* Newsletter Subscription */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -356,7 +372,7 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                       {/* Status Badge */}
                       <div className={cn(
-                        "p-3 rounded-2xl text-center",
+                        "p-3 rounded-full text-center",
                         subscriptionStatus 
                           ? "bg-green-500/10 border border-green-500/20" 
                           : "bg-muted border border-border"
@@ -410,7 +426,8 @@ export default function DashboardPage() {
                         <Button 
                           onClick={handleUnsubscribe}
                           variant="outline" 
-                          className="w-full rounded-xl"
+                          size="lg"
+                          className="w-full rounded-full"
                         >
                           Unsubscribe
                         </Button>
@@ -418,7 +435,8 @@ export default function DashboardPage() {
                         <Button 
                           onClick={handleSubscribe}
                           variant="default"
-                          className="w-full rounded-xl"
+                          size="lg"
+                          className="w-full rounded-full"
                         >
                           Subscribe Now
                         </Button>
