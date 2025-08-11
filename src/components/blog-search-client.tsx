@@ -92,8 +92,8 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 lg:space-y-0 lg:flex lg:gap-4">
-        <div className="flex-1">
+      <div className="space-y-4">
+        <div className="w-full">
           <BlogSearch 
             value={searchQuery}
             onChange={handleSearchChange}
@@ -102,28 +102,29 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
             className={isPending ? 'opacity-50' : ''}
           />
         </div>
-        <BlogFilters 
-          filters={filters}
-          onChange={handleFilterChange}
-        />
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <BlogFilters 
+            filters={filters}
+            onChange={handleFilterChange}
+          />
+          <div className="text-sm text-muted-foreground">
+            {totalCount} {totalCount === 1 ? 'Analysis' : 'Analyses'} Available
+          </div>
+        </div>
       </div>
 
       <Tabs value={sort} onValueChange={handleSortChange}>
-        <div className="flex items-center justify-between mb-6">
-          <TabsList className="grid w-[300px] grid-cols-2">
-            <TabsTrigger value="latest" className="flex items-center gap-2">
+        <div className="mb-6">
+          <TabsList className="grid w-[320px] grid-cols-2 rounded-full h-12">
+            <TabsTrigger value="latest" className="flex items-center gap-2 rounded-full h-10 text-base">
               <Clock className="h-4 w-4" />
               Latest
             </TabsTrigger>
-            <TabsTrigger value="oldest" className="flex items-center gap-2">
+            <TabsTrigger value="oldest" className="flex items-center gap-2 rounded-full h-10 text-base">
               <Calendar className="h-4 w-4" />
               Oldest
             </TabsTrigger>
           </TabsList>
-          
-          <div className="text-sm text-muted-foreground">
-            {totalCount} {totalCount === 1 ? 'Analysis' : 'Analyses'} Available
-          </div>
         </div>
 
         <TabsContent value={sort} className="mt-0">

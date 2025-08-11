@@ -62,7 +62,7 @@ export const BlogSearch = memo(function BlogSearch({
           value={localValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          className="pl-10 pr-10"
+          className="pl-10 pr-10 rounded-full h-12 text-base"
         />
         {localValue && (
           <Button
@@ -80,8 +80,9 @@ export const BlogSearch = memo(function BlogSearch({
       <Button
         type="button"
         onClick={handleSearchClick}
-        className="px-4"
+        className="px-6 rounded-full"
         variant="default"
+        size="lg"
       >
         Search
       </Button>
