@@ -1,5 +1,4 @@
-import Link from "next/link"
-import { TrendingUp } from "lucide-react"
+import { Logo } from "@/components/ui/logo"
 
 interface AuthPanelProps {
   children: React.ReactNode
@@ -24,12 +23,12 @@ export function AuthPanel({ children }: AuthPanelProps) {
           
           <div className="relative z-10">
             {/* Logo at top */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="bg-white text-black flex size-10 items-center justify-center rounded-md">
-                <TrendingUp className="size-6" />
-              </div>
-              <span className="text-2xl font-semibold">Weekly Digest</span>
-            </Link>
+            <Logo
+              variant="md"
+              href="/"
+              showIcon={false}
+              textClassName="text-white"
+            />
           </div>
           
           <div className="relative z-10">

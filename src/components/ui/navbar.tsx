@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { 
-  TrendingUp, 
   LogOut, 
   LayoutDashboard, 
   BookOpen,
@@ -23,6 +22,7 @@ import {
 } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { Logo } from '@/components/ui/logo'
 
 interface NavbarProps {
   className?: string
@@ -118,12 +118,12 @@ export default function Navbar({ className }: NavbarProps) {
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link 
-            href={user ? '/dashboard' : '/'} 
-            className="transition-opacity hover:opacity-80"
-          >
-            <span className="text-lg sm:text-xl font-semibold text-foreground">WeeklyDigest</span>
-          </Link>
+          <Logo
+            variant="sm"
+            href={user ? '/dashboard' : '/'}
+            showIcon={false}
+            textClassName="text-foreground"
+          />
 
           {/* Navigation */}
           <div className="flex items-center gap-4">

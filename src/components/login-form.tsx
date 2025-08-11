@@ -4,19 +4,12 @@ import { useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/app/(auth)/login/actions"
 import { Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Logo } from "@/components/ui/logo"
 
 export function LoginForm() {
   const searchParams = useSearchParams()
@@ -33,6 +26,13 @@ export function LoginForm() {
 
   return (
     <div className="w-full">
+      <div className="flex justify-center mb-8">
+        <Logo
+          variant="sm"
+          href={undefined}
+          textClassName="text-foreground"
+        />
+      </div>
       <div className="space-y-1 mb-8">
         <h2 className="text-2xl font-bold text-center text-foreground">
           Sign In
