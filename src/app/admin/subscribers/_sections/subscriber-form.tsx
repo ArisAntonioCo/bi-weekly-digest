@@ -47,9 +47,9 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
   }
 
   return (
-    <Card>
+    <Card className="border-0 bg-muted/30 rounded-2xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg font-medium">
           <UserPlus className="h-5 w-5" />
           Add New Subscriber
         </CardTitle>
@@ -67,7 +67,7 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
                   })}
                   type="email"
                   placeholder="Enter email address..."
-                  className="pl-10 h-11 text-base"
+                  className="pl-10 h-11 text-base border-border/50 bg-background/50 focus:bg-background transition-colors"
                   disabled={adding}
                 />
               </div>
@@ -78,7 +78,7 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
             <Button 
               type="submit" 
               disabled={adding} 
-              className="min-w-[140px] sm:w-auto w-full h-11 text-base font-medium"
+              className="min-w-[140px] sm:w-auto w-full h-11 text-base font-medium bg-black hover:bg-black/90 text-white border-0"
             >
               {adding ? (
                 <>

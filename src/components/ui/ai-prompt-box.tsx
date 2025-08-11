@@ -137,7 +137,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", ...props }, ref) => {
     const variantClasses = {
-      default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm",
+      default: "bg-primary hover:bg-primary/90 text-primary-foreground",
       outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",
       ghost: "bg-transparent hover:bg-accent hover:text-accent-foreground",
     };
@@ -335,7 +335,7 @@ const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
           <div
             ref={ref}
             className={cn(
-              "rounded-3xl border border-border bg-card p-2 shadow-[0_8px_30px_rgba(0,0,0,0.24)] transition-all duration-300",
+              "rounded-3xl border border-border bg-muted/30 p-2 transition-all duration-300",
               isLoading && "border-destructive/70",
               className
             )}
@@ -554,7 +554,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
         isLoading={isLoading}
         onSubmit={handleSubmit}
         className={cn(
-          "w-full bg-card border-border shadow-[0_8px_30px_rgba(0,0,0,0.24)] transition-all duration-300 ease-in-out",
+          "w-full bg-muted/30 border-border transition-all duration-300 ease-in-out",
           isRecording && "border-destructive/70",
           className
         )}
@@ -702,8 +702,8 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
                 isRecording
                   ? "bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20"
                   : hasContent
-                  ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-                  : "bg-accent/50 hover:bg-accent text-muted-foreground hover:text-accent-foreground border border-border"
+                  ? "bg-black hover:bg-black/90 text-white"
+                  : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
               )}
               onClick={() => {
                 if (isLoading) {
