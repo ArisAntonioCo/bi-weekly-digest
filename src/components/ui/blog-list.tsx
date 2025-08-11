@@ -77,17 +77,17 @@ export function BlogList({ blogs }: BlogListProps) {
                 </div>
               )}
               
-              <div className="w-full overflow-hidden">
-                <div className="prose prose-invert prose-zinc prose-lg w-full max-w-none [&>*]:max-w-full" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+              <div className="w-full overflow-x-hidden">
+                <div className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-full overflow-x-hidden [&>*]:!max-w-full" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkBreaks]}
                     components={{
-                      h1: ({ children }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-foreground">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-xl font-bold mb-3 mt-5 text-foreground">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-lg font-bold mb-2 mt-4 text-foreground">{children}</h3>,
-                      h4: ({ children }) => <h4 className="text-base font-bold mb-2 mt-3 text-foreground">{children}</h4>,
-                      h5: ({ children }) => <h5 className="text-base font-semibold mb-2 mt-3 text-foreground">{children}</h5>,
-                      h6: ({ children }) => <h6 className="text-sm font-semibold mb-2 mt-2 text-foreground">{children}</h6>,
+                      h1: ({ children }) => <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 mt-4 sm:mt-6 text-foreground">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-base sm:text-lg font-bold mb-2 mt-3 sm:mt-4 text-foreground">{children}</h3>,
+                      h4: ({ children }) => <h4 className="text-sm sm:text-base font-bold mb-2 mt-2 sm:mt-3 text-foreground">{children}</h4>,
+                      h5: ({ children }) => <h5 className="text-sm sm:text-base font-semibold mb-2 mt-2 sm:mt-3 text-foreground">{children}</h5>,
+                      h6: ({ children }) => <h6 className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 mt-2 text-foreground">{children}</h6>,
                       p: ({ children }) => {
                         // Check if this paragraph is actually a header-like text (no actual markdown header but should be)
                         const text = String(children);
@@ -102,26 +102,26 @@ export function BlogList({ blogs }: BlogListProps) {
                              text.includes('3-Year MOIC') ||
                              text.includes('Core Features') ||
                              text.includes('Analysis'))) {
-                          return <h2 className="text-xl font-bold mb-3 mt-5 text-foreground">{children}</h2>;
+                          return <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>;
                         }
-                        return <p className="text-base leading-relaxed mb-4 text-muted-foreground" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{children}</p>;
+                        return <p className="text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 text-muted-foreground break-words">{children}</p>;
                       },
-                      ul: ({ children }) => <ul className="text-base space-y-2 mb-4 ml-6 list-disc max-w-full">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-base space-y-2 mb-4 ml-6 list-decimal max-w-full">{children}</ol>,
+                      ul: ({ children }) => <ul className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 ml-4 sm:ml-6 list-disc list-inside">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 ml-4 sm:ml-6 list-decimal list-inside">{children}</ol>,
                       li: ({ children }) => (
-                        <li className="leading-relaxed text-muted-foreground mb-2" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                        <li className="leading-relaxed text-muted-foreground mb-2 break-words">
                           {children}
                         </li>
                       ),
                       strong: ({ children }) => <strong className="font-semibold text-foreground break-words">{children}</strong>,
                       em: ({ children }) => <em className="italic break-words">{children}</em>,
                       blockquote: ({ children }) => (
-                        <blockquote className="border-l-4 border-primary/20 pl-6 py-3 mb-4 italic text-muted-foreground bg-muted/30 rounded-r-lg">
+                        <blockquote className="border-l-4 border-primary/20 pl-4 sm:pl-6 py-2 sm:py-3 mb-3 sm:mb-4 italic text-muted-foreground bg-muted/30 rounded-r-lg">
                           {children}
                         </blockquote>
                       ),
                       code: ({ children }) => (
-                        <code className="bg-muted px-2 py-1 rounded-md text-sm font-mono" style={{ wordBreak: 'break-all' }}>{children}</code>
+                        <code className="bg-muted px-1 sm:px-2 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-mono" style={{ wordBreak: 'break-all' }}>{children}</code>
                       ),
                       pre: ({ children }) => {
                         // Check if this is an ASCII table/chart
@@ -157,14 +157,13 @@ export function BlogList({ blogs }: BlogListProps) {
                           
                           if (dataLines.length > 0) {
                             return (
-                              <div className="my-6 overflow-x-auto">
-                                <div className="inline-block min-w-full align-middle">
-                                  <div className="overflow-hidden border border-border/50 rounded-xl">
-                                    <table className="min-w-full divide-y divide-border/50">
+                              <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
+                                <div className="overflow-x-auto px-4 sm:px-0">
+                                  <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl">
                                       <thead className="bg-muted/50">
                                         <tr>
                                           {headers.map((header, idx) => (
-                                            <th key={idx} className="px-6 py-3 text-left text-sm font-semibold text-foreground uppercase tracking-wider">
+                                            <th key={idx} className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider">
                                               {header}
                                             </th>
                                           ))}
@@ -176,7 +175,7 @@ export function BlogList({ blogs }: BlogListProps) {
                                           return (
                                             <tr key={rowIdx} className="hover:bg-muted/30 transition-colors">
                                               {cells.map((cell, cellIdx) => (
-                                                <td key={cellIdx} className="px-6 py-3 text-base text-muted-foreground">
+                                                <td key={cellIdx} className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground">
                                                   {cell}
                                                 </td>
                                               ))}
@@ -184,8 +183,7 @@ export function BlogList({ blogs }: BlogListProps) {
                                           );
                                         })}
                                       </tbody>
-                                    </table>
-                                  </div>
+                                  </table>
                                 </div>
                               </div>
                             );
@@ -194,19 +192,17 @@ export function BlogList({ blogs }: BlogListProps) {
                         
                         // Regular code block
                         return (
-                          <pre className="bg-muted p-4 rounded-xl overflow-x-auto mb-4 font-mono text-sm max-w-full">
+                          <pre className="bg-muted p-2 sm:p-4 rounded-lg sm:rounded-xl overflow-x-auto mb-3 sm:mb-4 font-mono text-xs sm:text-sm max-w-full">
                             {children}
                           </pre>
                         );
                       },
                       table: ({ children }) => (
-                        <div className="my-6 overflow-x-auto">
-                          <div className="inline-block min-w-full align-middle">
-                            <div className="overflow-hidden border border-border/50 rounded-xl">
-                              <table className="min-w-full divide-y divide-border/50">
-                                {children}
-                              </table>
-                            </div>
+                        <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
+                          <div className="overflow-x-auto px-4 sm:px-0">
+                            <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl">
+                              {children}
+                            </table>
                           </div>
                         </div>
                       ),
@@ -220,12 +216,12 @@ export function BlogList({ blogs }: BlogListProps) {
                         <tr className="hover:bg-muted/30 transition-colors">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-foreground uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider">
                           {children}
                         </th>
                       ),
                       td: ({ children }) => (
-                        <td className="px-6 py-3 text-base text-muted-foreground">
+                        <td className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground">
                           {children}
                         </td>
                       ),
@@ -262,10 +258,10 @@ export function BlogList({ blogs }: BlogListProps) {
                           
                           // Show a nice chart placeholder instead of broken image
                           return (
-                            <span className="block my-4 p-8 bg-gradient-to-br from-muted/20 to-muted/40 border border-border rounded-lg flex flex-col items-center justify-center">
-                              <ChartIcon className="h-14 w-14 text-muted-foreground/40 mb-3" />
-                              <span className="block text-sm text-muted-foreground font-semibold">{alt || chartType}</span>
-                              <span className="block text-xs text-muted-foreground/60 mt-1">Interactive chart would display here</span>
+                            <span className="block my-3 sm:my-4 p-4 sm:p-8 bg-gradient-to-br from-muted/20 to-muted/40 border border-border rounded-lg flex flex-col items-center justify-center">
+                              <ChartIcon className="h-10 w-10 sm:h-14 sm:w-14 text-muted-foreground/40 mb-2 sm:mb-3" />
+                              <span className="block text-xs sm:text-sm text-muted-foreground font-semibold">{alt || chartType}</span>
+                              <span className="block text-[10px] sm:text-xs text-muted-foreground/60 mt-1">Interactive chart would display here</span>
                             </span>
                           );
                         }

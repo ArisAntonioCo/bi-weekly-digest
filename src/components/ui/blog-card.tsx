@@ -55,30 +55,30 @@ export const BlogCard = memo(function BlogCard({ blog }: BlogCardProps) {
 
   return (
     <Link href={`/blogs/${blog.id}`} className="block h-full">
-      <div className="group h-full flex flex-col bg-muted/50 rounded-3xl p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
+      <div className="group h-full flex flex-col bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
         {/* Header */}
-        <div className="mb-4">
-          <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="mb-3 sm:mb-4">
+          <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
             <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs rounded-full">
               <Icon className="h-3 w-3" />
               {analysisType.type}
             </Badge>
           </div>
-          <h3 className="font-semibold text-lg line-clamp-2 text-foreground group-hover:text-foreground/90 transition-colors">
+          <h3 className="font-semibold text-base sm:text-lg line-clamp-2 text-foreground group-hover:text-foreground/90 transition-colors">
             {blog.title}
           </h3>
         </div>
         
         {/* Content Preview */}
-        <div className="flex-1 mb-4">
-          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+        <div className="flex-1 mb-3 sm:mb-4">
+          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed">
             {getPreviewText(blog.content)}
           </p>
         </div>
         
         {/* Footer */}
-        <div className="pt-4 border-t border-border/50">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="pt-3 sm:pt-4 border-t border-border/50">
+          <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <CalendarDays className="h-3 w-3" />

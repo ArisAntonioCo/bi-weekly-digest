@@ -57,7 +57,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-6xl mx-auto px-6 py-8">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/blogs">
@@ -73,7 +73,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
 
         {/* Article Header */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
           <div className="flex items-center gap-3 flex-wrap">
             <Badge 
               variant={analysisType.variant}
@@ -93,15 +93,15 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             </div>
           </div>
           
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
             {blog.title}
           </h1>
         </div>
 
         {/* Blog Content */}
-        <article className="w-full">
-          <div className="bg-muted/50 rounded-3xl p-6 md:p-8 overflow-hidden">
-            <div className="max-w-full">
+        <article className="w-full overflow-x-hidden">
+          <div className="bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 overflow-x-hidden">
+            <div className="max-w-full overflow-x-hidden">
               <BlogList blogs={[blog]} />
             </div>
           </div>
@@ -109,8 +109,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
         {/* Related Posts */}
         {relatedBlogs && relatedBlogs.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-border/50">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">Related Insights</h2>
+          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border/50">
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-4 sm:mb-6">Related Insights</h2>
             <div className="space-y-3">
               {relatedBlogs.map((related) => (
                 <Link 
@@ -118,7 +118,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   href={`/blogs/${related.id}`}
                   className="block group"
                 >
-                  <div className="p-6 bg-muted/50 rounded-3xl hover:bg-muted/70 transition-all">
+                  <div className="p-4 sm:p-6 bg-muted/50 rounded-2xl sm:rounded-3xl hover:bg-muted/70 transition-all">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
@@ -140,7 +140,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
       {/* Footer */}
       <footer className="border-t border-border/50 mt-auto">
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="text-center text-muted-foreground text-sm">
             © 2024 Weekly Digest. All rights reserved.
           </div>
