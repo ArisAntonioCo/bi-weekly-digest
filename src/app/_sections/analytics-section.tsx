@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 export function AnalyticsSection() {
@@ -19,12 +20,43 @@ export function AnalyticsSection() {
         </Link>
       </div>
 
-      <div className="bg-foreground rounded-3xl p-8 sm:p-12 lg:p-16 min-h-[500px]">
-        <p className="text-lg sm:text-xl font-medium text-background">
-          Institutional-grade analytical tools
-          <br />
-          powered by advanced ML models.
-        </p>
+      <div className="bg-foreground rounded-3xl p-8 sm:p-12 lg:p-16 min-h-[500px] relative overflow-hidden">
+        <div className="flex items-center justify-between gap-8">
+          <div className="flex-1">
+            <p className="text-lg sm:text-xl font-medium text-background">
+              Institutional-grade analytical tools
+              <br />
+              powered by advanced ML models.
+            </p>
+          </div>
+          
+          {/* Screenshots - Dashboard overlapping AI Chat */}
+          <div className="hidden lg:block absolute right-12 bottom-0">
+            <div className="relative">
+              {/* AI Chat Screenshot (back layer) */}
+              <Image
+                src="/ai-chat-sc.png"
+                alt="AI Financial Assistant Interface"
+                width={800}
+                height={900}
+                className="rounded-t-xl shadow-2xl"
+                priority
+              />
+              
+              {/* Dashboard Screenshot (front layer, overlapping from left) */}
+              <div className="absolute -left-96 top-20">
+                <Image
+                  src="/dashboard-sc.png"
+                  alt="Dashboard Interface"
+                  width={700}
+                  height={800}
+                  className="rounded-xl shadow-2xl"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Disclaimer */}
