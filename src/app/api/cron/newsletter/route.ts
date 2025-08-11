@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
     const emailPromises = subscribers.map(email => 
       NewsletterService.sendEmail({
         to: email,
-        subject: `Weekly Investment Analysis - ${now.toLocaleDateString()}`
+        subject: `AI Investment Analysis - ${now.toLocaleDateString()}`
       }, aiResponse)
     )
 
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
       .eq('id', schedule.id)
 
     // Store newsletter
-    await NewsletterService.storeNewsletter(aiResponse, `Weekly Investment Analysis - ${now.toLocaleDateString()}`, supabase)
+    await NewsletterService.storeNewsletter(aiResponse, undefined, supabase)
 
     // Log event
     await NewsletterService.logNewsletterEvent('sent', subscribers.length, {
