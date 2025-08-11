@@ -10,8 +10,26 @@ export async function GET(request: NextRequest) {
     
     // Verify this is a Vercel cron job or authorized request
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      console.log('Unauthorized cron request')
+    const cronSecretFromVercel = request.headers.get('x-vercel-cron-secret')
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
+    
+    console.log('Auth check:', {
+      hasAuthHeader: !!authHeader,
+      hasCronSecretHeader: !!cronSecretFromVercel,
+      hasCronSecret: !!process.env.CRON_SECRET,
+      authMatches: authHeader === expectedAuth,
+      isVercelCron: !!cronSecretFromVercel
+    })
+    
+    // Allow if either proper auth OR it's from Vercel cron
+    const isAuthorized = authHeader === expectedAuth || !!cronSecretFromVercel
+    
+    if (!isAuthorized) {
+      console.log('Unauthorized cron request:', {
+        received: authHeader ? 'Bearer [REDACTED]' : 'none',
+        hasVercelHeader: !!cronSecretFromVercel,
+        expected: process.env.CRON_SECRET ? 'Bearer [REDACTED]' : 'CRON_SECRET not set'
+      })
       return NextResponse.json({ 
         error: 'Unauthorized',
         message: 'Missing or invalid CRON_SECRET' 
@@ -31,14 +49,15 @@ export async function GET(request: NextRequest) {
       console.log('Error fetching schedule:', scheduleError)
       return NextResponse.json({ 
         error: 'Failed to fetch schedule',
-        details: scheduleError.message 
+        details: scheduleError 
       }, { status: 500 })
     }
 
     if (!schedules || schedules.length === 0) {
       console.log('No active schedule found')
       return NextResponse.json({ 
-        error: 'No active schedule found' 
+        error: 'No active schedule found',
+        message: 'Please configure a newsletter schedule in the database' 
       }, { status: 404 })
     }
 
