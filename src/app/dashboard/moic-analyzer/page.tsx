@@ -7,6 +7,7 @@ import { PromptInputBox } from '@/components/ui/ai-prompt-box'
 import { Button } from '@/components/ui/button'
 import { AIResponse } from '@/components/ui/ai-response'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { AnimatedOrb } from '@/components/ui/animated-orb'
 import { createClient } from '@/utils/supabase/client'
 
 interface Message {
@@ -144,12 +145,8 @@ export default function FinancePage() {
           {/* Welcome Message & Suggested Prompts */}
           {messages.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-              {/* Avatar */}
-              <Avatar className="h-16 w-16 mb-6">
-                <AvatarFallback className="bg-muted text-foreground text-xl font-medium">
-                  <Sparkles className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
+              {/* Animated Orb */}
+              <AnimatedOrb className="mb-6" />
               
               {/* Greeting */}
               <h1 className="text-3xl font-semibold text-foreground mb-2">
@@ -202,11 +199,7 @@ export default function FinancePage() {
                     >
                       {/* AI Avatar */}
                       {message.role === 'assistant' && (
-                        <Avatar className="h-8 w-8 flex-shrink-0">
-                          <AvatarFallback className="bg-muted text-foreground">
-                            <Sparkles className="h-4 w-4" />
-                          </AvatarFallback>
-                        </Avatar>
+                        <AnimatedOrb size="sm" className="flex-shrink-0" />
                       )}
                       
                       {/* Message content */}
@@ -237,11 +230,7 @@ export default function FinancePage() {
                 
                   {isLoading && (
                     <div className="flex gap-3 justify-start">
-                      <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarFallback className="bg-muted text-foreground">
-                          <Sparkles className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
+                      <AnimatedOrb size="sm" className="flex-shrink-0" />
                       <div className="bg-background rounded-2xl px-4 py-3">
                         <div className="flex space-x-2">
                           <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />

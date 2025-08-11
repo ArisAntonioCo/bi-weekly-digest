@@ -1,6 +1,5 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { CalendarDays, TrendingUp, AlertTriangle, BarChart3, LineChart, PieChart, Activity } from 'lucide-react'
@@ -45,10 +44,12 @@ export function BlogList({ blogs }: BlogListProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Latest Analysis</h2>
-        <Badge variant="outline">{blogs.length} Post{blogs.length !== 1 ? 's' : ''}</Badge>
-      </div>
+      {blogs.length > 1 && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Latest Analysis</h2>
+          <Badge variant="outline" className="rounded-full px-3">{blogs.length} Post{blogs.length !== 1 ? 's' : ''}</Badge>
+        </div>
+      )}
       
       <div className="grid gap-6">
         {blogs.map((blog) => {
@@ -56,37 +57,37 @@ export function BlogList({ blogs }: BlogListProps) {
           const Icon = analysisType.icon
           
           return (
-            <Card key={blog.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
+            <div key={blog.id} className="space-y-4">
+              {blogs.length > 1 && (
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2 flex-1">
-                    <CardTitle className="text-lg leading-tight">{blog.title}</CardTitle>
+                    <h3 className="text-lg font-semibold leading-tight">{blog.title}</h3>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <CalendarDays className="h-3 w-3" />
                         {format(new Date(blog.created_at), 'MMM d, yyyy')}
                       </div>
                       <Separator orientation="vertical" className="h-3" />
-                      <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs">
+                      <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs rounded-full px-3">
                         <Icon className="h-3 w-3" />
                         {analysisType.type}
                       </Badge>
                     </div>
                   </div>
                 </div>
-              </CardHeader>
+              )}
               
-              <CardContent className="pt-0">
-                <div className="prose prose-sm max-w-none dark:prose-invert">
+              <div className="w-full overflow-x-hidden">
+                <div className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-full overflow-x-hidden [&>*]:!max-w-full" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkBreaks]}
                     components={{
-                      h1: ({ children }) => <h1 className="text-xl font-bold mb-4 mt-6 text-foreground">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-lg font-bold mb-3 mt-5 text-foreground">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-base font-bold mb-2 mt-4 text-foreground">{children}</h3>,
-                      h4: ({ children }) => <h4 className="text-sm font-bold mb-2 mt-3 text-foreground">{children}</h4>,
-                      h5: ({ children }) => <h5 className="text-sm font-semibold mb-2 mt-3 text-foreground">{children}</h5>,
-                      h6: ({ children }) => <h6 className="text-sm font-semibold mb-2 mt-2 text-foreground">{children}</h6>,
+                      h1: ({ children }) => <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 mt-4 sm:mt-6 text-foreground">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-base sm:text-lg font-bold mb-2 mt-3 sm:mt-4 text-foreground">{children}</h3>,
+                      h4: ({ children }) => <h4 className="text-sm sm:text-base font-bold mb-2 mt-2 sm:mt-3 text-foreground">{children}</h4>,
+                      h5: ({ children }) => <h5 className="text-sm sm:text-base font-semibold mb-2 mt-2 sm:mt-3 text-foreground">{children}</h5>,
+                      h6: ({ children }) => <h6 className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 mt-2 text-foreground">{children}</h6>,
                       p: ({ children }) => {
                         // Check if this paragraph is actually a header-like text (no actual markdown header but should be)
                         const text = String(children);
@@ -101,26 +102,26 @@ export function BlogList({ blogs }: BlogListProps) {
                              text.includes('3-Year MOIC') ||
                              text.includes('Core Features') ||
                              text.includes('Analysis'))) {
-                          return <h2 className="text-lg font-bold mb-3 mt-5 text-foreground">{children}</h2>;
+                          return <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>;
                         }
-                        return <p className="text-sm leading-relaxed mb-3 text-muted-foreground">{children}</p>;
+                        return <p className="text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 text-muted-foreground break-words">{children}</p>;
                       },
-                      ul: ({ children }) => <ul className="text-sm space-y-1 mb-3 ml-5 list-disc">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-sm space-y-1 mb-3 ml-5 list-decimal">{children}</ol>,
+                      ul: ({ children }) => <ul className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 ml-4 sm:ml-6 list-disc list-inside">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 ml-4 sm:ml-6 list-decimal list-inside">{children}</ol>,
                       li: ({ children }) => (
-                        <li className="leading-relaxed text-muted-foreground mb-1">
+                        <li className="leading-relaxed text-muted-foreground mb-2 break-words">
                           {children}
                         </li>
                       ),
-                      strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-                      em: ({ children }) => <em className="italic">{children}</em>,
+                      strong: ({ children }) => <strong className="font-semibold text-foreground break-words">{children}</strong>,
+                      em: ({ children }) => <em className="italic break-words">{children}</em>,
                       blockquote: ({ children }) => (
-                        <blockquote className="border-l-4 border-primary/20 pl-4 py-2 mb-3 italic text-muted-foreground">
+                        <blockquote className="border-l-4 border-primary/20 pl-4 sm:pl-6 py-2 sm:py-3 mb-3 sm:mb-4 italic text-muted-foreground bg-muted/30 rounded-r-lg">
                           {children}
                         </blockquote>
                       ),
                       code: ({ children }) => (
-                        <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
+                        <code className="bg-muted px-1 sm:px-2 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-mono" style={{ wordBreak: 'break-all' }}>{children}</code>
                       ),
                       pre: ({ children }) => {
                         // Check if this is an ASCII table/chart
@@ -156,26 +157,25 @@ export function BlogList({ blogs }: BlogListProps) {
                           
                           if (dataLines.length > 0) {
                             return (
-                              <div className="my-4 overflow-x-auto">
-                                <div className="inline-block min-w-full align-middle">
-                                  <div className="overflow-hidden border border-border rounded-lg">
-                                    <table className="min-w-full divide-y divide-border">
+                              <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
+                                <div className="overflow-x-auto px-4 sm:px-0">
+                                  <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl">
                                       <thead className="bg-muted/50">
                                         <tr>
                                           {headers.map((header, idx) => (
-                                            <th key={idx} className="px-4 py-3 text-left text-xs font-semibold text-foreground uppercase tracking-wider">
+                                            <th key={idx} className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider">
                                               {header}
                                             </th>
                                           ))}
                                         </tr>
                                       </thead>
-                                      <tbody className="bg-background divide-y divide-border">
+                                      <tbody className="bg-background divide-y divide-border/50">
                                         {dataLines.map((line, rowIdx) => {
                                           const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
                                           return (
                                             <tr key={rowIdx} className="hover:bg-muted/30 transition-colors">
                                               {cells.map((cell, cellIdx) => (
-                                                <td key={cellIdx} className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
+                                                <td key={cellIdx} className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground">
                                                   {cell}
                                                 </td>
                                               ))}
@@ -183,8 +183,7 @@ export function BlogList({ blogs }: BlogListProps) {
                                           );
                                         })}
                                       </tbody>
-                                    </table>
-                                  </div>
+                                  </table>
                                 </div>
                               </div>
                             );
@@ -193,19 +192,17 @@ export function BlogList({ blogs }: BlogListProps) {
                         
                         // Regular code block
                         return (
-                          <pre className="bg-muted p-3 rounded-lg overflow-x-auto mb-3 font-mono text-xs">
+                          <pre className="bg-muted p-2 sm:p-4 rounded-lg sm:rounded-xl overflow-x-auto mb-3 sm:mb-4 font-mono text-xs sm:text-sm max-w-full">
                             {children}
                           </pre>
                         );
                       },
                       table: ({ children }) => (
-                        <div className="my-4 overflow-x-auto">
-                          <div className="inline-block min-w-full align-middle">
-                            <div className="overflow-hidden border border-border rounded-lg shadow-sm">
-                              <table className="min-w-full divide-y divide-border">
-                                {children}
-                              </table>
-                            </div>
+                        <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
+                          <div className="overflow-x-auto px-4 sm:px-0">
+                            <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl">
+                              {children}
+                            </table>
                           </div>
                         </div>
                       ),
@@ -213,22 +210,22 @@ export function BlogList({ blogs }: BlogListProps) {
                         <thead className="bg-muted/50">{children}</thead>
                       ),
                       tbody: ({ children }) => (
-                        <tbody className="bg-background divide-y divide-border">{children}</tbody>
+                        <tbody className="bg-background divide-y divide-border/50">{children}</tbody>
                       ),
                       tr: ({ children }) => (
                         <tr className="hover:bg-muted/30 transition-colors">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-foreground uppercase tracking-wider border-r border-border last:border-r-0">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider">
                           {children}
                         </th>
                       ),
                       td: ({ children }) => (
-                        <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap border-r border-border last:border-r-0">
+                        <td className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground">
                           {children}
                         </td>
                       ),
-                      hr: () => <hr className="my-4 border-border" />,
+                      hr: () => <hr className="my-6 border-border/50" />,
                       img: ({ alt, src }) => {
                         // Check if this is a chart placeholder
                         const altLower = alt?.toLowerCase() || '';
@@ -261,10 +258,10 @@ export function BlogList({ blogs }: BlogListProps) {
                           
                           // Show a nice chart placeholder instead of broken image
                           return (
-                            <span className="block my-4 p-8 bg-gradient-to-br from-muted/20 to-muted/40 border border-border rounded-lg flex flex-col items-center justify-center">
-                              <ChartIcon className="h-14 w-14 text-muted-foreground/40 mb-3" />
-                              <span className="block text-sm text-muted-foreground font-semibold">{alt || chartType}</span>
-                              <span className="block text-xs text-muted-foreground/60 mt-1">Interactive chart would display here</span>
+                            <span className="block my-3 sm:my-4 p-4 sm:p-8 bg-gradient-to-br from-muted/20 to-muted/40 border border-border rounded-lg flex flex-col items-center justify-center">
+                              <ChartIcon className="h-10 w-10 sm:h-14 sm:w-14 text-muted-foreground/40 mb-2 sm:mb-3" />
+                              <span className="block text-xs sm:text-sm text-muted-foreground font-semibold">{alt || chartType}</span>
+                              <span className="block text-[10px] sm:text-xs text-muted-foreground/60 mt-1">Interactive chart would display here</span>
                             </span>
                           );
                         }
@@ -288,8 +285,8 @@ export function BlogList({ blogs }: BlogListProps) {
                     {blog.content}
                   </ReactMarkdown>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )
         })}
       </div>

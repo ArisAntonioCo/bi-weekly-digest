@@ -92,8 +92,8 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 lg:space-y-0 lg:flex lg:gap-4">
-        <div className="flex-1">
+      <div className="space-y-4">
+        <div className="w-full">
           <BlogSearch 
             value={searchQuery}
             onChange={handleSearchChange}
@@ -102,35 +102,37 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
             className={isPending ? 'opacity-50' : ''}
           />
         </div>
-        <BlogFilters 
-          filters={filters}
-          onChange={handleFilterChange}
-        />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <BlogFilters 
+            filters={filters}
+            onChange={handleFilterChange}
+            className="w-full sm:w-auto"
+          />
+          <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
+            {totalCount} {totalCount === 1 ? 'Analysis' : 'Analyses'} Available
+          </div>
+        </div>
       </div>
 
       <Tabs value={sort} onValueChange={handleSortChange}>
-        <div className="flex items-center justify-between mb-6">
-          <TabsList className="grid w-[300px] grid-cols-2">
-            <TabsTrigger value="latest" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+        <div className="mb-4 sm:mb-6">
+          <TabsList className="grid w-full sm:w-[320px] grid-cols-2 rounded-full h-10 sm:h-12">
+            <TabsTrigger value="latest" className="flex items-center gap-1 sm:gap-2 rounded-full h-8 sm:h-10 text-sm sm:text-base">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
               Latest
             </TabsTrigger>
-            <TabsTrigger value="oldest" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+            <TabsTrigger value="oldest" className="flex items-center gap-1 sm:gap-2 rounded-full h-8 sm:h-10 text-sm sm:text-base">
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
               Oldest
             </TabsTrigger>
           </TabsList>
-          
-          <div className="text-sm text-muted-foreground">
-            {totalCount} {totalCount === 1 ? 'Analysis' : 'Analyses'} Available
-          </div>
         </div>
 
         <TabsContent value={sort} className="mt-0">
           {isPending ? (
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(9)].map((_, i) => (
-                <div key={i} className="bg-muted/50 rounded-3xl p-6 space-y-4 animate-pulse">
+                <div key={i} className="bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 animate-pulse">
                   <Skeleton className="h-5 w-20 bg-muted/80 rounded-full" />
                   <Skeleton className="h-7 w-full bg-muted/80" />
                   <div className="space-y-2">

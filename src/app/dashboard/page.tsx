@@ -158,7 +158,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-                  Welcome back! 👋
+                  Welcome back! <span className="inline-block animate-wave">👋</span>
                 </h1>
                 <p className="text-muted-foreground mt-1">
                   {format(new Date(), 'EEEE, MMMM d, yyyy')}
