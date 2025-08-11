@@ -43,7 +43,11 @@
       "Bash(git checkout:*)",
       "Bash(npx shadcn@latest add:*)",
       "WebFetch(domain:wise.design)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(vercel link:*)",
+      "Bash(vercel env:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(vercel project:*)"
     ],
     "deny": []
   },
