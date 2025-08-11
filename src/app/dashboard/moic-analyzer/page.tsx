@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Sparkles, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { PromptInputBox } from '@/components/ui/ai-prompt-box'
 import { Button } from '@/components/ui/button'
 import { AIResponse } from '@/components/ui/ai-response'
