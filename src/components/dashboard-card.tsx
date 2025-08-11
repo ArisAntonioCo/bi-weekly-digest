@@ -76,7 +76,10 @@ export function CardHeader({ title, subtitle, icon, action, className }: CardHea
             </div>
           )}
           <div>
-            <h3 className="text-base font-semibold text-foreground leading-tight">{title}</h3>
+            <h3 className={cn(
+              "font-semibold text-foreground leading-tight",
+              icon ? "text-base" : "text-lg"
+            )}>{title}</h3>
             {subtitle && (
               <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
             )}

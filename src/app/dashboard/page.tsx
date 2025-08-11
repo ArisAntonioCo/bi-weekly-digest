@@ -246,25 +246,20 @@ export default function DashboardPage() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="h-full"
               >
-                <DashboardCard variant="highlight" padding="medium" className="h-full">
-                  <CardHeader
-                    title="Latest Investment Insights"
-                    subtitle="AI-powered market analysis & strategies"
-                    icon={<BookOpen className="h-5 w-5 text-foreground" />}
-                    action={
-                      <Link href="/blogs">
-                        <Button 
-                          variant="ghost" 
-                          size="md" 
-                          className="rounded-full hover:bg-muted"
-                        >
-                          View All
-                          <ArrowRight className="h-4 w-4 ml-2" />
-                        </Button>
-                      </Link>
-                    }
-                  />
-                  <CardContent>
+                <div className="h-full p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-2xl font-semibold text-foreground">Latest Investment Insights</h3>
+                    <Link href="/blogs">
+                      <Button 
+                        variant="ghost" 
+                        size="md" 
+                        className="hover:bg-transparent underline underline-offset-4 p-0 h-auto"
+                      >
+                        View All
+                      </Button>
+                    </Link>
+                  </div>
+                  <div>
                     {blogs.length > 0 ? (
                       <div className="space-y-2">
                         {blogs.map((blog, index) => (
@@ -303,8 +298,8 @@ export default function DashboardPage() {
                         <p className="text-muted-foreground text-sm mt-1">Check back soon for new content</p>
                       </div>
                     )}
-                  </CardContent>
-                </DashboardCard>
+                  </div>
+                </div>
               </motion.div>
 
             </div>
