@@ -47,11 +47,13 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
   }
 
   return (
-    <Card className="border-0 bg-muted/30 rounded-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-medium">
-          <UserPlus className="h-5 w-5" />
-          Add New Subscriber
+    <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/10 rounded-3xl overflow-hidden">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-3 text-xl font-normal">
+          <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
+            <UserPlus className="h-5 w-5" />
+          </div>
+          Add Subscriber
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -66,8 +68,8 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
                     validate: validateEmail
                   })}
                   type="email"
-                  placeholder="Enter email address..."
-                  className="pl-10 h-11 text-base border-border/50 bg-background/50 focus:bg-background transition-colors"
+                  placeholder="name@example.com"
+                  className="pl-10 h-12 text-base border-border/50 bg-background/70 focus:bg-background transition-all rounded-xl"
                   disabled={adding}
                 />
               </div>
@@ -78,7 +80,7 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
             <Button 
               type="submit" 
               disabled={adding} 
-              className="min-w-[140px] sm:w-auto w-full h-11 text-base font-medium bg-black hover:bg-black/90 text-white border-0"
+              className="min-w-[140px] sm:w-auto w-full h-12 text-base font-normal bg-black hover:bg-black/90 text-white border-0 rounded-xl transition-all"
             >
               {adding ? (
                 <>
