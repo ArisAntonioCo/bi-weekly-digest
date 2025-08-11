@@ -311,10 +311,8 @@ export default function DashboardPage() {
               >
                 <DashboardCard 
                   variant="default" 
-                  clickable 
-                  onClick={() => router.push('/dashboard/moic-analyzer')}
                   padding="medium"
-                  className="relative overflow-hidden"
+                  className="relative overflow-hidden cursor-pointer hover:bg-muted/70"
                 >
                   {/* Decorative Background Shapes */}
                   <div className="absolute inset-0 pointer-events-none">
@@ -339,6 +337,7 @@ export default function DashboardPage() {
                         variant="default" 
                         size="lg"
                         className="w-full rounded-full"
+                        onClick={() => router.push('/dashboard/moic-analyzer')}
                       >
                         Start Analysis
                         <ArrowRight className="h-4 w-4 ml-2" />
