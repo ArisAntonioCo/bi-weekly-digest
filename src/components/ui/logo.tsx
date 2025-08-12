@@ -65,7 +65,7 @@ export function Logo({
             textClassName
           )}
         >
-          WeeklyDigest
+          3YMode
         </span>
       )}
     </>

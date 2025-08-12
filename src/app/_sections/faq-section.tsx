@@ -8,7 +8,7 @@ import {
 const faqs = [
   {
     question: "What is a 3-Year Forward MOIC projection?",
-    answer: "MOIC (Multiple on Invested Capital) is a key investment metric that measures the total value of an investment relative to its initial cost. Our 3-year forward projections use AI-powered analysis to estimate potential returns over a 36-month holding period, helping you make informed long-term investment decisions."
+    answer: "MOIC (Multiple on Invested Capital) is a key investment metric that measures the total value of an investment relative to its initial cost. Our 3Y Mode methodology specifically leverages battle-tested frameworks from world-class investors like Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker, and Beth Kindig to estimate potential returns over a 36-month holding period, helping you make informed long-term investment decisions."
   },
   {
     question: "How do you calculate Base, Bear, and Bull cases?",

@@ -14,9 +14,9 @@ export function HeroSection() {
       {/* Main Content */}
       <div className="mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-none">
-            Predictive Finance
+            Expert-Grade 3Y MOIC
             <br />
-            In Your Inbox
+            Projections In Your Inbox
           </h1>
         </div>
 
@@ -24,7 +24,7 @@ export function HeroSection() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">Get Weekly Insights</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground">Get Expert Analysis</h3>
               <p className="text-sm text-foreground">In Your Inbox</p>
             </div>
             <Link href="/signup">
@@ -35,9 +35,9 @@ export function HeroSection() {
           </div>
           
           <p className="text-base sm:text-lg font-semibold text-foreground max-w-full lg:max-w-md">
-            AI-powered MOIC projections and
+            Leveraging frameworks from Gurley,
             <br className="hidden sm:block" />
-            market insights in your inbox.
+            Gerstner, Druckenmiller & more.
           </p>
         </div>
 
