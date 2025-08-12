@@ -39,7 +39,7 @@ const sidebarItems = [
     items: [
       { title: "Configuration", icon: Settings, href: "/admin/newsletter/config" },
       { title: "Schedule", icon: Calendar, href: "/admin/newsletter/schedule" },
-      { title: "Subscribers", icon: User, href: "/admin/subscribers" },
+      { title: "Elite Members", icon: User, href: "/admin/members" },
     ]
   }
 ]
