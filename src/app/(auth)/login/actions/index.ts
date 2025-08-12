@@ -4,11 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/route-handler'
 
-export async function login(formData: FormData) {
+export type LoginState = {
+  error?: string
+  success?: boolean
+}
+
+export async function login(prevState: LoginState | undefined, formData: FormData): Promise<LoginState> {
   const supabase = await createClient()
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -18,16 +21,14 @@ export async function login(formData: FormData) {
 
   if (error) {
     console.error('Login error:', error)
-    redirect('/login?error=Invalid credentials')
+    return { error: 'Invalid credentials' }
   }
 
-  // Ensure the session is properly set
   if (!authData?.session) {
     console.error('No session returned from login')
-    redirect('/login?error=Login failed')
+    return { error: 'Login failed' }
   }
 
-  // Check user role and redirect accordingly
   if (authData?.user) {
     const { data: userRole } = await supabase
       .from('user_roles')
@@ -37,7 +38,6 @@ export async function login(formData: FormData) {
 
     const role = userRole?.role || 'user'
     
-    // Revalidate all layouts to ensure fresh data
     revalidatePath('/', 'layout')
     revalidatePath('/dashboard', 'layout')
     revalidatePath('/admin', 'layout')
@@ -49,7 +49,6 @@ export async function login(formData: FormData) {
     }
   }
 
-  // Fallback redirect
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }

@@ -1,26 +1,18 @@
 "use client"
 
-import { useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useActionState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "@/app/(auth)/login/actions"
+import { login, type LoginState } from "@/app/(auth)/login/actions"
 import { Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-export function LoginForm() {
-  const searchParams = useSearchParams()
-  const error = searchParams.get('error')
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-    
-    const formData = new FormData(e.currentTarget)
-    await login(formData)
-  }
+const initialState: LoginState = {}
+
+export function LoginForm() {
+  const [state, formAction, pending] = useActionState(login, initialState)
 
   return (
     <div className="w-full">
@@ -32,12 +24,12 @@ export function LoginForm() {
           Enter your email to sign in to your account
         </p>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form action={formAction}>
         <div className="space-y-4">
-          {error && (
+          {state?.error && (
             <Alert className="bg-destructive/10 border-destructive/20">
               <AlertDescription className="text-destructive">
-                {error}
+                {state.error}
               </AlertDescription>
             </Alert>
           )}
@@ -51,7 +43,7 @@ export function LoginForm() {
               type="email"
               placeholder="name@example.com"
               required
-              disabled={isLoading}
+              disabled={pending}
               className="h-12 text-base bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -65,7 +57,7 @@ export function LoginForm() {
               type="password"
               placeholder="••••••••"
               required
-              disabled={isLoading}
+              disabled={pending}
               className="h-12 text-base bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -75,9 +67,9 @@ export function LoginForm() {
             type="submit"
             size="lg"
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-            disabled={isLoading}
+            disabled={pending}
           >
-            {isLoading ? (
+            {pending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing in...
