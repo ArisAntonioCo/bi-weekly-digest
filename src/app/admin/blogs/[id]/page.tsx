@@ -125,7 +125,7 @@ export default function BlogDetailPage() {
           <p className="text-muted-foreground">
             The blog post you&apos;re looking for could not be loaded.
           </p>
-          <Link href="/blogs">
+          <Link href="/admin/blogs">
             <Button variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Blogs
@@ -144,7 +144,7 @@ export default function BlogDetailPage() {
       <div className="space-y-6">
         {/* Navigation */}
         <div className="flex items-center justify-between">
-          <Link href="/blogs">
+          <Link href="/admin/blogs">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to All Analyses

@@ -85,9 +85,21 @@ export async function updateSession(request: NextRequest) {
       }
     }
 
-    // Check dashboard routes
+    // Check dashboard routes - admin should not access user dashboard
     if (isDashboardRoute) {
-      // All authenticated users can access dashboard
+      if (role === 'admin') {
+        // Admins should not access user dashboard
+        // Redirect them to admin dashboard
+        url.pathname = '/admin/dashboard'
+        return NextResponse.redirect(url)
+      }
+      // Regular users can access dashboard
+      return supabaseResponse
+    }
+    
+    // Allow both admins and users to view /blogs content
+    // This is public content that both roles should be able to view
+    if (url.pathname.startsWith('/blogs')) {
       return supabaseResponse
     }
   }
