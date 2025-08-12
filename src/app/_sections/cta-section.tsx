@@ -13,7 +13,7 @@ export function CTASection() {
         </p>
         <Link href="/signup">
           <Button variant="brand-cta" size="lg" className="w-full sm:w-auto">
-            Get Started for Free
+            Subscribe Now
           </Button>
         </Link>
       </div>

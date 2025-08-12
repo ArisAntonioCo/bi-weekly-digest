@@ -18,7 +18,7 @@ A proprietary, AI-enabled investment methodology
 so rather than a broader, AI-powered investment tool
 8:43
 our app very specifically
-8:45
+8:45Our 
 leverages battel-tested frameworks from well-known/world-class investors ((Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker, Beth Kindig)
 in order to precisely project [base/bull/bear case] 3-Year MOIC projections
 and assess equity durability or, said differently, vulnerability to a market correction or pullback

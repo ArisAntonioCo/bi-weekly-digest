@@ -7,15 +7,15 @@ export function AnalyticsSection() {
     <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="mb-12 sm:mb-16 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground leading-none max-w-5xl">
-          World-class Financial Intelligence &
+          See What World-Class Investors
           <br />
-          Analysis, leveraging Proprietary and
+          Would Think About Any Stock's
           <br />
-          Cutting Edge ML Models
+          3-Year Potential
         </h2>
         <Link href="/signup">
           <Button variant="brand-cta" size="lg" className="w-full sm:w-auto">
-            Get Started
+            Subscribe Now
           </Button>
         </Link>
       </div>
@@ -24,9 +24,11 @@ export function AnalyticsSection() {
         <div className="flex items-center justify-between gap-8">
           <div className="flex-1">
             <p className="text-lg sm:text-xl font-medium text-background">
-              Institutional-grade analytical tools
+              Expert frameworks from Gurley, Gerstner,
               <br />
-              powered by advanced ML models.
+              Druckenmiller & more for precise MOIC
+              <br />
+              projections and durability analysis.
             </p>
           </div>
           

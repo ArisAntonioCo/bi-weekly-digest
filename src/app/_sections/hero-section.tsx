@@ -29,7 +29,7 @@ export function HeroSection() {
             </div>
             <Link href="/signup">
               <Button variant="brand-cta" size="lg" className="w-full sm:w-auto text-sm sm:text-base">
-                Get Started
+                Subscribe Now
               </Button>
             </Link>
           </div>
