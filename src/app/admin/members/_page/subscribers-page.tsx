@@ -103,7 +103,7 @@ export function SubscribersPage() {
         <div className="space-y-8">
           {/* Header Section */}
           <div>
-            <h1 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">Subscribers</h1>
+            <h1 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">Elite Members</h1>
             <p className="text-muted-foreground mt-2">Manage your newsletter audience</p>
           </div>
           
@@ -114,7 +114,7 @@ export function SubscribersPage() {
                 <div className="text-4xl font-light text-foreground tracking-tight">
                   {subscribers.length.toLocaleString()}
                 </div>
-                <div className="text-sm text-muted-foreground mt-2">Total Subscribers</div>
+                <div className="text-sm text-muted-foreground mt-2">Total Elite Members</div>
               </div>
               <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-black/5 dark:bg-white/5" />
             </div>

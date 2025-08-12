@@ -97,7 +97,7 @@ export function SubscribersList({
           <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
             <Users className="h-5 w-5" />
           </div>
-          Subscribers
+          Elite Members
         </CardTitle>
       </CardHeader>
       
@@ -107,8 +107,8 @@ export function SubscribersList({
             <div className="h-16 w-16 rounded-2xl bg-muted/50 mx-auto mb-4 flex items-center justify-center">
               <Users className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-normal mb-2 text-foreground">No subscribers yet</h3>
-            <p className="text-muted-foreground text-sm">Add your first subscriber using the form above.</p>
+            <h3 className="text-lg font-normal mb-2 text-foreground">No elite members yet</h3>
+            <p className="text-muted-foreground text-sm">Add your first elite member using the form above.</p>
           </div>
         ) : (
           <>
@@ -196,9 +196,9 @@ export function SubscribersList({
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Delete Subscriber</AlertDialogTitle>
+                                  <AlertDialogTitle>Delete Elite Member</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to delete {subscriber.email} from your subscribers list? 
+                                    Are you sure you want to delete {subscriber.email} from your elite members list? 
                                     This action cannot be undone.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
@@ -208,7 +208,7 @@ export function SubscribersList({
                                     onClick={() => handleDeleteSubscriber(subscriber.id)}
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                   >
-                                    Delete Subscriber
+                                    Delete Elite Member
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
@@ -293,14 +293,14 @@ export function SubscribersList({
                             disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
                           >
                             <Trash2 className="h-3 w-3 mr-1" />
-                            Delete Subscriber
+                            Delete Elite Member
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="mx-4 max-w-[calc(100vw-2rem)]">
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Subscriber</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete {subscriber.email} from your subscribers list? 
+                              Are you sure you want to delete {subscriber.email} from your elite members list? 
                               This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
@@ -310,7 +310,7 @@ export function SubscribersList({
                               onClick={() => handleDeleteSubscriber(subscriber.id)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto"
                             >
-                              Delete Subscriber
+                              Delete Elite Member
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
