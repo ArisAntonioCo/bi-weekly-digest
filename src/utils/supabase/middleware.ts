@@ -35,7 +35,10 @@ export async function updateSession(request: NextRequest) {
   const url = request.nextUrl.clone()
   const isAdminRoute = url.pathname.startsWith('/admin')
   const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/signup')
-  const isPublicRoute = url.pathname === '/' || url.pathname.startsWith('/unsubscribe')
+  const isPublicRoute = url.pathname === '/' || 
+    url.pathname.startsWith('/unsubscribe') || 
+    url.pathname === '/privacy' || 
+    url.pathname === '/terms'
   const isApiRoute = url.pathname.startsWith('/api')
   const isDashboardRoute = url.pathname.startsWith('/dashboard')
 
