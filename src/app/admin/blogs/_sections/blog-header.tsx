@@ -3,11 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { TrendingUp, BookOpen } from 'lucide-react'
 
-interface BlogHeaderProps {
-  systemPromptSummary?: string
-}
-
-export function BlogHeader({ systemPromptSummary }: BlogHeaderProps) {
+export function BlogHeader() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -31,13 +27,6 @@ export function BlogHeader({ systemPromptSummary }: BlogHeaderProps) {
         </Badge>
         <Badge variant="outline">Elite Investor Perspectives</Badge>
         <Badge variant="outline">AI-Powered Insights</Badge>
-      </div>
-      
-      <div className="bg-muted/50 rounded-lg p-4 border">
-        <p className="text-sm text-muted-foreground">
-          {systemPromptSummary || 
-            'Our AI analyst provides comprehensive analysis and insights based on the current system configuration.'}
-        </p>
       </div>
     </div>
   )

@@ -9,7 +9,6 @@ import { Blog } from '@/types/blog'
 
 export function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
-  const [systemPromptSummary, setSystemPromptSummary] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
@@ -36,10 +35,9 @@ export function BlogsPage() {
         throw new Error('Failed to fetch blogs')
       }
       
-      const data: Paginated<Blog> & { systemPromptSummary?: string } = await response.json()
+      const data: Paginated<Blog> = await response.json()
       
       setBlogs(data.data || [])
-      setSystemPromptSummary(data.systemPromptSummary || '')
       setCurrentPage(data.currentPage || 1)
       setTotalPages(data.lastPage || 1)
       setTotal(data.total || 0)
@@ -103,7 +101,7 @@ export function BlogsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="space-y-8">
-        <BlogHeader systemPromptSummary={systemPromptSummary} />
+        <BlogHeader />
         <BlogGrid 
           blogs={blogs}
           currentPage={currentPage}
