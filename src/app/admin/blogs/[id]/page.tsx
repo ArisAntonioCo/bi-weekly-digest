@@ -14,11 +14,9 @@ import {
   Clock, 
   TrendingUp, 
   AlertTriangle,
-  Share2,
   BookOpen
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { toast } from 'sonner'
 
 import { Blog } from '@/types/blog'
 
@@ -64,29 +62,6 @@ export default function BlogDetailPage() {
     const words = content.split(/\s+/).length
     const minutes = Math.ceil(words / 200)
     return `${minutes} min read`
-  }
-
-  const handleShare = async () => {
-    if (navigator.share && blog) {
-      try {
-        await navigator.share({
-          title: blog.title,
-          text: `Check out this investment analysis: ${blog.title}`,
-          url: window.location.href,
-        })
-      } catch (err) {
-        // User cancelled share or error occurred
-        if ((err as Error).name !== 'AbortError') {
-          // Copy to clipboard as fallback
-          await navigator.clipboard.writeText(window.location.href)
-          toast.success('Link copied to clipboard!')
-        }
-      }
-    } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(window.location.href)
-      toast.success('Link copied to clipboard!')
-    }
   }
 
   if (loading) {
@@ -143,22 +118,13 @@ export default function BlogDetailPage() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="space-y-6">
         {/* Navigation */}
-        <div className="flex items-center justify-between">
+        <div className="mb-6">
           <Link href="/admin/blogs">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to All Analyses
             </Button>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleShare}
-            className="gap-2"
-          >
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
         </div>
 
         {/* Header */}

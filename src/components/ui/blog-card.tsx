@@ -9,9 +9,10 @@ import { Blog } from '@/types/blog'
 
 interface BlogCardProps {
   blog: Blog
+  isAdmin?: boolean
 }
 
-export const BlogCard = memo(function BlogCard({ blog }: BlogCardProps) {
+export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCardProps) {
   // Extract preview text (first 200 characters of content)
   const getPreviewText = (content: string) => {
     // Remove markdown formatting for preview
@@ -52,9 +53,10 @@ export const BlogCard = memo(function BlogCard({ blog }: BlogCardProps) {
 
   const analysisType = getAnalysisType(blog.content)
   const Icon = analysisType.icon
+  const href = isAdmin ? `/admin/blogs/${blog.id}` : `/blogs/${blog.id}`
 
   return (
-    <Link href={`/blogs/${blog.id}`} className="block h-full">
+    <Link href={href} className="block h-full">
       <div className="group h-full flex flex-col bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
         {/* Header */}
         <div className="mb-3 sm:mb-4">
