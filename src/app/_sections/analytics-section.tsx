@@ -9,7 +9,7 @@ export function AnalyticsSection() {
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground leading-none max-w-5xl">
           See What World-Class Investors
           <br />
-          Would Think About Any Stock's
+          Would Think About Any Stock&apos;s
           <br />
           3-Year Potential
         </h2>

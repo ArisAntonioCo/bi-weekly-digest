@@ -95,6 +95,27 @@ export class NewsletterService {
   static convertMarkdownToHtml(markdown: string): string {
     let html = markdown
     
+    // Convert markdown links to HTML
+    // Handle inline links: [text](url)
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #2563eb; text-decoration: underline;">$1</a>')
+    
+    // Handle reference-style links: [text][ref] and [ref]: url
+    const refLinks: { [key: string]: string } = {}
+    html = html.replace(/^\[([^\]]+)\]:\s*(.+)$/gm, (match, ref, url) => {
+      refLinks[ref.toLowerCase()] = url.trim()
+      return '' // Remove reference definitions from output
+    })
+    
+    // Replace reference-style link usages
+    html = html.replace(/\[([^\]]+)\]\[([^\]]*)\]/g, (match, text, ref) => {
+      const refKey = (ref || text).toLowerCase()
+      const url = refLinks[refKey]
+      if (url) {
+        return `<a href="${url}" style="color: #2563eb; text-decoration: underline;">${text}</a>`
+      }
+      return match // Keep original if no reference found
+    })
+    
     // Handle tables properly
     const tableRegex = /\|.*\|\n\|[-:\s|]+\|\n(?:\|.*\|\n?)+/gm
     
