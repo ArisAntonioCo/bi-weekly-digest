@@ -34,34 +34,41 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
     const calculateNextRuns = () => {
       if (!scheduleSettings) return []
 
-      const { frequency, hour, minute, day_of_week, day_of_month } = scheduleSettings
+      const { frequency, hour, minute, day_of_week, day_of_month, timezone } = scheduleSettings
       const runs: Date[] = []
       const now = new Date()
       
-      let baseDate = startOfDay(now)
+      // Create a date in the configured timezone (America/New_York)
+      const configuredTimezone = timezone || 'America/New_York'
+      let baseDate = new TZDate(now.getTime(), configuredTimezone)
+      baseDate = startOfDay(baseDate)
       
       for (let i = 0; i < 5; i++) {
-        let nextRun: Date | null = null
+        let nextRun: TZDate | null = null
         
         if (frequency === 'daily') {
-          nextRun = setMinutes(setHours(baseDate, hour || 9), minute || 0)
+          nextRun = new TZDate(baseDate.getTime(), configuredTimezone)
+          nextRun = setMinutes(setHours(nextRun, hour || 9), minute || 0)
           if (nextRun <= now && i === 0) {
             nextRun = addDays(nextRun, 1)
           }
-          runs.push(nextRun)
+          // Convert from local timezone to UTC for storage
+          runs.push(new Date(nextRun.getTime()))
           baseDate = addDays(nextRun, 1)
         } 
         else if (frequency === 'weekly' || frequency === 'biweekly') {
           const targetDay = day_of_week ?? 1 // Default to Monday
-          let checkDate = baseDate
+          let checkDate = new TZDate(baseDate.getTime(), configuredTimezone)
           
           // Find next occurrence of target day
           for (let j = 0; j < 7; j++) {
             if (checkDate.getDay() === targetDay) {
-              nextRun = setMinutes(setHours(checkDate, hour || 9), minute || 0)
+              nextRun = new TZDate(checkDate.getTime(), configuredTimezone)
+              nextRun = setMinutes(setHours(nextRun, hour || 9), minute || 0)
               if (nextRun <= now && i === 0) {
                 checkDate = addDays(checkDate, frequency === 'biweekly' ? 14 : 7)
-                nextRun = setMinutes(setHours(checkDate, hour || 9), minute || 0)
+                nextRun = new TZDate(checkDate.getTime(), configuredTimezone)
+                nextRun = setMinutes(setHours(nextRun, hour || 9), minute || 0)
               }
               break
             }
@@ -69,20 +76,21 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
           }
           
           if (nextRun) {
-            runs.push(nextRun)
+            // Convert from local timezone to UTC for storage
+            runs.push(new Date(nextRun.getTime()))
             baseDate = addDays(nextRun, frequency === 'biweekly' ? 14 : 7)
           }
         } 
         else if (frequency === 'monthly') {
           const targetDayOfMonth = day_of_month ?? 1
-          let checkDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), targetDayOfMonth)
-          checkDate = setMinutes(setHours(checkDate, hour || 9), minute || 0)
+          let checkDate = new TZDate(baseDate.getFullYear(), baseDate.getMonth(), targetDayOfMonth, hour || 9, minute || 0, 0, 0, configuredTimezone)
           
           if (checkDate <= now && i === 0) {
             checkDate = addMonths(checkDate, 1)
           }
           
-          runs.push(checkDate)
+          // Convert from local timezone to UTC for storage
+          runs.push(new Date(checkDate.getTime()))
           baseDate = addMonths(checkDate, 1)
         }
       }
