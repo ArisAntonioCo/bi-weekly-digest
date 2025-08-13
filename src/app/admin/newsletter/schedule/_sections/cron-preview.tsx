@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { CalendarCheck, Clock, Globe, Timer } from 'lucide-react'
-import { format, addDays, addMonths, setHours, setMinutes, startOfDay } from 'date-fns'
+import { format } from 'date-fns'
 import { TZDate } from '@date-fns/tz'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { COMMON_TIMEZONES } from '@/utils/timezone'
@@ -40,58 +40,73 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
       
       // Create a date in the configured timezone (America/New_York)
       const configuredTimezone = timezone || 'America/New_York'
-      let baseDate = new TZDate(now.getTime(), configuredTimezone)
-      baseDate = startOfDay(baseDate)
+      let baseDate = new Date()
       
       for (let i = 0; i < 5; i++) {
-        let nextRun: TZDate | null = null
+        let nextRun: Date | null = null
         
         if (frequency === 'daily') {
-          nextRun = new TZDate(baseDate.getTime(), configuredTimezone)
-          nextRun = setMinutes(setHours(nextRun, hour || 9), minute || 0)
+          // Create date in local timezone
+          const tzDate = new TZDate(baseDate.getTime(), configuredTimezone)
+          tzDate.setHours(hour || 9, minute || 0, 0, 0)
+          nextRun = new Date(tzDate.getTime())
+          
           if (nextRun <= now && i === 0) {
-            nextRun = addDays(nextRun, 1)
+            const nextDay = new Date(tzDate.getTime())
+            nextDay.setDate(nextDay.getDate() + 1)
+            const nextTzDate = new TZDate(nextDay.getTime(), configuredTimezone)
+            nextTzDate.setHours(hour || 9, minute || 0, 0, 0)
+            nextRun = new Date(nextTzDate.getTime())
           }
-          // Convert from local timezone to UTC for storage
-          runs.push(new Date(nextRun.getTime()))
-          baseDate = addDays(nextRun, 1)
+          
+          runs.push(nextRun)
+          baseDate = new Date(nextRun.getTime())
+          baseDate.setDate(baseDate.getDate() + 1)
         } 
         else if (frequency === 'weekly' || frequency === 'biweekly') {
           const targetDay = day_of_week ?? 1 // Default to Monday
-          let checkDate = new TZDate(baseDate.getTime(), configuredTimezone)
+          const checkDate = new Date(baseDate)
           
           // Find next occurrence of target day
           for (let j = 0; j < 7; j++) {
             if (checkDate.getDay() === targetDay) {
-              nextRun = new TZDate(checkDate.getTime(), configuredTimezone)
-              nextRun = setMinutes(setHours(nextRun, hour || 9), minute || 0)
+              const tzDate = new TZDate(checkDate.getTime(), configuredTimezone)
+              tzDate.setHours(hour || 9, minute || 0, 0, 0)
+              nextRun = new Date(tzDate.getTime())
+              
               if (nextRun <= now && i === 0) {
-                checkDate = addDays(checkDate, frequency === 'biweekly' ? 14 : 7)
-                nextRun = new TZDate(checkDate.getTime(), configuredTimezone)
-                nextRun = setMinutes(setHours(nextRun, hour || 9), minute || 0)
+                checkDate.setDate(checkDate.getDate() + (frequency === 'biweekly' ? 14 : 7))
+                const nextTzDate = new TZDate(checkDate.getTime(), configuredTimezone)
+                nextTzDate.setHours(hour || 9, minute || 0, 0, 0)
+                nextRun = new Date(nextTzDate.getTime())
               }
               break
             }
-            checkDate = addDays(checkDate, 1)
+            checkDate.setDate(checkDate.getDate() + 1)
           }
           
           if (nextRun) {
-            // Convert from local timezone to UTC for storage
-            runs.push(new Date(nextRun.getTime()))
-            baseDate = addDays(nextRun, frequency === 'biweekly' ? 14 : 7)
+            runs.push(nextRun)
+            baseDate = new Date(nextRun.getTime())
+            baseDate.setDate(baseDate.getDate() + (frequency === 'biweekly' ? 14 : 7))
           }
         } 
         else if (frequency === 'monthly') {
           const targetDayOfMonth = day_of_month ?? 1
-          let checkDate = new TZDate(baseDate.getFullYear(), baseDate.getMonth(), targetDayOfMonth, hour || 9, minute || 0, 0, 0, configuredTimezone)
+          const checkDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), targetDayOfMonth)
+          const tzDate = new TZDate(checkDate.getTime(), configuredTimezone)
+          tzDate.setHours(hour || 9, minute || 0, 0, 0)
+          nextRun = new Date(tzDate.getTime())
           
-          if (checkDate <= now && i === 0) {
-            checkDate = addMonths(checkDate, 1)
+          if (nextRun <= now && i === 0) {
+            checkDate.setMonth(checkDate.getMonth() + 1)
+            const nextTzDate = new TZDate(checkDate.getTime(), configuredTimezone)
+            nextTzDate.setHours(hour || 9, minute || 0, 0, 0)
+            nextRun = new Date(nextTzDate.getTime())
           }
           
-          // Convert from local timezone to UTC for storage
-          runs.push(new Date(checkDate.getTime()))
-          baseDate = addMonths(checkDate, 1)
+          runs.push(nextRun)
+          baseDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, targetDayOfMonth)
         }
       }
       
