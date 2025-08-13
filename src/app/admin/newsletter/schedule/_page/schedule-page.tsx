@@ -7,6 +7,7 @@ import {
   CronPreview 
 } from '../_sections'
 import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface ScheduleSettings {
   is_active: boolean
@@ -22,6 +23,7 @@ interface ScheduleSettings {
 export function SchedulePage() {
   const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings | null>(null)
   const [isActive, setIsActive] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadScheduleSettings()
@@ -37,6 +39,8 @@ export function SchedulePage() {
       }
     } catch (error) {
       console.error('Failed to load schedule settings:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -48,21 +52,36 @@ export function SchedulePage() {
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <Card className="p-6">
-              <ScheduleForm 
-                scheduleSettings={scheduleSettings}
-                isActive={isActive}
-                onActiveChange={setIsActive}
-                onScheduleChange={setScheduleSettings}
-              />
+              {loading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-48" />
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-10 w-32" />
+                </div>
+              ) : (
+                <ScheduleForm 
+                  scheduleSettings={scheduleSettings}
+                  isActive={isActive}
+                  onActiveChange={setIsActive}
+                  onScheduleChange={setScheduleSettings}
+                />
+              )}
             </Card>
           </div>
           
           <div className="lg:col-span-1">
             <Card className="p-6 sticky top-6">
-              <CronPreview 
-                scheduleSettings={scheduleSettings}
-                isActive={isActive}
-              />
+              {loading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-24 w-full" />
+                </div>
+              ) : (
+                <CronPreview 
+                  scheduleSettings={scheduleSettings}
+                  isActive={isActive}
+                />
+              )}
             </Card>
           </div>
         </div>
