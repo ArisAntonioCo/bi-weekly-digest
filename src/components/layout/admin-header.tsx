@@ -7,6 +7,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { 
   Settings, 
   MessageSquare, 
@@ -146,48 +147,52 @@ export function AdminHeader() {
           </div>
         </div>
         
-        {config.action && (
-          config.action.onClick === 'emailAnalysis' ? (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="hidden sm:flex gap-2" 
-              onClick={handleEmailAnalysis}
-              disabled={isEmailingAnalysis}
-            >
-              <config.action.icon className="h-4 w-4" />
-              {isEmailingAnalysis ? 'Generating & Sending...' : config.action.label}
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
-              <Link href={config.action.href || '#'}>
-                <config.action.icon className="h-4 w-4 mr-2" />
-                {config.action.label}
-              </Link>
-            </Button>
-          )
-        )}
-        
-        {/* Mobile version */}
-        {config.action && (
-          config.action.onClick === 'emailAnalysis' ? (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="sm:hidden" 
-              onClick={handleEmailAnalysis}
-              disabled={isEmailingAnalysis}
-            >
-              <config.action.icon className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" className="sm:hidden" asChild>
-              <Link href={config.action.href || '#'}>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          
+          {config.action && (
+            config.action.onClick === 'emailAnalysis' ? (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="hidden sm:flex gap-2" 
+                onClick={handleEmailAnalysis}
+                disabled={isEmailingAnalysis}
+              >
                 <config.action.icon className="h-4 w-4" />
-              </Link>
-            </Button>
-          )
-        )}
+                {isEmailingAnalysis ? 'Generating & Sending...' : config.action.label}
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
+                <Link href={config.action.href || '#'}>
+                  <config.action.icon className="h-4 w-4 mr-2" />
+                  {config.action.label}
+                </Link>
+              </Button>
+            )
+          )}
+          
+          {/* Mobile version */}
+          {config.action && (
+            config.action.onClick === 'emailAnalysis' ? (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="sm:hidden" 
+                onClick={handleEmailAnalysis}
+                disabled={isEmailingAnalysis}
+              >
+                <config.action.icon className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" className="sm:hidden" asChild>
+                <Link href={config.action.href || '#'}>
+                  <config.action.icon className="h-4 w-4" />
+                </Link>
+              </Button>
+            )
+          )}
+        </div>
       </div>
     </header>
   )
