@@ -612,8 +612,11 @@ export class NewsletterService {
     <div class="container">
       <div class="header">
         <div class="header-pattern"></div>
-        <h1 class="brand-logo">
-          <span class="three-y">3Y</span><span class="mode-text">Mode</span>
+        <h1 class="brand-logo" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0;">
+          <img src="https://bi-weekly-digest-4xcy.vercel.app/3YMode.png" alt="3YMode Logo" style="height: 35px; width: auto; vertical-align: middle; display: inline-block;" />
+          <span style="display: inline-flex; align-items: baseline;">
+            <span class="three-y">3Y</span><span class="mode-text">Mode</span>
+          </span>
         </h1>
         <p class="header-tagline">Expert-Grade MOIC Projections</p>
       </div>
