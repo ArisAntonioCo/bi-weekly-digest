@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,18 +19,21 @@ const sizeConfig = {
     iconWrapper: 'size-8',
     text: 'text-lg',
     gap: 'gap-1.5',
+    svgHeight: 18,
   },
   md: {
     icon: 'size-6',
     iconWrapper: 'size-10',
     text: 'text-2xl',
     gap: 'gap-2',
+    svgHeight: 24,
   },
   lg: {
     icon: 'size-8',
     iconWrapper: 'size-12',
     text: 'text-3xl',
     gap: 'gap-3',
+    svgHeight: 32,
   },
 }
 
@@ -58,15 +62,33 @@ export function Logo({
         </div>
       )}
       {showText && (
-        <span
-          className={cn(
-            'font-semibold',
-            config.text,
-            textClassName
-          )}
-        >
-          3YMode
-        </span>
+        <div className={cn('flex items-center', config.gap)}>
+          <div 
+            className="relative [&_img]:brightness-0 [&_img]:dark:invert [&_img]:dark:brightness-100" 
+            style={{ 
+              height: config.svgHeight,
+              filter: textClassName?.includes('text-white') || textClassName?.includes('text-gray-100') || textClassName?.includes('text-slate-100') 
+                ? 'invert(1) brightness(100%)' 
+                : undefined
+            }}
+          >
+            <Image
+              src="/3YMode.svg"
+              alt="3YMode"
+              width={config.svgHeight * (600/325)}
+              height={config.svgHeight}
+            />
+          </div>
+          <span
+            className={cn(
+              'font-semibold',
+              config.text,
+              textClassName
+            )}
+          >
+            3YMode
+          </span>
+        </div>
       )}
     </>
   )
