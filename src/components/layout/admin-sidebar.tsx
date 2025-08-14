@@ -54,6 +54,10 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
+      // Reset theme to default on logout
+      localStorage.removeItem('bi-weekly-digest-theme')
+      document.documentElement.classList.remove('dark')
+      
       await logout()
     } catch (error) {
       console.error('Logout error:', error)

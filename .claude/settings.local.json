@@ -50,7 +50,7 @@
       "Bash(vercel project:*)",
       "mcp__supabase__get_anon_key",
       "Bash(true)",
-      "Bash(node:*)"
+      "WebSearch"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

@@ -81,6 +81,11 @@ export default function Navbar({ className }: NavbarProps) {
   const handleSignOut = useCallback(async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
+    
+    // Reset theme to default on logout
+    localStorage.removeItem('bi-weekly-digest-theme')
+    document.documentElement.classList.remove('dark')
+    
     router.push('/login')
   }, [router])
 
