@@ -389,9 +389,9 @@ export class NewsletterService {
       font-weight: 900;
       color: #000000;
       letter-spacing: -0.02em;
-      margin: 0;
-      position: relative;
-      display: inline-block;
+      margin: 0 auto;
+      text-align: center;
+      display: block;
     }
     .brand-logo .mode-text {
       color: #000000;
