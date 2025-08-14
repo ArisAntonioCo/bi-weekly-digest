@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
+import { NextRequest } from 'next/server'
 import { NewsletterService } from '@/services/newsletter.service'
 
 // Email recipients
@@ -8,60 +7,51 @@ const RECIPIENTS = [
   'arisantonioco@gmail.com'
 ]
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    // Authenticate request
+    const auth = await NewsletterService.authenticateRequest(request, ['kyle@zaigo.ai'])
     
-    // Check authentication
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'kyle@zaigo.ai') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!auth.isAuthorized) {
+      return NewsletterService.createErrorResponse(
+        new Error(auth.error || 'Unauthorized'),
+        401
+      )
     }
 
-    // Get configuration and generate content
-    const config = await NewsletterService.getConfiguration()
-    const aiResponse = await NewsletterService.generateContent(config.system_prompt)
-
-    // Send emails to recipients
-    const emailPromises = RECIPIENTS.map(email => 
-      NewsletterService.sendEmail({
-        to: email,
-        subject: `AI Investment Analysis - ${new Date().toLocaleDateString()}`
-      }, aiResponse)
-    )
-
-    const results = await Promise.allSettled(emailPromises)
-    const successCount = results.filter(r => r.status === 'fulfilled').length
-    const failureCount = results.filter(r => r.status === 'rejected').length
-
-    // Store in database
-    await NewsletterService.storeNewsletter(aiResponse)
-
-    // Log the event
-    await NewsletterService.logNewsletterEvent('sent', RECIPIENTS.length, {
-      success: successCount,
-      failed: failureCount,
-      recipients: RECIPIENTS
-    })
-
-    return NextResponse.json({
-      success: true,
-      message: `Newsletter sent successfully to ${successCount} recipients`,
-      details: {
-        sent: successCount,
-        failed: failureCount,
-        total: RECIPIENTS.length
+    // Generate and send newsletter
+    const result = await NewsletterService.generateAndSend(
+      RECIPIENTS,
+      `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
+      {
+        storeNewsletter: true,
+        logEvent: true
       }
-    })
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    
-    // Log failure
-    await NewsletterService.logNewsletterEvent('failed', 0, { error: errorMessage })
-    
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
     )
+
+    if (!result.success) {
+      return NewsletterService.createErrorResponse(
+        new Error(result.error || 'Failed to send newsletter'),
+        500
+      )
+    }
+
+    return NewsletterService.createSuccessResponse(
+      `Newsletter sent successfully to ${result.successCount} recipients`,
+      {
+        details: {
+          sent: result.successCount,
+          failed: result.failureCount,
+          total: RECIPIENTS.length
+        }
+      }
+    )
+  } catch (error) {
+    // Log failure
+    await NewsletterService.logNewsletterEvent('failed', 0, { 
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+    
+    return NewsletterService.createErrorResponse(error)
   }
 }

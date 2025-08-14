@@ -1,113 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createServiceClient } from '@/utils/supabase/server'
 import { NewsletterService } from '@/services/newsletter.service'
 
 export async function GET(request: NextRequest) {
   try {
     console.log('Cron triggered (test mode, ignores schedule):', new Date().toISOString())
-    console.log('Headers:', Object.fromEntries(request.headers.entries()))
     
-    // Verify this is a Vercel cron job or authorized request
-    const authHeader = request.headers.get('authorization')
-    const cronSecretFromVercel = request.headers.get('x-vercel-cron-secret')
-    const userAgent = request.headers.get('user-agent')
-    const vercelId = request.headers.get('x-vercel-id')
-    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
+    // Authenticate cron request
+    const auth = await NewsletterService.authenticateRequest(request)
     
-    console.log('Auth check:', {
-      hasAuthHeader: !!authHeader,
-      hasCronSecretHeader: !!cronSecretFromVercel,
-      hasCronSecret: !!process.env.CRON_SECRET,
-      authMatches: authHeader === expectedAuth,
-      isVercelCron: !!cronSecretFromVercel,
-      userAgent,
-      hasVercelId: !!vercelId
-    })
-    
-    // Allow if proper auth OR it's from Vercel cron (check multiple indicators)
-    const isVercelInternal = !!cronSecretFromVercel || 
-                             (userAgent && userAgent.includes('Vercel')) ||
-                             !!vercelId
-    const isAuthorized = authHeader === expectedAuth || isVercelInternal
-    
-    if (!isAuthorized) {
+    if (!auth.isAuthorized) {
       console.log('Unauthorized test cron request')
-      return NextResponse.json({ 
-        error: 'Unauthorized',
-        message: 'Missing or invalid CRON_SECRET'
-      }, { status: 401 })
+      return NewsletterService.createErrorResponse(
+        new Error(auth.error || 'Unauthorized - Missing or invalid CRON_SECRET'),
+        401
+      )
     }
 
     // Create service client for database operations
     const supabase = createServiceClient()
     
-    // Get active subscribers (same as production)
+    // Get active subscribers
     const subscribers = await NewsletterService.getActiveSubscribers(supabase)
     
     if (subscribers.length === 0) {
-      return NextResponse.json({ 
-        message: 'No active subscribers found'
-      }, { status: 200 })
+      return NewsletterService.createSuccessResponse(
+        'No active subscribers found',
+        { subscriberCount: 0 }
+      )
     }
 
-    // Generate content (same as production)
-    const config = await NewsletterService.getConfiguration(supabase)
-    const aiResponse = await NewsletterService.generateContent(config.system_prompt)
-
-    // Send to all subscribers in batch (single API call)
-    let successCount: number
-    let failureCount: number
-    
-    try {
-      await NewsletterService.sendEmail({
-        to: subscribers, // Send to all subscribers at once
-        subject: 'AI Analysis Report - Weekly Digest',
-        isTest: false
-      }, aiResponse)
-      
-      // Single API call success - all emails delivered
-      successCount = subscribers.length
-      failureCount = 0
-    } catch (error) {
-      console.error('Batch email send failed:', error)
-      // Single API call failed - no emails delivered
-      successCount = 0
-      failureCount = subscribers.length
-    }
-
-    // Store newsletter (same as production but marked as test)
-    await NewsletterService.storeNewsletter(aiResponse, `AI Analysis Report - Weekly Digest`, supabase)
-
-    // Log test event
-    await NewsletterService.logNewsletterEvent('test', subscribers.length, {
-      success: successCount,
-      failed: failureCount,
-      cron: true,
-      type: 'full-test'
-    }, supabase)
-
-    return NextResponse.json({
-      success: true,
-      message: 'Newsletter sent successfully (test mode, ignores schedule)',
-      stats: {
-        totalSubscribers: subscribers.length,
-        successfulSends: successCount,
-        failedSends: failureCount
+    // Generate and send newsletter to all subscribers
+    const result = await NewsletterService.generateAndSend(
+      subscribers,
+      'AI Analysis Report - Weekly Digest',
+      {
+        supabaseClient: supabase,
+        storeNewsletter: true,
+        logEvent: true
       }
-    })
+    )
+
+    if (!result.success) {
+      return NewsletterService.createErrorResponse(
+        new Error(result.error || 'Failed to send newsletter'),
+        500
+      )
+    }
+
+    return NewsletterService.createSuccessResponse(
+      'Newsletter sent successfully (test mode, ignores schedule)',
+      {
+        stats: {
+          totalSubscribers: subscribers.length,
+          successfulSends: result.successCount,
+          failedSends: result.failureCount
+        }
+      }
+    )
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    
     // Create service client for error logging
     const supabase = createServiceClient()
     await NewsletterService.logNewsletterEvent('failed', 0, { 
-      error: errorMessage,
+      error: error instanceof Error ? error.message : 'Unknown error',
       type: 'test-cron'
     }, supabase)
     
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    )
+    return NewsletterService.createErrorResponse(error)
   }
 }

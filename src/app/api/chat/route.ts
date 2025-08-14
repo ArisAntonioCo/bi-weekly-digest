@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { openai } from '@/lib/openai'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 export async function POST(request: NextRequest) {
   try {

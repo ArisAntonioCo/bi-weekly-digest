@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { openai } from '@/lib/openai'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 // Finance-specific system prompt
 const FINANCE_SYSTEM_PROMPT = `You are an AI Finance Assistant specializing in investment analysis, particularly in 3-year Forward MOIC (Multiple on Invested Capital) projections. 

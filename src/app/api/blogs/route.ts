@@ -1,13 +1,9 @@
 import { NextRequest } from 'next/server'
-import OpenAI from 'openai'
+import { openai } from '@/lib/openai'
 import { createClient } from '@/utils/supabase/server'
 import { Paginated } from '@/types/pagination'
 import { Blog } from '@/types/blog'
 import { handleApiError, ApiError, createSuccessResponse, checkRateLimit } from '@/utils/api-errors'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 export async function GET(request: NextRequest) {
   try {

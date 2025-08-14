@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createServiceClient } from '@/utils/supabase/server'
 import { NewsletterService } from '@/services/newsletter.service'
 import { NewsletterSchedule } from '@/types/newsletter'
@@ -6,44 +6,16 @@ import { NewsletterSchedule } from '@/types/newsletter'
 export async function GET(request: NextRequest) {
   try {
     console.log('Newsletter cron triggered:', new Date().toISOString())
-    console.log('Headers:', Object.fromEntries(request.headers.entries()))
     
-    // Verify this is a Vercel cron job or authorized request
-    const authHeader = request.headers.get('authorization')
-    const cronSecretFromVercel = request.headers.get('x-vercel-cron-secret')
-    const userAgent = request.headers.get('user-agent')
-    const vercelId = request.headers.get('x-vercel-id')
-    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
+    // Authenticate cron request
+    const auth = await NewsletterService.authenticateRequest(request)
     
-    console.log('Auth check:', {
-      hasAuthHeader: !!authHeader,
-      hasCronSecretHeader: !!cronSecretFromVercel,
-      hasCronSecret: !!process.env.CRON_SECRET,
-      authMatches: authHeader === expectedAuth,
-      isVercelCron: !!cronSecretFromVercel,
-      userAgent,
-      hasVercelId: !!vercelId,
-      allHeaders: Array.from(request.headers.entries()).filter(([key]) => 
-        key.toLowerCase().startsWith('x-vercel') || key.toLowerCase().includes('cron')
+    if (!auth.isAuthorized) {
+      console.log('Unauthorized cron request')
+      return NewsletterService.createErrorResponse(
+        new Error(auth.error || 'Unauthorized - Missing or invalid CRON_SECRET'),
+        401
       )
-    })
-    
-    // Allow if proper auth OR it's from Vercel cron (check multiple indicators)
-    const isVercelInternal = !!cronSecretFromVercel || 
-                             (userAgent && userAgent.includes('Vercel')) ||
-                             !!vercelId
-    const isAuthorized = authHeader === expectedAuth || isVercelInternal
-    
-    if (!isAuthorized) {
-      console.log('Unauthorized cron request:', {
-        received: authHeader ? 'Bearer [REDACTED]' : 'none',
-        hasVercelHeader: !!cronSecretFromVercel,
-        expected: process.env.CRON_SECRET ? 'Bearer [REDACTED]' : 'CRON_SECRET not set'
-      })
-      return NextResponse.json({ 
-        error: 'Unauthorized',
-        message: 'Missing or invalid CRON_SECRET' 
-      }, { status: 401 })
     }
 
     const supabase = createServiceClient()
@@ -57,18 +29,18 @@ export async function GET(request: NextRequest) {
 
     if (scheduleError) {
       console.log('Error fetching schedule:', scheduleError)
-      return NextResponse.json({ 
-        error: 'Failed to fetch schedule',
-        details: scheduleError 
-      }, { status: 500 })
+      return NewsletterService.createErrorResponse(
+        new Error(`Failed to fetch schedule: ${scheduleError.message}`),
+        500
+      )
     }
 
     if (!schedules || schedules.length === 0) {
       console.log('No active schedule found')
-      return NextResponse.json({ 
-        error: 'No active schedule found',
-        message: 'Please configure a newsletter schedule in the database' 
-      }, { status: 404 })
+      return NewsletterService.createErrorResponse(
+        new Error('No active schedule found. Please configure a newsletter schedule in the database'),
+        404
+      )
     }
 
     const schedule = schedules[0]
@@ -77,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     // Check if schedule is active
     if (!schedule.is_active) {
-      return NextResponse.json({ message: 'Schedule is not active' }, { status: 200 })
+      return NewsletterService.createSuccessResponse('Schedule is not active')
     }
 
     // Check if we should send newsletter today
@@ -85,43 +57,35 @@ export async function GET(request: NextRequest) {
     const shouldSend = shouldSendNewsletter(schedule, now)
 
     if (!shouldSend) {
-      return NextResponse.json({ 
-        message: 'Not scheduled to send today',
-        nextScheduled: schedule.next_scheduled_at 
-      }, { status: 200 })
+      return NewsletterService.createSuccessResponse(
+        'Not scheduled to send today',
+        { nextScheduled: schedule.next_scheduled_at }
+      )
     }
 
     // Get active subscribers
     const subscribers = await NewsletterService.getActiveSubscribers(supabase)
     
     if (subscribers.length === 0) {
-      return NextResponse.json({ 
-        message: 'No active subscribers found'
-      }, { status: 200 })
+      return NewsletterService.createSuccessResponse('No active subscribers found')
     }
 
-    // Generate content
-    const config = await NewsletterService.getConfiguration(supabase)
-    const aiResponse = await NewsletterService.generateContent(config.system_prompt)
+    // Generate and send newsletter
+    const result = await NewsletterService.generateAndSend(
+      subscribers,
+      'AI Analysis Report - Weekly Digest',
+      {
+        supabaseClient: supabase,
+        storeNewsletter: true,
+        logEvent: true
+      }
+    )
 
-    // Send to all subscribers in batch (single API call)
-    let successCount: number
-    let failureCount: number
-    
-    try {
-      await NewsletterService.sendEmail({
-        to: subscribers, // Send to all subscribers at once
-        subject: 'AI Analysis Report - Weekly Digest'
-      }, aiResponse)
-      
-      // Single API call success - all emails delivered
-      successCount = subscribers.length
-      failureCount = 0
-    } catch (error) {
-      console.error('Batch email send failed:', error)
-      // Single API call failed - no emails delivered
-      successCount = 0
-      failureCount = subscribers.length
+    if (!result.success) {
+      return NewsletterService.createErrorResponse(
+        new Error(result.error || 'Failed to send newsletter'),
+        500
+      )
     }
 
     // Update schedule
@@ -133,39 +97,25 @@ export async function GET(request: NextRequest) {
       })
       .eq('id', schedule.id)
 
-    // Store newsletter
-    await NewsletterService.storeNewsletter(aiResponse, undefined, supabase)
-
-    // Log event
-    await NewsletterService.logNewsletterEvent('sent', subscribers.length, {
-      success: successCount,
-      failed: failureCount,
-      cron: true
-    }, supabase)
-
-    return NextResponse.json({
-      success: true,
-      message: 'Newsletter sent successfully',
-      stats: {
-        totalSubscribers: subscribers.length,
-        successfulSends: successCount,
-        failedSends: failureCount
+    return NewsletterService.createSuccessResponse(
+      'Newsletter sent successfully',
+      {
+        stats: {
+          totalSubscribers: subscribers.length,
+          successfulSends: result.successCount,
+          failedSends: result.failureCount
+        }
       }
-    })
+    )
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    
     // Create service client for error logging
     const supabase = createServiceClient()
     await NewsletterService.logNewsletterEvent('failed', 0, { 
-      error: errorMessage,
+      error: error instanceof Error ? error.message : 'Unknown error',
       cron: true
     }, supabase)
     
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    )
+    return NewsletterService.createErrorResponse(error)
   }
 }
 
