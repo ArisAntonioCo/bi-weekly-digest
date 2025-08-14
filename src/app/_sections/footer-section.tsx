@@ -32,7 +32,7 @@ export function FooterSection() {
               <h4 className="text-sm font-medium text-foreground mb-3">Ready to get started?</h4>
               <Link href="/signup">
                 <Button variant="default" size="default" className="w-full sm:w-auto rounded-full text-sm sm:text-base">
-                  Start Free Trial
+                  Get Started
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
