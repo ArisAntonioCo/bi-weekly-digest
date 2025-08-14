@@ -130,7 +130,7 @@ export function BlogSearchClient({ children, totalCount }: BlogSearchClientProps
 
         <TabsContent value={sort} className="mt-0">
           {isPending ? (
-            <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(9)].map((_, i) => (
                 <div key={i} className="bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 animate-pulse">
                   <Skeleton className="h-5 w-20 bg-muted/80 rounded-full" />

@@ -57,7 +57,7 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
 
   return (
     <Link href={href} className="block h-full">
-      <div className="group h-full flex flex-col bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
+      <div className="group h-full flex flex-col bg-muted/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
         {/* Header */}
         <div className="mb-3 sm:mb-4">
           <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
