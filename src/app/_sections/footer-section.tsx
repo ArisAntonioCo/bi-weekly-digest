@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -7,13 +8,21 @@ export function FooterSection() {
     <footer className="border-t border-border bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Main Footer Content */}
-        <div className="flex flex-col items-center text-center mb-12">
+        <div className="flex flex-col lg:flex-row items-center lg:items-stretch gap-12 mb-12">
           
-          {/* Brand Column */}
-          <div className="max-w-2xl">
-            <div className="mb-4">
-              <span className="text-2xl sm:text-3xl font-semibold text-foreground">3YMode</span>
-            </div>
+          {/* Logo on left */}
+          <div className="flex-shrink-0">
+            <Image 
+              src="/3YMode.svg" 
+              alt="3YMode"
+              width={120}
+              height={65}
+              className="w-auto h-16 sm:h-20 lg:h-24"
+            />
+          </div>
+          
+          {/* Content Column */}
+          <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left max-w-2xl">
             <p className="text-sm text-muted-foreground mb-6">
               Premium investment insights and market analysis for smarter portfolio decisions.
             </p>

@@ -9,17 +9,22 @@ export function AuthPanel({ children }: AuthPanelProps) {
     <div className="min-h-screen bg-muted/30 p-2">
       <div className="h-[calc(100vh-1rem)] grid lg:grid-cols-2 gap-2">
         {/* Left Panel - Branding */}
-        <div 
-          className="rounded-2xl p-12 flex flex-col justify-between text-white relative overflow-hidden"
-          style={{
-            backgroundImage: 'url(/AuthBG.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
+        <div className="rounded-2xl p-12 flex flex-col justify-between text-white relative overflow-hidden">
+          {/* Video Background */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+          >
+            <source src="/AuthBGLoop.mp4" type="video/mp4" />
+            {/* Fallback to image if video doesn't load */}
+            Your browser does not support the video tag.
+          </video>
+          
           {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/40 rounded-2xl" />
+          <div className="absolute inset-0 bg-black/50 rounded-2xl" />
           
           <div className="relative z-10">
             {/* Logo at top */}
