@@ -226,10 +226,12 @@ export async function POST(request: NextRequest) {
 }
 
 async function generateBlogContent(systemPrompt: string): Promise<string> {
+  const { logger } = await import('@/lib/logger')
+  
   try {
     // Try Responses API with web search first for real-time data
     try {
-      console.log('Attempting Responses API with web_search_preview for blog content...')
+      logger.debug('Attempting Responses API with web_search_preview for blog content')
       const response = await openai.responses.create({
         model: 'gpt-4o',
         instructions: `${systemPrompt}\n\nIMPORTANT: Use web search to get the most current market data, stock prices, and financial news for the investment analysis.`,
@@ -237,11 +239,12 @@ async function generateBlogContent(systemPrompt: string): Promise<string> {
         tools: [{ type: 'web_search_preview' }],
       })
       
-      console.log('Responses API with web search succeeded')
+      logger.info('Responses API with web search succeeded')
       return response.output_text || 'No response generated'
     } catch (responsesError) {
-      console.error('Responses API with web search error:', responsesError)
-      console.log('Falling back to Chat Completions...')
+      logger.warn('Responses API with web search failed, falling back to Chat Completions', {
+        error: responsesError instanceof Error ? responsesError.message : 'Unknown error'
+      })
       
       // Fallback to regular chat completions
       const completion = await openai.chat.completions.create({

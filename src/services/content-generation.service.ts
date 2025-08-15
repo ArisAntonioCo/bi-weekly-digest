@@ -1,4 +1,5 @@
 import { openai } from '@/lib/openai'
+import { logger } from '@/lib/logger'
 
 /**
  * Content Generation Service
@@ -9,24 +10,32 @@ export class ContentGenerationService {
    * Generates AI content using OpenAI
    */
   static async generateContent(systemPrompt: string): Promise<string> {
+    const startTime = Date.now()
+    
     try {
       // Try Responses API with web search first for real-time market data
       try {
-        console.log('Attempting Responses API with web_search_preview for newsletter generation...')
+        logger.debug('Attempting Responses API with web_search_preview for newsletter generation')
         const response = await openai.responses.create({
           model: 'gpt-4o',
           input: systemPrompt,
           tools: [{ type: 'web_search_preview' }],
         })
         
-        console.log('Responses API with web search succeeded for newsletter')
+        const duration = Date.now() - startTime
+        logger.logService('ContentGeneration', 'generateWithWebSearch', true, duration, {
+          model: 'gpt-4o',
+          toolsUsed: ['web_search_preview']
+        })
         
         // Clean the response to remove web search artifacts
         const rawContent = response.output_text || 'No response generated'
         return this.cleanWebSearchContent(rawContent)
       } catch (responsesError) {
-        console.error('Responses API with web search error:', responsesError)
-        console.log('Falling back to Chat Completions...')
+        logger.warn('Responses API with web search failed, falling back to Chat Completions', {
+          error: responsesError instanceof Error ? responsesError.message : 'Unknown error',
+          duration: Date.now() - startTime
+        })
         
         // Fallback to regular chat completions
         const completion = await openai.chat.completions.create({
@@ -45,9 +54,19 @@ export class ContentGenerationService {
           max_tokens: 8000,
         })
         
+        const totalDuration = Date.now() - startTime
+        logger.logService('ContentGeneration', 'generateWithChatCompletion', true, totalDuration, {
+          model: 'gpt-4o',
+          fallback: true
+        })
+        
         return completion.choices[0].message.content || 'No response generated'
       }
     } catch (error) {
+      const totalDuration = Date.now() - startTime
+      logger.logService('ContentGeneration', 'generateContent', false, totalDuration, {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
       throw new Error(`Failed to generate AI content: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }

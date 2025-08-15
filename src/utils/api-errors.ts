@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
+import { AppError } from '@/types/errors'
 
+/**
+ * Legacy ApiError class - maintained for backward compatibility
+ * New code should use AppError from @/types/errors
+ */
 export class ApiError extends Error {
   constructor(
     public statusCode: number,
@@ -11,22 +17,27 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Legacy error handler - maintained for backward compatibility
+ * New code should use handleError from @/middleware/error-handler
+ */
 export function handleApiError(error: unknown): NextResponse {
-  // Handle our custom API errors
-  if (error instanceof ApiError) {
-    const response: { error: string; details?: unknown } = {
-      error: error.message
-    }
-    
-    if (error.details !== undefined) {
-      response.details = error.details
-    }
-    
-    return NextResponse.json(response, { status: error.statusCode })
-  }
+  // Log the error using new logger
+  logger.error('Legacy API Error Handler', error)
 
-  // Handle Supabase errors
-  if (error && typeof error === 'object' && 'code' in error) {
+  // Convert to AppError for consistent handling
+  let appError: AppError
+
+  if (error instanceof ApiError) {
+    appError = new AppError(
+      error.message,
+      error.statusCode,
+      true,
+      error.details ? { details: error.details } : undefined
+    )
+  } else if (error instanceof AppError) {
+    appError = error
+  } else if (error && typeof error === 'object' && 'code' in error) {
     const supabaseError = error as { code: string; message?: string }
     
     // Map common Supabase error codes to HTTP status codes
@@ -39,33 +50,29 @@ export function handleApiError(error: unknown): NextResponse {
     }
     
     const statusCode = errorMap[supabaseError.code] || 500
-    
-    return NextResponse.json(
-      {
-        error: supabaseError.message || 'Database error',
-        code: supabaseError.code
-      },
-      { status: statusCode }
+    appError = new AppError(
+      supabaseError.message || 'Database error',
+      statusCode,
+      false,
+      { code: supabaseError.code }
     )
+  } else if (error instanceof Error) {
+    appError = new AppError(error.message || 'Internal server error', 500, false)
+  } else {
+    appError = new AppError('An unexpected error occurred', 500, false)
   }
 
-  // Handle standard errors
-  if (error instanceof Error) {
-    return NextResponse.json(
-      {
-        error: error.message || 'Internal server error'
-      },
-      { status: 500 }
-    )
+  // Format response
+  const response: { error: string; details?: unknown; timestamp?: string } = {
+    error: appError.message,
+    timestamp: new Date().toISOString()
   }
-
-  // Fallback for unknown errors
-  return NextResponse.json(
-    {
-      error: 'An unexpected error occurred'
-    },
-    { status: 500 }
-  )
+  
+  if (process.env.NODE_ENV === 'development' && appError.details) {
+    response.details = appError.details
+  }
+  
+  return NextResponse.json(response, { status: appError.statusCode })
 }
 
 export function createErrorResponse(

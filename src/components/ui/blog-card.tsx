@@ -2,10 +2,16 @@
 
 import { memo } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { CalendarDays, TrendingUp, AlertTriangle, ChevronRight, Clock } from 'lucide-react'
+import { CalendarDays, ChevronRight, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { Blog } from '@/types/blog'
+import { 
+  extractPreviewText, 
+  getAnalysisType, 
+  calculateReadingTime, 
+  formatReadingTime 
+} from '@/utils/blog.utils'
 
 interface BlogCardProps {
   blog: Blog
@@ -13,45 +19,12 @@ interface BlogCardProps {
 }
 
 export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCardProps) {
-  // Extract preview text (first 200 characters of content)
-  const getPreviewText = (content: string) => {
-    // Remove markdown formatting for preview
-    const plainText = content
-      .replace(/#{1,6}\s/g, '') // Remove headers
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-      .replace(/\*(.*?)\*/g, '$1') // Remove italic
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
-      .replace(/```[\s\S]*?```/g, '') // Remove code blocks
-      .replace(/`([^`]+)`/g, '$1') // Remove inline code
-      .replace(/\n{2,}/g, ' ') // Replace multiple newlines
-      .replace(/\n/g, ' ') // Replace single newlines
-      .trim()
-    
-    return plainText.length > 200 
-      ? plainText.substring(0, 200) + '...' 
-      : plainText
-  }
-
-  // Determine analysis type based on content
-  const getAnalysisType = (content: string) => {
-    const contentLower = content.toLowerCase()
-    if (contentLower.includes('moic') || contentLower.includes('multiple on invested capital')) {
-      return { type: 'MOIC Analysis', variant: 'default' as const, icon: TrendingUp }
-    }
-    if (contentLower.includes('bear case') || contentLower.includes('risk')) {
-      return { type: 'Risk Assessment', variant: 'destructive' as const, icon: AlertTriangle }
-    }
-    return { type: 'Investment Insight', variant: 'secondary' as const, icon: TrendingUp }
-  }
-
-  // Calculate reading time (rough estimate: 200 words per minute)
-  const getReadingTime = (content: string) => {
-    const words = content.split(/\s+/).length
-    const minutes = Math.ceil(words / 200)
-    return `${minutes} min read`
-  }
-
+  // Use utility functions for business logic
+  const previewText = extractPreviewText(blog.content)
   const analysisType = getAnalysisType(blog.content)
+  const readingTime = calculateReadingTime(blog.content)
+  const readingTimeText = formatReadingTime(readingTime)
+  
   const Icon = analysisType.icon
   const href = isAdmin ? `/admin/blogs/${blog.id}` : `/blogs/${blog.id}`
 
@@ -74,7 +47,7 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
         {/* Content Preview */}
         <div className="flex-1 mb-3 sm:mb-4">
           <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-            {getPreviewText(blog.content)}
+            {previewText}
           </p>
         </div>
         
@@ -88,7 +61,7 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {getReadingTime(blog.content)}
+                {readingTimeText}
               </div>
             </div>
             <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
