@@ -50,7 +50,8 @@
       "Bash(vercel project:*)",
       "mcp__supabase__get_anon_key",
       "Bash(true)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__supabase__list_migrations"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
