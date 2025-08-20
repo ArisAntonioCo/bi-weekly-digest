@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { Expert, CreateExpertInput } from '@/types/expert'
+import { CreateExpertInput } from '@/types/expert'
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { openai } from '@/lib/openai'
 import { handleApiError, ApiError, createSuccessResponse, checkRateLimit } from '@/utils/api-errors'
@@ -79,7 +79,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function generateExpertAnalysis(expert: any, ticker: string) {
+interface ExpertRecord {
+  id: string
+  name: string
+  title?: string
+  investing_law?: string
+  focus_areas?: string
+  framework_description?: string
+}
+
+async function generateExpertAnalysis(expert: ExpertRecord, ticker: string) {
   const { logger } = await import('@/lib/logger')
   
   // Build expert-specific prompt

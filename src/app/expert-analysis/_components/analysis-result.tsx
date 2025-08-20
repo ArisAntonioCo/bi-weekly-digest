@@ -4,7 +4,7 @@ import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-c
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Building2, User, DollarSign, TrendingUp, Copy, Calendar } from 'lucide-react'
+import { Building2, Copy, Calendar } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ interface AnalysisResultProps {
   selectedExpert?: Expert | null
 }
 
-export function AnalysisResult({ result, selectedExpert }: AnalysisResultProps) {
+export function AnalysisResult({ result }: AnalysisResultProps) {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(result.analysis)
     toast.success('Analysis copied to clipboard')

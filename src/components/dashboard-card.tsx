@@ -28,7 +28,7 @@ export function DashboardCard({
   const variantClasses = {
     default: 'bg-muted/50 min-h-[200px]',
     highlight: 'bg-muted/50 min-h-[300px]',
-    compact: 'bg-muted/50 min-h-[140px]'
+    compact: 'bg-muted/50'
   }
 
   const baseClasses = cn(

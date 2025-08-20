@@ -2,27 +2,67 @@
 
 import { DashboardCard } from '@/components/dashboard-card'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
+import { Badge } from '@/components/ui/badge'
 import { motion } from 'motion/react'
+import { Expert } from '@/types/expert'
+import { Sparkles, X } from 'lucide-react'
 
-interface EmptyStateProps {
-  recentAnalyses: Array<{
-    id: string
-    stock_ticker: string
-    expert_name: string
-    timestamp: string
-  }>
-  onSelectAnalysis: (analysis: any) => void
+interface AnalysisType {
+  id: string
+  stock_ticker: string
+  company_name: string
+  expert_name: string
+  expert_id: string
+  analysis: string
+  timestamp: string
+  current_price?: number
+  market_cap?: string
+  pe_ratio?: number
 }
 
-export function EmptyState({ recentAnalyses, onSelectAnalysis }: EmptyStateProps) {
+interface EmptyStateProps {
+  selectedExperts: Expert[]
+  onRemoveExpert?: (expert: Expert) => void
+  recentAnalyses: AnalysisType[]
+  onSelectAnalysis: (analysis: AnalysisType | null) => void
+}
+
+export function EmptyState({ selectedExperts, onRemoveExpert, recentAnalyses, onSelectAnalysis }: EmptyStateProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
+      className="space-y-4"
     >
+      {/* Selected Experts Display */}
+      {selectedExperts.length > 0 && (
+        <DashboardCard variant="compact" padding="small" className="bg-muted/30">
+          <div className="flex items-center gap-3">
+            <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
+            <p className="text-sm font-medium text-foreground">
+              Selected ({selectedExperts.length}/3):
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {selectedExperts.map(expert => (
+                <Badge 
+                  key={expert.id} 
+                  variant="secondary"
+                  className="text-sm pr-1.5 group cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                  onClick={() => onRemoveExpert?.(expert)}
+                >
+                  {expert.name}
+                  <X className="h-3.5 w-3.5 ml-1.5 opacity-60 group-hover:opacity-100" />
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </DashboardCard>
+      )}
+
+      {/* Main Empty State */}
       <DashboardCard variant="highlight" padding="large">
-        <div className="flex flex-col items-center justify-center min-h-[500px] text-center">
+        <div className="flex flex-col items-center justify-center min-h-[320px] text-center">
           {/* Animated Orb */}
           <AnimatedOrb className="mb-8" />
           
@@ -30,7 +70,10 @@ export function EmptyState({ recentAnalyses, onSelectAnalysis }: EmptyStateProps
             Ready to Analyze
           </h3>
           <p className="text-muted-foreground max-w-sm">
-            Select an expert framework and enter a stock ticker to get AI-powered insights
+            {selectedExperts.length > 0 
+              ? `Enter a stock ticker to analyze with ${selectedExperts.length === 1 ? 'your selected expert' : 'your selected experts'}`
+              : 'Select experts and enter a stock ticker to get AI-powered insights'
+            }
           </p>
 
           {/* Recent Analyses */}

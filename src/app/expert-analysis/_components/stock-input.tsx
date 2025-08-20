@@ -3,7 +3,6 @@
 import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Search, ChevronRight, Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 
@@ -44,13 +43,13 @@ export function StockInput({
                 value={stockTicker}
                 onChange={(e) => onTickerChange(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === 'Enter' && !disabled && onAnalyze()}
-                className="font-mono text-lg"
+                className="font-mono text-lg h-11 rounded-full px-5"
               />
               <Button 
                 onClick={onAnalyze}
                 disabled={disabled || analyzing}
                 size="lg"
-                className="rounded-full px-6"
+                className="rounded-full px-8 h-11 min-w-[120px]"
               >
                 {analyzing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

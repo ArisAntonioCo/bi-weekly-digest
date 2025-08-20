@@ -28,7 +28,7 @@ interface AnalysisResultType {
 
 export function ExpertAnalysisPage() {
   const [experts, setExperts] = useState<Expert[]>([])
-  const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null)
+  const [selectedExperts, setSelectedExperts] = useState<Expert[]>([])
   const [stockTicker, setStockTicker] = useState('')
   const [loadingExperts, setLoadingExperts] = useState(true)
   const [analyzing, setAnalyzing] = useState(false)
@@ -47,10 +47,6 @@ export function ExpertAnalysisPage() {
       if (response.ok) {
         const data = await response.json()
         setExperts(data.experts || [])
-        // Select first expert by default
-        if (data.experts && data.experts.length > 0) {
-          setSelectedExpert(data.experts[0])
-        }
       }
     } catch (error) {
       console.error('Failed to load experts:', error)
@@ -89,9 +85,13 @@ export function ExpertAnalysisPage() {
     localStorage.setItem('recentAnalyses', JSON.stringify(updated))
   }
 
+  const removeExpert = (expertToRemove: Expert) => {
+    setSelectedExperts(prev => prev.filter(e => e.id !== expertToRemove.id))
+  }
+
   const handleAnalyze = async () => {
-    if (!selectedExpert) {
-      toast.error('Please select an expert')
+    if (selectedExperts.length === 0) {
+      toast.error('Please select at least one expert')
       return
     }
 
@@ -104,14 +104,22 @@ export function ExpertAnalysisPage() {
       setAnalyzing(true)
       setAnalysisResult(null)
 
+      // For now, use the first expert for the API call
+      // Later this can be enhanced to combine multiple expert perspectives
+      const expertsToUse = selectedExperts.length === 1 
+        ? selectedExperts[0] 
+        : selectedExperts[0] // TODO: Implement multi-expert analysis
+
       const response = await fetch('/api/expert-analysis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          expert_id: selectedExpert.id,
-          stock_ticker: stockTicker.toUpperCase().trim()
+          expert_id: expertsToUse.id,
+          stock_ticker: stockTicker.toUpperCase().trim(),
+          // For future: pass all expert IDs
+          expert_ids: selectedExperts.map(e => e.id)
         })
       })
 
@@ -120,6 +128,12 @@ export function ExpertAnalysisPage() {
       }
 
       const result = await response.json()
+      
+      // Update expert name to show multiple if applicable
+      if (selectedExperts.length > 1) {
+        result.data.expert_name = selectedExperts.map(e => e.name).join(', ')
+      }
+      
       setAnalysisResult(result.data)
       saveToRecent(result.data)
       toast.success('Analysis complete!')
@@ -134,12 +148,12 @@ export function ExpertAnalysisPage() {
   if (loadingExperts) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="container mx-auto px-6 py-8 max-w-7xl">
           <div className="space-y-6">
             <Skeleton className="h-12 w-64 mx-auto" />
             <div className="grid gap-6 lg:grid-cols-3">
               <div className="space-y-4">
-                <Skeleton className="h-[400px] w-full rounded-3xl" />
+                <Skeleton className="h-[500px] w-full rounded-3xl" />
                 <Skeleton className="h-[200px] w-full rounded-3xl" />
               </div>
               <div className="lg:col-span-2">
@@ -156,39 +170,42 @@ export function ExpertAnalysisPage() {
     <div className="min-h-screen bg-background">
       <PageHeader />
       
-      <div className="container mx-auto px-4 max-w-6xl pb-12">
+      <div className="container mx-auto px-4 pb-12">
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Left Column - Expert Selection & Input */}
-          <div className="lg:col-span-1 space-y-4">
+          {/* Left Column - Expert Selection */}
+          <div className="lg:col-span-1">
             <ExpertSelector 
               experts={experts}
-              selectedExpert={selectedExpert}
-              onSelectExpert={setSelectedExpert}
+              selectedExperts={selectedExperts}
+              onSelectExperts={setSelectedExperts}
             />
-            
+          </div>
+
+          {/* Right Column - Stock Input & Analysis Results */}
+          <div className="lg:col-span-2 space-y-4">
             <StockInput
               stockTicker={stockTicker}
               onTickerChange={setStockTicker}
               onAnalyze={handleAnalyze}
               analyzing={analyzing}
-              disabled={!selectedExpert || !stockTicker}
+              disabled={selectedExperts.length === 0 || !stockTicker}
             />
-          </div>
-
-          {/* Right Column - Analysis Results */}
-          <div className="lg:col-span-2">
+            
+            {/* Analysis Display */}
             {analyzing ? (
               <LoadingState 
                 stockTicker={stockTicker}
-                selectedExpert={selectedExpert}
+                selectedExperts={selectedExperts}
               />
             ) : analysisResult ? (
               <AnalysisResult 
                 result={analysisResult}
-                selectedExpert={selectedExpert}
+                selectedExpert={selectedExperts[0]} // For compatibility
               />
             ) : (
               <EmptyState 
+                selectedExperts={selectedExperts}
+                onRemoveExpert={removeExpert}
                 recentAnalyses={recentAnalyses}
                 onSelectAnalysis={setAnalysisResult}
               />

@@ -2,23 +2,50 @@
 
 import { DashboardCard } from '@/components/dashboard-card'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
+import { Badge } from '@/components/ui/badge'
 import { motion } from 'motion/react'
 import { Expert } from '@/types/expert'
+import { Sparkles } from 'lucide-react'
 
 interface LoadingStateProps {
   stockTicker: string
-  selectedExpert: Expert | null
+  selectedExperts: Expert[]
 }
 
-export function LoadingState({ stockTicker, selectedExpert }: LoadingStateProps) {
+export function LoadingState({ stockTicker, selectedExperts }: LoadingStateProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
+      className="space-y-4"
     >
+      {/* Selected Experts Display */}
+      {selectedExperts.length > 0 && (
+        <DashboardCard variant="compact" padding="small" className="bg-muted/30">
+          <div className="flex items-center gap-3">
+            <Sparkles className="h-4 w-4 text-primary flex-shrink-0 animate-pulse" />
+            <p className="text-sm font-medium text-foreground">
+              Analyzing with ({selectedExperts.length}/3):
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {selectedExperts.map(expert => (
+                <Badge 
+                  key={expert.id} 
+                  variant="secondary"
+                  className="text-sm"
+                >
+                  {expert.name}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </DashboardCard>
+      )}
+
+      {/* Loading Animation */}
       <DashboardCard variant="highlight" padding="large">
-        <div className="flex flex-col items-center justify-center min-h-[500px] text-center">
+        <div className="flex flex-col items-center justify-center min-h-[320px] text-center">
           <AnimatedOrb size="lg" className="mb-8" />
           
           <div className="space-y-3">
@@ -26,7 +53,10 @@ export function LoadingState({ stockTicker, selectedExpert }: LoadingStateProps)
               Analyzing {stockTicker}
             </h3>
             <p className="text-muted-foreground">
-              Applying {selectedExpert?.name}'s investment framework
+              {selectedExperts.length === 1 
+                ? `Applying ${selectedExperts[0].name}'s investment framework`
+                : `Combining insights from ${selectedExperts.length} expert frameworks`
+              }
             </p>
             
             {/* Progress Steps */}
