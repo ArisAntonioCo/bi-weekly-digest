@@ -22,7 +22,8 @@ import {
   Calendar,
   LogOut,
   Loader2,
-  BookOpen
+  BookOpen,
+  Users
 } from 'lucide-react'
 import { logout } from '@/app/(auth)/login/actions'
 
@@ -32,6 +33,7 @@ const sidebarItems = [
     items: [
       { title: "AI Assistant", icon: MessageSquare, href: "/admin/dashboard" },
       { title: "Blog", icon: BookOpen, href: "/admin/blogs" },
+      { title: "Expert Frameworks", icon: Users, href: "/admin/experts" },
     ]
   },
   {
