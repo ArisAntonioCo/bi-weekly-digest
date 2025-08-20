@@ -18,7 +18,8 @@ import {
   LogOut, 
   LayoutDashboard, 
   BookOpen,
-  ChevronDown
+  ChevronDown,
+  TrendingUp
 } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -110,6 +111,9 @@ export default function Navbar({ className }: NavbarProps) {
     if (route === '/blogs') {
       return pathname.startsWith('/blogs')
     }
+    if (route === '/expert-analysis') {
+      return pathname === '/expert-analysis'
+    }
     return false
   }, [pathname])
 
@@ -200,6 +204,22 @@ export default function Navbar({ className }: NavbarProps) {
                     {isActiveRoute('/blogs') && (
                       <span className="ml-auto text-xs text-muted-foreground">●</span>
                     )}
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem 
+                    onClick={() => handleNavigation('/expert-analysis')}
+                    className={`text-muted-foreground cursor-pointer transition-colors ${
+                      isActiveRoute('/expert-analysis') 
+                        ? 'bg-muted text-foreground' 
+                        : 'hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Expert Analysis
+                    {isActiveRoute('/expert-analysis') && (
+                      <span className="ml-auto text-xs text-muted-foreground">●</span>
+                    )}
+                    <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">NEW</span>
                   </DropdownMenuItem>
                   
                   <DropdownMenuSeparator className="bg-border" />

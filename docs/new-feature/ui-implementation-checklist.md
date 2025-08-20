@@ -187,95 +187,96 @@
 
 ---
 
-## Phase 2: User Expert Selection UI (Next Phase)
+## Phase 2: User-Facing Expert Stock Analysis Feature
 
-### 1. Expert Selection Trigger
-- [ ] Add "Select Experts" button to analysis page
-- [ ] Show currently selected experts count
-- [ ] Default to saved preferences if available
-- [ ] Required step before analysis can proceed
+### 1. Expert Analysis Page (`/expert-analysis`)
+- [x] Create main page at `/src/app/expert-analysis/page.tsx`
+- [x] Create page component at `_page/expert-analysis-page.tsx`
+- [x] Page header with title and description
+- [x] Three-column responsive layout (expert selection, input, results)
+- [x] Add navigation from user dashboard
+- [x] Add navigation from navbar dropdown
+- [ ] Mobile-responsive design adjustments
 
-### 2. Expert Selection Modal (`expert-selection-modal.tsx`)
-- [ ] Full-screen modal on mobile, centered on desktop
-- [ ] Modal header with title and close button
-- [ ] Selected count indicator (e.g., "3 of 5 selected")
-- [ ] Tabs for different views:
-  - [ ] All Experts
-  - [ ] Categories (Tech, Value, Growth, etc.)
-  - [ ] My Favorites
-  - [ ] Recently Used
-- [ ] Footer with action buttons:
-  - [ ] Cancel
-  - [ ] Clear Selection
-  - [ ] Apply Selection
-  - [ ] Save as Default (optional)
+### 2. Expert Selection Interface
+- [x] Expert selection card with tabs (All, Value, Growth)
+- [x] Scrollable list of expert cards
+- [x] Expert card displays:
+  - [x] Name
+  - [x] Title/description
+  - [x] Investing law preview
+- [x] Visual feedback for selected expert
+- [x] Default selection on page load
+- [ ] Expert details modal/popup
 
-### 3. Expert Grid Component (`expert-grid.tsx`)
-- [ ] Responsive grid layout
-- [ ] Expert cards with:
-  - [ ] Checkbox for selection
-  - [ ] Expert photo/avatar
-  - [ ] Name and title
-  - [ ] Key focus area badges
-  - [ ] Investing law preview
-  - [ ] "Learn More" expand action
-- [ ] Visual feedback for selected state
-- [ ] Disabled state for unavailable experts
-- [ ] Loading skeleton while fetching
+### 3. Stock Input Component
+- [x] Stock ticker input field
+- [x] Enter key support for quick analysis
+- [x] Popular stocks quick selection badges
+- [x] Input validation and formatting (uppercase)
+- [ ] Stock ticker autocomplete/search
+- [ ] Company name display after ticker validation
 
-### 4. Expert Preview Card (`expert-preview-card.tsx`)
-- [ ] Expanded view with full details
-- [ ] Complete investing law
-- [ ] Framework description
-- [ ] Historical performance (future)
-- [ ] Example analyses using this expert
-- [ ] Select/Deselect toggle
+### 4. Analysis API Endpoint (`/api/expert-analysis`)
+- [x] Create POST endpoint for analysis requests
+- [x] Accept expert_id and stock_ticker parameters
+- [x] Fetch real-time stock data (price, market cap, PE ratio)
+- [x] Generate analysis using expert framework
+- [x] Return structured analysis response
+- [x] Error handling for invalid tickers
+- [x] Rate limiting per user
 
-### 5. Quick Presets Component (`expert-quick-presets.tsx`)
-- [ ] Preset combinations:
-  - [ ] "Tech Innovators" (Doerr, Sacks, Hoffman, Khosla)
-  - [ ] "Value Investors" (Gurley, Druckenmiller)
-  - [ ] "Growth & AI" (Gerstner, Meeker, Kindig)
-  - [ ] "Balanced View" (Mix of different perspectives)
-  - [ ] "All Experts" (Select all available)
-- [ ] One-click selection
-- [ ] Preview of included experts
-- [ ] Custom preset creation (future)
+### 5. Analysis Results Display
+- [x] Loading state with spinner and message
+- [x] Result card with company/ticker header
+- [x] Stock metrics display (price, market cap)
+- [x] Scrollable analysis content area
+- [x] Copy analysis button
+- [x] Timestamp display
+- [ ] Export/share options
+- [ ] Print-friendly view
 
-### 6. Selected Experts Bar (`selected-experts-bar.tsx`)
-- [ ] Horizontal scrollable list of selected experts
-- [ ] Expert chips with:
-  - [ ] Name
-  - [ ] Remove button (X)
-- [ ] Clear all button
-- [ ] Reorder capability (drag and drop)
-- [ ] Collapse/expand for mobile
+### 6. Recent Analyses Feature
+- [x] Store recent analyses in localStorage
+- [x] Display recent analyses list when no active analysis
+- [x] Click to view previous analysis
+- [x] Show ticker, expert, and date for each
+- [ ] Clear history option
+- [ ] Persist to database for logged-in users
 
-### 7. Integration with Analysis Flow
-- [ ] Pass selected expert IDs to content generation
-- [ ] Store selection with analysis results
-- [ ] Display which experts were used in output
-- [ ] Allow re-running with different experts
+### 7. Expert Framework Integration (UI Only)
+- [x] Enhanced expert card display with category badges
+- [x] Added tooltips showing expert philosophy and focus areas
+- [x] Improved visual feedback for selected expert
+- [x] Added category-specific icons and colors
+- [x] Created selected expert summary card
+- [x] Enhanced analysis loading state with expert context
+- [x] Added expert framework indicators in results header
+- [x] Display focus area tags on expert cards
 
-### 8. User Preferences
-- [ ] Save selection as default preference
-- [ ] Load saved preferences on next visit
-- [ ] Reset to defaults option
-- [ ] Preference sync across devices
+### 8. Stock Data via OpenAI Web Search
+- [ ] Use OpenAI web search for real-time stock data
+- [ ] Stock tickers are presets (no external API needed)
+- [ ] Web search queries tailored to expert's focus
+- [ ] Parse stock metrics from web search results
+- [ ] Display available metrics in analysis
+- [ ] Handle cases where metrics aren't found
 
-### 9. Mobile Optimizations
-- [ ] Bottom sheet for selection modal
-- [ ] Swipe gestures for navigation
-- [ ] Larger touch targets
-- [ ] Simplified layout
-- [ ] Progressive disclosure of details
+### 9. User Experience Enhancements
+- [ ] Keyboard shortcuts for common actions
+- [ ] Loading progress indicator
+- [ ] Error messages with helpful suggestions
+- [ ] Tooltips for expert information
+- [ ] Smooth transitions and animations
+- [ ] Responsive design for all screen sizes
 
-### 10. Performance Optimizations
-- [ ] Lazy load expert details
-- [ ] Virtual scrolling for long lists
-- [ ] Image optimization for avatars
-- [ ] Debounced search
-- [ ] Optimistic UI updates
+### 10. Performance & Caching
+- [ ] Cache expert data on client
+- [ ] Implement analysis result caching
+- [ ] Debounce API calls
+- [ ] Optimize component re-renders
+- [ ] Lazy load non-critical components
+- [ ] Implement virtual scrolling for long lists
 
 ---
 

@@ -347,6 +347,46 @@ export default function DashboardPage() {
                 </DashboardCard>
               </motion.div>
 
+              {/* Expert Stock Analysis - NEW */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.35 }}
+              >
+                <DashboardCard 
+                  variant="default" 
+                  padding="medium"
+                  className="relative overflow-hidden cursor-pointer hover:bg-muted/70 border-primary/20"
+                >
+                  {/* New Badge */}
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                      NEW
+                    </span>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <CardHeader
+                      title="Expert Analysis"
+                      subtitle="Stock insights via legendary investors"
+                      icon={<Sparkles className="h-5 w-5 text-primary" />}
+                    />
+                    <CardContent className="mt-6">
+                      <Button 
+                        variant="outline" 
+                        size="lg"
+                        className="w-full rounded-full border-primary/20 hover:bg-primary/5"
+                        onClick={() => router.push('/expert-analysis')}
+                      >
+                        Analyze Stocks
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </CardContent>
+                  </div>
+                </DashboardCard>
+              </motion.div>
+
               {/* Newsletter Subscription */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
