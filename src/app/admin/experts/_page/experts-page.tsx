@@ -1,82 +1,131 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { ExpertHeader } from '../_sections/expert-header'
 import { ExpertList } from '../_sections/expert-list'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { Expert } from '@/types/expert'
+import { useExperts, useBulkUpdateExperts } from '@/hooks/use-experts'
 
 export function ExpertsPage() {
-  const [experts, setExperts] = useState<Expert[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  
   // Filter state
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
+  const [typeFilter, setTypeFilter] = useState<'all' | 'default' | 'custom'>('all')
+  const [sortBy, setSortBy] = useState<'name' | 'created_at' | 'display_order'>('display_order')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(9) // 3x3 grid on desktop
+  
+  // Bulk selection state
+  const [selectionMode, setSelectionMode] = useState(false)
+  const [selectedExperts, setSelectedExperts] = useState<string[]>([])
 
-  const fetchExperts = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    
-    try {
-      const params = new URLSearchParams()
-      
-      if (searchQuery) {
-        params.append('search', searchQuery)
-      }
-      
-      if (categoryFilter !== 'all') {
-        params.append('category', categoryFilter)
-      }
-      
-      if (statusFilter !== 'all') {
-        params.append('active', statusFilter === 'active' ? 'true' : 'false')
-      }
-      
-      const response = await fetch(`/api/experts?${params}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch experts')
-      }
-      
-      const data: Expert[] = await response.json()
-      setExperts(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }, [searchQuery, categoryFilter, statusFilter])
+  // Use SWR hook for fetching experts
+  const { 
+    experts, 
+    total: totalCount, 
+    isLoading: loading, 
+    error,
+    revalidate 
+  } = useExperts({
+    search: searchQuery,
+    category: categoryFilter,
+    status: statusFilter,
+    type: typeFilter,
+    sortBy,
+    sortOrder,
+    page: currentPage,
+    limit: itemsPerPage,
+  })
 
-  useEffect(() => {
-    fetchExperts()
-  }, [fetchExperts])
+  // Use bulk update hook
+  const { bulkUpdate } = useBulkUpdateExperts()
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
+    setCurrentPage(1) // Reset to first page on filter change
   }
 
   const handleCategoryChange = (category: string) => {
     setCategoryFilter(category)
+    setCurrentPage(1)
   }
 
   const handleStatusChange = (status: 'all' | 'active' | 'inactive') => {
     setStatusFilter(status)
+    setCurrentPage(1)
   }
 
-  const handleExpertUpdate = (updatedExpert: Expert) => {
-    setExperts(prev => prev.map(e => 
-      e.id === updatedExpert.id ? updatedExpert : e
-    ))
+  const handleTypeChange = (type: 'all' | 'default' | 'custom') => {
+    setTypeFilter(type)
+    setCurrentPage(1)
   }
 
-  const handleExpertDelete = (expertId: string) => {
-    setExperts(prev => prev.filter(e => e.id !== expertId))
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
   }
 
-  const handleExpertAdd = (newExpert: Expert) => {
-    setExperts(prev => [...prev, newExpert])
+  const handleSortChange = (newSortBy: 'name' | 'created_at' | 'display_order') => {
+    if (sortBy === newSortBy) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(newSortBy)
+      setSortOrder('asc')
+    }
+  }
+
+  const handleExpertUpdate = async () => {
+    // Revalidate the data after update
+    await revalidate()
+  }
+
+  const handleExpertDelete = async () => {
+    // Revalidate the data after delete
+    await revalidate()
+  }
+
+  const handleExpertAdd = async () => {
+    // Revalidate to show the new expert
+    await revalidate()
+  }
+
+  const handleSelectExpert = (expertId: string, selected: boolean) => {
+    if (selected) {
+      setSelectedExperts(prev => [...prev, expertId])
+    } else {
+      setSelectedExperts(prev => prev.filter(id => id !== expertId))
+    }
+  }
+
+  const handleSelectAll = (selected: boolean) => {
+    if (selected) {
+      setSelectedExperts(experts.map((e: Expert) => e.id))
+    } else {
+      setSelectedExperts([])
+    }
+  }
+
+  const handleBulkAction = async (action: 'activate' | 'deactivate' | 'delete') => {
+    await bulkUpdate(selectedExperts, action)
+    
+    // Clear selection after action
+    setSelectedExperts([])
+    setSelectionMode(false)
+    
+    // Revalidate the list
+    await revalidate()
+  }
+
+  const handleToggleSelectionMode = () => {
+    setSelectionMode(!selectionMode)
+    if (selectionMode) {
+      setSelectedExperts([]) // Clear selection when exiting selection mode
+    }
   }
 
   if (loading) {
@@ -107,7 +156,8 @@ export function ExpertsPage() {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-destructive">Error Loading Experts</h1>
-          <p className="text-muted-foreground">{error}</p>
+          <p className="text-muted-foreground">{error?.message || 'An error occurred'}</p>
+          <Button onClick={() => revalidate()}>Retry</Button>
         </div>
       </div>
     )
@@ -117,9 +167,10 @@ export function ExpertsPage() {
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="space-y-8">
         <ExpertHeader 
-          totalExperts={experts.length}
-          activeExperts={experts.filter(e => e.is_active).length}
-          defaultExperts={experts.filter(e => e.is_default).length}
+          totalExperts={totalCount || experts.length}
+          activeExperts={experts.filter((e: Expert) => e.is_active).length}
+          defaultExperts={experts.filter((e: Expert) => e.is_default).length}
+          customExperts={experts.filter((e: Expert) => !e.is_default).length}
           onAddExpert={handleExpertAdd}
         />
         <ExpertList 
@@ -127,11 +178,26 @@ export function ExpertsPage() {
           searchQuery={searchQuery}
           categoryFilter={categoryFilter}
           statusFilter={statusFilter}
+          typeFilter={typeFilter}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          currentPage={currentPage}
+          totalCount={totalCount}
+          itemsPerPage={itemsPerPage}
+          selectionMode={selectionMode}
+          selectedExperts={selectedExperts}
           onSearch={handleSearch}
           onCategoryChange={handleCategoryChange}
           onStatusChange={handleStatusChange}
+          onTypeChange={handleTypeChange}
+          onSortChange={handleSortChange}
+          onPageChange={handlePageChange}
           onExpertUpdate={handleExpertUpdate}
           onExpertDelete={handleExpertDelete}
+          onSelectExpert={handleSelectExpert}
+          onSelectAll={handleSelectAll}
+          onBulkAction={handleBulkAction}
+          onToggleSelectionMode={handleToggleSelectionMode}
         />
       </div>
     </div>

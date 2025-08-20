@@ -82,6 +82,11 @@ export async function GET(request: NextRequest) {
     const active = searchParams.get('active')
     const category = searchParams.get('category')
     const search = searchParams.get('search')
+    const type = searchParams.get('type')
+    const sortBy = searchParams.get('sortBy') || 'display_order'
+    const sortOrder = searchParams.get('sortOrder') || 'asc'
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
 
     // For now, use mock data
     let experts = [...mockExperts]
@@ -95,6 +100,14 @@ export async function GET(request: NextRequest) {
       experts = experts.filter(e => e.category === category)
     }
 
+    if (type) {
+      if (type === 'default') {
+        experts = experts.filter(e => e.is_default === true)
+      } else if (type === 'custom') {
+        experts = experts.filter(e => e.is_default === false)
+      }
+    }
+
     if (search) {
       const searchLower = search.toLowerCase()
       experts = experts.filter(e => 
@@ -104,10 +117,42 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Sort by display_order
-    experts.sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+    // Apply sorting
+    experts.sort((a, b) => {
+      let compareValue = 0
+      
+      switch (sortBy) {
+        case 'name':
+          compareValue = a.name.localeCompare(b.name)
+          break
+        case 'created_at':
+          compareValue = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          break
+        case 'display_order':
+        default:
+          compareValue = (a.display_order || 999) - (b.display_order || 999)
+          break
+      }
+      
+      return sortOrder === 'asc' ? compareValue : -compareValue
+    })
 
-    return NextResponse.json(experts)
+    // Store total count before pagination
+    const total = experts.length
+
+    // Apply pagination
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const paginatedExperts = experts.slice(startIndex, endIndex)
+
+    // Return paginated response
+    return NextResponse.json({
+      experts: paginatedExperts,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    })
   } catch (error) {
     console.error('Error fetching experts:', error)
     return NextResponse.json(

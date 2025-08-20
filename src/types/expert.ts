@@ -42,4 +42,5 @@ export interface CreateExpertInput {
 
 export interface UpdateExpertInput extends Partial<CreateExpertInput> {
   is_active?: boolean
+  is_default?: boolean
 }

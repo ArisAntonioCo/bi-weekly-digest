@@ -25,7 +25,7 @@ import {
 import { MoreVertical, Edit, Trash, Shield, Star, StarOff } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { ExpertForm } from './expert-form'
-import { toast } from 'sonner'
+import { useToggleExpertStatus, useToggleExpertDefault, useDeleteExpert } from '@/hooks/use-experts'
 
 interface ExpertCardProps {
   expert: Expert
@@ -37,23 +37,18 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
+  
+  const { toggleStatus } = useToggleExpertStatus()
+  const { toggleDefault } = useToggleExpertDefault()
+  const { deleteExpert } = useDeleteExpert()
 
   const handleToggleActive = async () => {
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/experts/${expert.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: !expert.is_active }),
-      })
-
-      if (!response.ok) throw new Error('Failed to update expert')
-
-      const updatedExpert = await response.json()
-      onUpdate({ ...expert, is_active: !expert.is_active })
-      toast.success(`Expert ${!expert.is_active ? 'activated' : 'deactivated'}`)
-    } catch (error) {
-      toast.error('Failed to update expert status')
+      const updatedExpert = await toggleStatus(expert)
+      onUpdate(updatedExpert)
+    } catch {
+      // Error is handled by the hook with toast
     } finally {
       setIsUpdating(false)
     }
@@ -62,19 +57,10 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
   const handleToggleDefault = async () => {
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/experts/${expert.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_default: !expert.is_default }),
-      })
-
-      if (!response.ok) throw new Error('Failed to update expert')
-
-      const updatedExpert = await response.json()
-      onUpdate({ ...expert, is_default: !expert.is_default })
-      toast.success(`Expert ${!expert.is_default ? 'set as default' : 'removed from defaults'}`)
-    } catch (error) {
-      toast.error('Failed to update expert default status')
+      const updatedExpert = await toggleDefault(expert)
+      onUpdate(updatedExpert)
+    } catch {
+      // Error is handled by the hook with toast
     } finally {
       setIsUpdating(false)
     }
@@ -82,16 +68,10 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/experts/${expert.id}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) throw new Error('Failed to delete expert')
-
+      await deleteExpert(expert.id)
       onDelete(expert.id)
-      toast.success('Expert deleted successfully')
-    } catch (error) {
-      toast.error('Failed to delete expert')
+    } catch {
+      // Error is handled by the hook with toast
     }
     setIsDeleteOpen(false)
   }
@@ -109,7 +89,7 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
 
   return (
     <>
-      <Card className="relative overflow-hidden border border-border/50">
+      <Card className="relative border border-border/50 h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="space-y-1 flex-1">
@@ -119,11 +99,9 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
                   <Star className="h-4 w-4 text-yellow-500" />
                 )}
               </div>
-              {expert.title && (
-                <p className="text-sm text-muted-foreground line-clamp-1">
-                  {expert.title}
-                </p>
-              )}
+              <p className="text-sm text-muted-foreground line-clamp-1 h-5">
+                {expert.title || ' '}
+              </p>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -136,7 +114,7 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleToggleDefault}>
+                <DropdownMenuItem onClick={handleToggleDefault} disabled={isUpdating}>
                   {expert.is_default ? (
                     <>
                       <StarOff className="h-4 w-4 mr-2" />
@@ -166,23 +144,21 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 flex-1">
           {expert.category && (
             <Badge className={getCategoryColor(expert.category)} variant="secondary">
               {expert.category}
             </Badge>
           )}
 
-          {expert.focus_areas && (
-            <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground">Focus Areas</p>
-              <p className="text-sm line-clamp-2">{expert.focus_areas}</p>
-            </div>
-          )}
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-muted-foreground">Focus Areas</p>
+            <p className="text-sm line-clamp-2 min-h-[2.5rem]">{expert.focus_areas || '—'}</p>
+          </div>
 
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground">Investing Law</p>
-            <p className="text-sm italic line-clamp-3">"{expert.investing_law}"</p>
+            <p className="text-sm italic line-clamp-3 min-h-[3.75rem]">&ldquo;{expert.investing_law}&rdquo;</p>
           </div>
         </CardContent>
 
@@ -220,7 +196,7 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Expert</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{expert.name}"? This action cannot be undone.
+              Are you sure you want to delete &ldquo;{expert.name}&rdquo;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

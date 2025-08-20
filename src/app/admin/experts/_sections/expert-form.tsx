@@ -33,7 +33,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Loader2 } from 'lucide-react'
-import { Expert, CreateExpertInput } from '@/types/expert'
+import { Expert } from '@/types/expert'
 import { toast } from 'sonner'
 
 const formSchema = z.object({
@@ -44,7 +44,7 @@ const formSchema = z.object({
   framework_description: z.string().optional(),
   category: z.enum(['value', 'growth', 'tech', 'macro', 'custom']).optional(),
   display_order: z.number().int().positive().optional(),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 })
 
 type FormData = z.infer<typeof formSchema>

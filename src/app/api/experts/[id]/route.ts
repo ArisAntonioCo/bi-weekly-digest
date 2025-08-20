@@ -4,13 +4,14 @@ import { UpdateExpertInput } from '@/types/expert'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // For now, return mock data
     // This will be replaced with actual database query
     return NextResponse.json({
-      id: params.id,
+      id,
       name: 'Bill Gurley',
       title: 'Legendary VC at Benchmark',
       focus_areas: 'Valuation discipline, marketplace dynamics, network effects',
@@ -34,9 +35,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
     
     // Check if user is admin
@@ -65,7 +67,7 @@ export async function PUT(
 
     // For now, return updated mock data
     return NextResponse.json({
-      id: params.id,
+      id,
       ...body,
       updated_at: new Date().toISOString(),
     })
@@ -80,9 +82,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params
     const supabase = await createClient()
     
     // Check if user is admin
