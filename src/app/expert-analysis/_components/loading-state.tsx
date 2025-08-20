@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Loader2, Shield, TrendingUp, Brain, LineChart, Briefcase } from 'lucide-react'
+import { DashboardCard } from '@/components/dashboard-card'
+import { AnimatedOrb } from '@/components/ui/animated-orb'
+import { motion } from 'motion/react'
 import { Expert } from '@/types/expert'
 
 interface LoadingStateProps {
@@ -10,67 +10,55 @@ interface LoadingStateProps {
   selectedExpert: Expert | null
 }
 
-// Helper function to get category icon
-function getCategoryIcon(category?: string) {
-  switch (category) {
-    case 'value':
-      return <Shield className="h-3 w-3" />
-    case 'growth':
-      return <TrendingUp className="h-3 w-3" />
-    case 'tech':
-      return <Brain className="h-3 w-3" />
-    case 'macro':
-      return <LineChart className="h-3 w-3" />
-    default:
-      return <Briefcase className="h-3 w-3" />
-  }
-}
-
-// Helper function to get category color
-function getCategoryColor(category?: string) {
-  switch (category) {
-    case 'value':
-      return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
-    case 'growth':
-      return 'bg-green-500/10 text-green-600 border-green-500/20'
-    case 'tech':
-      return 'bg-purple-500/10 text-purple-600 border-purple-500/20'
-    case 'macro':
-      return 'bg-orange-500/10 text-orange-600 border-orange-500/20'
-    default:
-      return 'bg-gray-500/10 text-gray-600 border-gray-500/20'
-  }
-}
-
 export function LoadingState({ stockTicker, selectedExpert }: LoadingStateProps) {
   return (
-    <Card>
-      <CardContent className="py-12">
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              {getCategoryIcon(selectedExpert?.category)}
-            </div>
-          </div>
-          <div className="text-center space-y-2">
-            <p className="text-lg font-medium">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+    >
+      <DashboardCard variant="highlight" padding="large">
+        <div className="flex flex-col items-center justify-center min-h-[500px] text-center">
+          <AnimatedOrb size="lg" className="mb-8" />
+          
+          <div className="space-y-3">
+            <h3 className="text-2xl font-semibold text-foreground">
               Analyzing {stockTicker}
-            </p>
-            <p className="text-sm text-muted-foreground">
+            </h3>
+            <p className="text-muted-foreground">
               Applying {selectedExpert?.name}'s investment framework
             </p>
-            {selectedExpert?.category && (
-              <Badge 
-                variant="outline" 
-                className={`${getCategoryColor(selectedExpert.category)}`}
-              >
-                {selectedExpert.category.toUpperCase()} ANALYSIS
-              </Badge>
-            )}
+            
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center gap-3 mt-8">
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-primary-foreground animate-pulse" />
+                </div>
+                <span className="text-[10px] text-muted-foreground">Fetching</span>
+              </div>
+              
+              <div className="h-px w-12 bg-primary/50" />
+              
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-8 w-8 rounded-full border-2 border-muted flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-muted" />
+                </div>
+                <span className="text-[10px] text-muted-foreground">Analyzing</span>
+              </div>
+              
+              <div className="h-px w-12 bg-muted" />
+              
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-8 w-8 rounded-full border-2 border-muted flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-muted" />
+                </div>
+                <span className="text-[10px] text-muted-foreground">Complete</span>
+              </div>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </DashboardCard>
+    </motion.div>
   )
 }

@@ -1,7 +1,8 @@
 "use client"
 
-import { Card, CardContent } from '@/components/ui/card'
-import { Zap } from 'lucide-react'
+import { DashboardCard } from '@/components/dashboard-card'
+import { AnimatedOrb } from '@/components/ui/animated-orb'
+import { motion } from 'motion/react'
 
 interface EmptyStateProps {
   recentAnalyses: Array<{
@@ -15,35 +16,40 @@ interface EmptyStateProps {
 
 export function EmptyState({ recentAnalyses, onSelectAnalysis }: EmptyStateProps) {
   return (
-    <Card>
-      <CardContent className="py-12">
-        <div className="text-center space-y-4">
-          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mx-auto">
-            <Zap className="h-8 w-8 text-muted-foreground" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold">Ready to Analyze</h3>
-            <p className="text-muted-foreground mt-2">
-              Select an expert and enter a stock ticker to get started
-            </p>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+    >
+      <DashboardCard variant="highlight" padding="large">
+        <div className="flex flex-col items-center justify-center min-h-[500px] text-center">
+          {/* Animated Orb */}
+          <AnimatedOrb className="mb-8" />
+          
+          <h3 className="text-2xl font-semibold text-foreground mb-2">
+            Ready to Analyze
+          </h3>
+          <p className="text-muted-foreground max-w-sm">
+            Select an expert framework and enter a stock ticker to get AI-powered insights
+          </p>
 
           {/* Recent Analyses */}
           {recentAnalyses.length > 0 && (
-            <div className="mt-8 text-left">
-              <h4 className="text-sm font-semibold mb-3">Recent Analyses</h4>
+            <div className="mt-12 w-full max-w-md">
+              <p className="text-sm font-medium text-muted-foreground mb-4">Recent Analyses</p>
               <div className="space-y-2">
                 {recentAnalyses
                   .filter(analysis => analysis && analysis.stock_ticker && analysis.expert_name && analysis.id)
+                  .slice(0, 3)
                   .map(analysis => (
-                    <div
+                    <button
                       key={analysis.id}
-                      className="p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                      className="w-full p-4 rounded-2xl bg-background/50 hover:bg-muted/50 transition-all text-left group"
                       onClick={() => onSelectAnalysis(analysis)}
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="font-medium">{analysis.stock_ticker}</span>
+                          <span className="font-mono font-semibold text-sm">{analysis.stock_ticker}</span>
                           <span className="text-sm text-muted-foreground ml-2">
                             by {analysis.expert_name}
                           </span>
@@ -52,13 +58,13 @@ export function EmptyState({ recentAnalyses, onSelectAnalysis }: EmptyStateProps
                           {analysis.timestamp ? new Date(analysis.timestamp).toLocaleDateString() : 'N/A'}
                         </span>
                       </div>
-                    </div>
+                    </button>
                   ))}
               </div>
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </DashboardCard>
+    </motion.div>
   )
 }

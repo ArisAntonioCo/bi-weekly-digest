@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Info } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { toast } from 'sonner'
 
@@ -135,68 +133,69 @@ export function ExpertAnalysisPage() {
 
   if (loadingExperts) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-64 w-full" />
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-64 mx-auto" />
+            <div className="grid gap-6 lg:grid-cols-3">
+              <div className="space-y-4">
+                <Skeleton className="h-[400px] w-full rounded-3xl" />
+                <Skeleton className="h-[200px] w-full rounded-3xl" />
+              </div>
+              <div className="lg:col-span-2">
+                <Skeleton className="h-[600px] w-full rounded-3xl" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen bg-background">
       <PageHeader />
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column - Expert Selection & Input */}
-        <div className="lg:col-span-1 space-y-6">
-          <ExpertSelector 
-            experts={experts}
-            selectedExpert={selectedExpert}
-            onSelectExpert={setSelectedExpert}
-          />
-          
-          <StockInput
-            stockTicker={stockTicker}
-            onTickerChange={setStockTicker}
-            onAnalyze={handleAnalyze}
-            analyzing={analyzing}
-            disabled={!selectedExpert || !stockTicker}
-          />
-        </div>
-
-        {/* Right Column - Analysis Results */}
-        <div className="lg:col-span-2">
-          {analyzing ? (
-            <LoadingState 
+      
+      <div className="container mx-auto px-4 max-w-6xl pb-12">
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Left Column - Expert Selection & Input */}
+          <div className="lg:col-span-1 space-y-4">
+            <ExpertSelector 
+              experts={experts}
+              selectedExpert={selectedExpert}
+              onSelectExpert={setSelectedExpert}
+            />
+            
+            <StockInput
               stockTicker={stockTicker}
-              selectedExpert={selectedExpert}
+              onTickerChange={setStockTicker}
+              onAnalyze={handleAnalyze}
+              analyzing={analyzing}
+              disabled={!selectedExpert || !stockTicker}
             />
-          ) : analysisResult ? (
-            <AnalysisResult 
-              result={analysisResult}
-              selectedExpert={selectedExpert}
-            />
-          ) : (
-            <EmptyState 
-              recentAnalyses={recentAnalyses}
-              onSelectAnalysis={setAnalysisResult}
-            />
-          )}
+          </div>
+
+          {/* Right Column - Analysis Results */}
+          <div className="lg:col-span-2">
+            {analyzing ? (
+              <LoadingState 
+                stockTicker={stockTicker}
+                selectedExpert={selectedExpert}
+              />
+            ) : analysisResult ? (
+              <AnalysisResult 
+                result={analysisResult}
+                selectedExpert={selectedExpert}
+              />
+            ) : (
+              <EmptyState 
+                recentAnalyses={recentAnalyses}
+                onSelectAnalysis={setAnalysisResult}
+              />
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Info Section */}
-      <Alert className="mt-8">
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          Each expert framework provides unique insights based on their investment philosophy. 
-          The analysis combines real-time market data with the expert's proven investment principles 
-          to deliver actionable insights.
-        </AlertDescription>
-      </Alert>
     </div>
   )
 }
