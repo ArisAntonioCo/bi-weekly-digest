@@ -19,6 +19,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Weekly Digest - AI-Powered Investment Intelligence",
   description: "Get comprehensive weekly analysis of market trends, investment opportunities, and strategic insights",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
 };
 
 export default function RootLayout({
@@ -27,9 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
         className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background`}
+        suppressHydrationWarning
       >
         <ThemeProvider defaultTheme="light" storageKey="bi-weekly-digest-theme">
           <Navbar className="sticky top-0 z-50 bg-background" />
