@@ -51,7 +51,9 @@
       "mcp__supabase__get_anon_key",
       "Bash(true)",
       "WebSearch",
-      "mcp__supabase__list_migrations"
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__search_docs",
+      "Bash(pnpm list:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

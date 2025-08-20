@@ -8,22 +8,25 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    // For now, return mock data
-    // This will be replaced with actual database query
-    return NextResponse.json({
-      id,
-      name: 'Bill Gurley',
-      title: 'Legendary VC at Benchmark',
-      focus_areas: 'Valuation discipline, marketplace dynamics, network effects',
-      investing_law: 'All revenue is not created equal - focus on high-margin, recurring revenue with pricing power',
-      framework_description: 'Focuses on sustainable unit economics and competitive moats',
-      is_default: true,
-      is_active: true,
-      display_order: 1,
-      category: 'value',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
+    const supabase = await createClient()
+    
+    const { data: expert, error } = await supabase
+      .from('experts')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Expert not found' },
+          { status: 404 }
+        )
+      }
+      throw error
+    }
+
+    return NextResponse.json(expert)
   } catch (error) {
     console.error('Error fetching expert:', error)
     return NextResponse.json(
@@ -65,12 +68,35 @@ export async function PUT(
 
     const body: UpdateExpertInput = await request.json()
 
-    // For now, return updated mock data
-    return NextResponse.json({
-      id,
-      ...body,
-      updated_at: new Date().toISOString(),
-    })
+    // Update expert in database
+    const { data: updatedExpert, error } = await supabase
+      .from('experts')
+      .update({
+        ...(body.name !== undefined && { name: body.name }),
+        ...(body.title !== undefined && { title: body.title }),
+        ...(body.focus_areas !== undefined && { focus_areas: body.focus_areas }),
+        ...(body.investing_law !== undefined && { investing_law: body.investing_law }),
+        ...(body.framework_description !== undefined && { framework_description: body.framework_description }),
+        ...(body.category !== undefined && { category: body.category }),
+        ...(body.display_order !== undefined && { display_order: body.display_order }),
+        ...(body.is_active !== undefined && { is_active: body.is_active }),
+        ...(body.is_default !== undefined && { is_default: body.is_default }),
+      })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Expert not found' },
+          { status: 404 }
+        )
+      }
+      throw error
+    }
+
+    return NextResponse.json(updatedExpert)
   } catch (error) {
     console.error('Error updating expert:', error)
     return NextResponse.json(
@@ -85,7 +111,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await params
+    const { id } = await params
     const supabase = await createClient()
     
     // Check if user is admin
@@ -110,8 +136,36 @@ export async function DELETE(
       )
     }
 
-    // For now, just return success
-    // In production, check if expert is default before allowing deletion
+    // Check if expert is default
+    const { data: expert } = await supabase
+      .from('experts')
+      .select('is_default')
+      .eq('id', id)
+      .single()
+
+    if (expert?.is_default) {
+      return NextResponse.json(
+        { error: 'Cannot delete default expert' },
+        { status: 400 }
+      )
+    }
+
+    // Delete the expert
+    const { error } = await supabase
+      .from('experts')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Expert not found' },
+          { status: 404 }
+        )
+      }
+      throw error
+    }
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting expert:', error)
