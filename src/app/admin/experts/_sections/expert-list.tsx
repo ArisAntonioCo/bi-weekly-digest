@@ -14,6 +14,7 @@ import { Search, Filter, X } from 'lucide-react'
 import { ExpertCard } from './expert-card'
 import { Expert } from '@/types/expert'
 import { Badge } from '@/components/ui/badge'
+import { motion } from 'motion/react'
 
 interface ExpertListProps {
   experts: Expert[]

@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { MoreVertical, Edit, Trash, Shield, Star } from 'lucide-react'
+import { MoreVertical, Edit, Trash, Shield, Star, StarOff } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { ExpertForm } from './expert-form'
 import { toast } from 'sonner'
@@ -59,6 +59,27 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
     }
   }
 
+  const handleToggleDefault = async () => {
+    setIsUpdating(true)
+    try {
+      const response = await fetch(`/api/experts/${expert.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_default: !expert.is_default }),
+      })
+
+      if (!response.ok) throw new Error('Failed to update expert')
+
+      const updatedExpert = await response.json()
+      onUpdate({ ...expert, is_default: !expert.is_default })
+      toast.success(`Expert ${!expert.is_default ? 'set as default' : 'removed from defaults'}`)
+    } catch (error) {
+      toast.error('Failed to update expert default status')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   const handleDelete = async () => {
     try {
       const response = await fetch(`/api/experts/${expert.id}`, {
@@ -88,7 +109,7 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
 
   return (
     <>
-      <Card className="relative overflow-hidden">
+      <Card className="relative overflow-hidden border border-border/50">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="space-y-1 flex-1">
@@ -114,6 +135,19 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
                 <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleToggleDefault}>
+                  {expert.is_default ? (
+                    <>
+                      <StarOff className="h-4 w-4 mr-2" />
+                      Remove from Defaults
+                    </>
+                  ) : (
+                    <>
+                      <Star className="h-4 w-4 mr-2" />
+                      Set as Default
+                    </>
+                  )}
                 </DropdownMenuItem>
                 {!expert.is_default && (
                   <>

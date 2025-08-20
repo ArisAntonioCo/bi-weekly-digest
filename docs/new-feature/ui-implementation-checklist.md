@@ -3,34 +3,34 @@
 ## Phase 1: Admin Expert Management UI (Priority)
 
 ### Prerequisites
-- [ ] Create Expert TypeScript interface in `/src/types/expert.ts`
-- [ ] Set up API route structure at `/src/app/api/experts/`
-- [ ] Add expert routes to admin sidebar navigation
-- [ ] Create admin/experts folder structure
+- [x] Create Expert TypeScript interface in `/src/types/expert.ts`
+- [x] Set up API route structure at `/src/app/api/experts/`
+- [x] Add expert routes to admin sidebar navigation
+- [x] Create admin/experts folder structure
 
 ### 1. Database & Types Setup
-- [ ] Create Expert interface with all required fields
-- [ ] Create UserExpertPreference interface
-- [ ] Create ExpertSelectionConfig interface
+- [x] Create Expert interface with all required fields
+- [x] Create UserExpertPreference interface
+- [x] Create ExpertSelectionConfig interface
 - [ ] Add expert-related types to index exports
-- [ ] Create mock data for development
+- [x] Create mock data for development
 
 ### 2. Admin Page Structure
-- [ ] Create `/src/app/admin/experts/page.tsx` main page
-- [ ] Create `/src/app/admin/experts/_page/experts-page.tsx` container
-- [ ] Set up page layout with admin header and sidebar
+- [x] Create `/src/app/admin/experts/page.tsx` main page
+- [x] Create `/src/app/admin/experts/_page/experts-page.tsx` container
+- [x] Set up page layout with admin header and sidebar
 - [ ] Add breadcrumb navigation
-- [ ] Implement loading and error states
+- [x] Implement loading and error states
 
 ### 3. Expert List Component (`expert-list.tsx`)
-- [ ] Create responsive grid layout (cards on desktop, list on mobile)
-- [ ] Implement search functionality
-  - [ ] Search by name
-  - [ ] Search by focus areas
-  - [ ] Search by investing law
-- [ ] Add filtering options
-  - [ ] Filter by category (tech, value, growth, macro, custom)
-  - [ ] Filter by status (active/inactive)
+- [x] Create responsive grid layout (cards on desktop, list on mobile)
+- [x] Implement search functionality
+  - [x] Search by name
+  - [x] Search by focus areas
+  - [x] Search by investing law
+- [x] Add filtering options
+  - [x] Filter by category (tech, value, growth, macro, custom)
+  - [x] Filter by status (active/inactive)
   - [ ] Filter by type (default/custom)
 - [ ] Implement sorting
   - [ ] Sort by name
@@ -43,85 +43,86 @@
   - [ ] Bulk delete (custom only)
 
 ### 4. Expert Card Component (`expert-card.tsx`)
-- [ ] Display expert information
-  - [ ] Name with badge (default/custom)
-  - [ ] Title/description
-  - [ ] Focus areas (with tags)
-  - [ ] Investing law (truncated with expand)
-  - [ ] Active status indicator
-- [ ] Action buttons
-  - [ ] Edit button
-  - [ ] Toggle active status
-  - [ ] Delete button (custom experts only)
+- [x] Display expert information
+  - [x] Name with badge (default/custom)
+  - [x] Title/description
+  - [x] Focus areas (with tags)
+  - [x] Investing law (truncated with expand)
+  - [x] Active status indicator
+- [x] Action buttons
+  - [x] Edit button
+  - [x] Toggle active status
+  - [x] Toggle default status
+  - [x] Delete button (custom experts only)
   - [ ] View details button
-- [ ] Hover effects and animations
-- [ ] Responsive design for different screen sizes
+- [x] Hover effects and animations
+- [x] Responsive design for different screen sizes
 - [ ] Accessibility features (ARIA labels, keyboard nav)
 
 ### 5. Expert Form Component (`expert-form.tsx`)
-- [ ] Create form with react-hook-form and zod validation
-- [ ] Form fields:
-  - [ ] Name (required, text input)
-  - [ ] Title (optional, text input)
-  - [ ] Focus Areas (optional, textarea or tags input)
-  - [ ] Investing Law (required, textarea with character count)
-  - [ ] Framework Description (optional, rich text editor)
-  - [ ] Category (select dropdown)
-  - [ ] Display Order (number input)
-  - [ ] Active Status (switch/toggle)
-- [ ] Validation rules:
-  - [ ] Name: min 2, max 100 characters
-  - [ ] Investing Law: min 10, max 500 characters
-  - [ ] Display Order: positive integer
-- [ ] Form modes:
-  - [ ] Create mode (empty form)
-  - [ ] Edit mode (pre-filled form)
+- [x] Create form with react-hook-form and zod validation
+- [x] Form fields:
+  - [x] Name (required, text input)
+  - [x] Title (optional, text input)
+  - [x] Focus Areas (optional, textarea or tags input)
+  - [x] Investing Law (required, textarea with character count)
+  - [x] Framework Description (optional, rich text editor)
+  - [x] Category (select dropdown)
+  - [x] Display Order (number input)
+  - [x] Active Status (switch/toggle)
+- [x] Validation rules:
+  - [x] Name: min 2, max 100 characters
+  - [x] Investing Law: min 10, max 500 characters
+  - [x] Display Order: positive integer
+- [x] Form modes:
+  - [x] Create mode (empty form)
+  - [x] Edit mode (pre-filled form)
   - [ ] View mode (read-only)
-- [ ] Form actions:
-  - [ ] Save button (create/update)
-  - [ ] Cancel button
+- [x] Form actions:
+  - [x] Save button (create/update)
+  - [x] Cancel button
   - [ ] Reset button (create mode only)
-- [ ] Loading state during submission
-- [ ] Success/error notifications using toast
+- [x] Loading state during submission
+- [x] Success/error notifications using toast
 
 ### 6. Expert Header Component (`expert-header.tsx`)
-- [ ] Page title and description
-- [ ] Statistics cards
-  - [ ] Total experts count
-  - [ ] Active experts count
+- [x] Page title and description
+- [x] Statistics cards
+  - [x] Total experts count
+  - [x] Active experts count
   - [ ] Custom experts count
-  - [ ] Default experts count
-- [ ] Primary actions
-  - [ ] Add New Expert button
+  - [x] Default experts count
+- [x] Primary actions
+  - [x] Add New Expert button
   - [ ] Import Experts button (future)
   - [ ] Export Experts button (future)
 - [ ] View toggle (grid/list)
 - [ ] Refresh button
 
 ### 7. Expert Filters Component (`expert-filters.tsx`)
-- [ ] Search input with debounce
-- [ ] Category filter dropdown
-- [ ] Status filter (all/active/inactive)
+- [x] Search input with debounce (implemented in expert-list)
+- [x] Category filter dropdown
+- [x] Status filter (all/active/inactive)
 - [ ] Type filter (all/default/custom)
-- [ ] Clear filters button
-- [ ] Applied filters tags with remove option
+- [x] Clear filters button
+- [x] Applied filters tags with remove option
 - [ ] Save filter preset (future)
 
 ### 8. Add/Edit Expert Modal
-- [ ] Create modal/sheet component
-- [ ] Include expert form
-- [ ] Modal header with title
-- [ ] Close button (X) and Cancel button
+- [x] Create modal/sheet component (Dialog)
+- [x] Include expert form
+- [x] Modal header with title
+- [x] Close button (X) and Cancel button
 - [ ] Prevent closing on outside click when form is dirty
 - [ ] Confirmation dialog if closing with unsaved changes
 
 ### 9. Delete Confirmation Dialog
-- [ ] Alert dialog component
-- [ ] Show expert name in confirmation message
-- [ ] Warning about permanent deletion
-- [ ] Cancel and Confirm buttons
+- [x] Alert dialog component
+- [x] Show expert name in confirmation message
+- [x] Warning about permanent deletion
+- [x] Cancel and Confirm buttons
 - [ ] Loading state during deletion
-- [ ] Success/error handling
+- [x] Success/error handling
 
 ### 10. Data Hooks (`use-experts.ts`)
 - [ ] Create useExperts hook for list fetching
@@ -146,13 +147,13 @@
 - [ ] Error handling
 
 ### 12. API Integration
-- [ ] Integrate with GET /api/experts endpoint
-- [ ] Integrate with POST /api/experts endpoint
-- [ ] Integrate with PUT /api/experts/[id] endpoint
-- [ ] Integrate with DELETE /api/experts/[id] endpoint
+- [x] Integrate with GET /api/experts endpoint
+- [x] Integrate with POST /api/experts endpoint
+- [x] Integrate with PUT /api/experts/[id] endpoint
+- [x] Integrate with DELETE /api/experts/[id] endpoint
 - [ ] Integrate with POST /api/experts/bulk endpoint
-- [ ] Handle API errors gracefully
-- [ ] Add loading states
+- [x] Handle API errors gracefully
+- [x] Add loading states
 - [ ] Implement retry logic
 
 ### 13. Responsive Design
