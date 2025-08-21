@@ -132,35 +132,19 @@ export async function DELETE(
     }
 
     // Delete the expert
-    const { error } = await supabase
+    const { error: deleteError } = await supabase
       .from('experts')
       .delete()
       .eq('id', id)
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (deleteError) {
+      if (deleteError.code === 'PGRST116') {
         return NextResponse.json(
           { error: 'Expert not found' },
           { status: 404 }
         )
       }
-      throw error
-    }
-
-    // Delete the expert
-    const { error } = await supabase
-      .from('experts')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Expert not found' },
-          { status: 404 }
-        )
-      }
-      throw error
+      throw deleteError
     }
 
     return NextResponse.json({ success: true })
