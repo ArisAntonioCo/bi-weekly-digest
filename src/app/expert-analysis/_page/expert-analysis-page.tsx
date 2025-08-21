@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Expert } from '@/types/expert'
 import { toast } from 'sonner'
+import { useActiveExperts } from '@/hooks/use-active-experts'
 
 // Import components
 import { PageHeader } from '../_components/page-header'
@@ -28,35 +29,28 @@ interface AnalysisResultType {
 }
 
 export function ExpertAnalysisPage() {
-  const [experts, setExperts] = useState<Expert[]>([])
+  const { experts, isLoading: loadingExperts, isError, refresh } = useActiveExperts()
   const [selectedExperts, setSelectedExperts] = useState<Expert[]>([])
   const [stockTicker, setStockTicker] = useState('')
-  const [loadingExperts, setLoadingExperts] = useState(true)
   const [analyzing, setAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultType | null>(null)
   const [recentAnalyses, setRecentAnalyses] = useState<AnalysisResultType[]>([])
   const [showDisclaimer, setShowDisclaimer] = useState(true)
 
   useEffect(() => {
-    loadExperts()
     loadRecentAnalyses()
   }, [])
 
-  const loadExperts = async () => {
-    try {
-      setLoadingExperts(true)
-      const response = await fetch('/api/experts?active=true')
-      if (response.ok) {
-        const data = await response.json()
-        setExperts(data.experts || [])
-      }
-    } catch (error) {
-      console.error('Failed to load experts:', error)
-      toast.error('Failed to load experts')
-    } finally {
-      setLoadingExperts(false)
+  useEffect(() => {
+    if (isError) {
+      toast.error('Failed to load experts. Please try again.', {
+        action: {
+          label: 'Retry',
+          onClick: () => refresh()
+        }
+      })
     }
-  }
+  }, [isError, refresh])
 
   const loadRecentAnalyses = () => {
     // Load from localStorage for now

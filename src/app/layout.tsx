@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Sans, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/ui/navbar";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { SWRProvider } from "@/providers/swr-provider";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -38,8 +39,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider defaultTheme="light" storageKey="bi-weekly-digest-theme">
-          <Navbar className="sticky top-0 z-50 bg-background" />
-          {children}
+          <SWRProvider>
+            <Navbar className="sticky top-0 z-50 bg-background" />
+            {children}
+          </SWRProvider>
         </ThemeProvider>
       </body>
     </html>
