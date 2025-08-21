@@ -17,7 +17,6 @@ import {
 import { 
   MessageSquare, 
   Settings, 
-  FileText, 
   User,
   Calendar,
   LogOut,
@@ -25,6 +24,7 @@ import {
   BookOpen,
   Users
 } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
 import { logout } from '@/app/(auth)/login/actions'
 
 const sidebarItems = [
@@ -70,14 +70,12 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-4 h-16 min-h-16 max-h-16 flex-shrink-0">
-          <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <FileText className="h-3 w-3 md:h-4 md:w-4" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs md:text-sm font-semibold">3Y MOIC</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Content Manager</span>
-          </div>
+        <div className="flex items-center px-4 h-16 min-h-16 max-h-16 flex-shrink-0">
+          <Logo 
+            variant="sm"
+            href="/admin/dashboard"
+            showIcon={false}
+          />
         </div>
       </SidebarHeader>
       
