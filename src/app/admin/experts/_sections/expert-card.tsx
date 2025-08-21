@@ -34,7 +34,6 @@ interface ExpertCardProps {
 export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [isUpdating, setIsUpdating] = useState(false)
   
   const { deleteExpert } = useDeleteExpert()
 

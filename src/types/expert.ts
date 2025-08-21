@@ -12,7 +12,6 @@ export interface UserExpertPreference {
   id: string
   user_id: string
   expert_ids: string[]
-  is_default: boolean
   created_at: string
   updated_at: string
 }
@@ -30,5 +29,4 @@ export interface CreateExpertInput {
   framework_description?: string
 }
 
-export interface UpdateExpertInput extends Partial<CreateExpertInput> {
-}
+export type UpdateExpertInput = Partial<CreateExpertInput>

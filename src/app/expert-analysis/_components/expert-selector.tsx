@@ -34,7 +34,7 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
         expert.name.toLowerCase().includes(query) ||
         expert.title?.toLowerCase().includes(query) ||
         expert.investing_law?.toLowerCase().includes(query) ||
-        expert.focus_areas?.toLowerCase().includes(query)
+        expert.framework_description?.toLowerCase().includes(query)
       )
     }
     
@@ -168,20 +168,11 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
                       <p className={`text-xs italic line-clamp-2 ${isSelected ? 'text-background/70' : 'text-muted-foreground'}`}>
                         &quot;{expert.investing_law}&quot;
                       </p>
-                      {expert.focus_areas && (
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          {expert.focus_areas.split(',').slice(0, 2).map((area, idx) => (
-                            <span 
-                              key={idx} 
-                              className={`text-[10px] px-2 py-0.5 rounded-full ${
-                                isSelected 
-                                  ? 'bg-background/20 text-background/90' 
-                                  : 'bg-muted text-muted-foreground'
-                              }`}
-                            >
-                              {area.trim()}
-                            </span>
-                          ))}
+                      {expert.framework_description && (
+                        <div className="mt-3">
+                          <p className={`text-xs line-clamp-2 ${isSelected ? 'text-background/70' : 'text-muted-foreground'}`}>
+                            {expert.framework_description}
+                          </p>
                         </div>
                       )}
                     </div>

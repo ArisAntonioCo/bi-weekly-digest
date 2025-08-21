@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { StatCard } from '@/components/dashboard-card'
-import { Plus, Users, Shield, Star, Settings } from 'lucide-react'
+import { Plus, Users } from 'lucide-react'
 import { ExpertForm } from './expert-form'
 import { Expert } from '@/types/expert'
 import { motion } from 'motion/react'

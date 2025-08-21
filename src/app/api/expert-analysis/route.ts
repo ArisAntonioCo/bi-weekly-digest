@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
       .from('experts')
       .select('*')
       .eq('id', expert_id)
-      .eq('is_active', true)
       .single()
     
     if (expertError || !expert) {
@@ -84,7 +83,6 @@ interface ExpertRecord {
   name: string
   title?: string
   investing_law?: string
-  focus_areas?: string
   framework_description?: string
 }
 
@@ -98,7 +96,6 @@ You are analyzing ${ticker} through the investment framework of ${expert.name}${
 EXPERT'S INVESTING LAW:
 "${expert.investing_law}"
 
-${expert.focus_areas ? `FOCUS AREAS: ${expert.focus_areas}` : ''}
 
 ${expert.framework_description ? `FRAMEWORK: ${expert.framework_description}` : ''}
 

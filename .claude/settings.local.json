@@ -53,7 +53,8 @@
       "WebSearch",
       "mcp__supabase__list_migrations",
       "mcp__supabase__search_docs",
-      "Bash(pnpm list:*)"
+      "Bash(pnpm list:*)",
+      "Bash(pnpm run:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
