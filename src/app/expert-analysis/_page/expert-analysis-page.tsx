@@ -12,6 +12,7 @@ import { StockInput } from '../_components/stock-input'
 import { LoadingState } from '../_components/loading-state'
 import { AnalysisResult } from '../_components/analysis-result'
 import { EmptyState } from '../_components/empty-state'
+import { DisclaimerDialog } from '../_components/disclaimer-dialog'
 
 interface AnalysisResultType {
   id: string
@@ -34,6 +35,7 @@ export function ExpertAnalysisPage() {
   const [analyzing, setAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultType | null>(null)
   const [recentAnalyses, setRecentAnalyses] = useState<AnalysisResultType[]>([])
+  const [showDisclaimer, setShowDisclaimer] = useState(true)
 
   useEffect(() => {
     loadExperts()
@@ -167,52 +169,59 @@ export function ExpertAnalysisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader />
+    <>
+      <DisclaimerDialog 
+        open={showDisclaimer} 
+        onAccept={() => setShowDisclaimer(false)} 
+      />
       
-      <div className="container mx-auto px-4 pb-12">
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Left Column - Expert Selection */}
-          <div className="lg:col-span-1">
-            <ExpertSelector 
-              experts={experts}
-              selectedExperts={selectedExperts}
-              onSelectExperts={setSelectedExperts}
-            />
-          </div>
+      <div className="min-h-screen bg-background">
+        <PageHeader />
+        
+        <div className="container mx-auto px-4 pb-12">
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Left Column - Expert Selection */}
+            <div className="lg:col-span-1">
+              <ExpertSelector 
+                experts={experts}
+                selectedExperts={selectedExperts}
+                onSelectExperts={setSelectedExperts}
+              />
+            </div>
 
-          {/* Right Column - Stock Input & Analysis Results */}
-          <div className="lg:col-span-2 space-y-4">
-            <StockInput
-              stockTicker={stockTicker}
-              onTickerChange={setStockTicker}
-              onAnalyze={handleAnalyze}
-              analyzing={analyzing}
-              disabled={selectedExperts.length === 0 || !stockTicker}
-            />
-            
-            {/* Analysis Display */}
-            {analyzing ? (
-              <LoadingState 
+            {/* Right Column - Stock Input & Analysis Results */}
+            <div className="lg:col-span-2 space-y-4">
+              <StockInput
                 stockTicker={stockTicker}
-                selectedExperts={selectedExperts}
+                onTickerChange={setStockTicker}
+                onAnalyze={handleAnalyze}
+                analyzing={analyzing}
+                disabled={selectedExperts.length === 0 || !stockTicker}
               />
-            ) : analysisResult ? (
-              <AnalysisResult 
-                result={analysisResult}
-                selectedExpert={selectedExperts[0]} // For compatibility
-              />
-            ) : (
-              <EmptyState 
-                selectedExperts={selectedExperts}
-                onRemoveExpert={removeExpert}
-                recentAnalyses={recentAnalyses}
-                onSelectAnalysis={setAnalysisResult}
-              />
-            )}
+              
+              {/* Analysis Display */}
+              {analyzing ? (
+                <LoadingState 
+                  stockTicker={stockTicker}
+                  selectedExperts={selectedExperts}
+                />
+              ) : analysisResult ? (
+                <AnalysisResult 
+                  result={analysisResult}
+                  selectedExpert={selectedExperts[0]} // For compatibility
+                />
+              ) : (
+                <EmptyState 
+                  selectedExperts={selectedExperts}
+                  onRemoveExpert={removeExpert}
+                  recentAnalyses={recentAnalyses}
+                  onSelectAnalysis={setAnalysisResult}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
