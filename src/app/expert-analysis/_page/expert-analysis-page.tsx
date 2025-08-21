@@ -173,9 +173,9 @@ export function ExpertAnalysisPage() {
         <PageHeader />
         
         <div className="container mx-auto px-4 pb-12">
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-4 lg:grid-cols-3">
             {/* Left Column - Expert Selection */}
-            <div className="lg:col-span-1">
+            <div>
               <ExpertSelector 
                 experts={experts}
                 selectedExperts={selectedExperts}
