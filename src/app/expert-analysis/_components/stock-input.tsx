@@ -3,7 +3,7 @@
 import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronRight, Loader2 } from 'lucide-react'
+import { Search, ChevronRight, Loader2, TrendingUp, Landmark } from 'lucide-react'
 import { motion } from 'motion/react'
 
 interface StockInputProps {
@@ -14,7 +14,26 @@ interface StockInputProps {
   disabled: boolean
 }
 
-const POPULAR_STOCKS = ['AAPL', 'NVDA', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'BRK.B']
+interface TickerOption {
+  symbol: string
+  type: 'stock' | 'etf'
+}
+
+const POPULAR_TICKERS: TickerOption[] = [
+  { symbol: 'AAPL', type: 'stock' },
+  { symbol: 'SPY', type: 'etf' },
+  { symbol: 'NVDA', type: 'stock' },
+  { symbol: 'QQQ', type: 'etf' },
+  { symbol: 'MSFT', type: 'stock' },
+  { symbol: 'VOO', type: 'etf' },
+  { symbol: 'GOOGL', type: 'stock' },
+  { symbol: 'IWM', type: 'etf' },
+]
+
+const validateTicker = (ticker: string): boolean => {
+  const tickerRegex = /^[A-Z]{1,5}(\.[A-Z]{1,2})?$/
+  return tickerRegex.test(ticker)
+}
 
 export function StockInput({ 
   stockTicker, 
@@ -23,6 +42,26 @@ export function StockInput({
   analyzing, 
   disabled 
 }: StockInputProps) {
+  const handleTickerChange = (value: string) => {
+    const upperCaseValue = value.toUpperCase()
+    onTickerChange(upperCaseValue)
+  }
+
+  const handleAnalyzeClick = () => {
+    if (!validateTicker(stockTicker)) {
+      return
+    }
+    onAnalyze()
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !disabled && validateTicker(stockTicker)) {
+      onAnalyze()
+    }
+  }
+
+  const isValidInput = stockTicker.length === 0 || validateTicker(stockTicker)
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -31,23 +70,34 @@ export function StockInput({
     >
       <DashboardCard variant="default" padding="medium">
         <CardHeader
-          title="Stock Ticker"
-          subtitle="Enter a symbol to analyze"
+          title="Stock or ETF Symbol"
+          subtitle="Enter a ticker to analyze"
           icon={<Search className="h-5 w-5 text-foreground" />}
         />
         <CardContent>
           <div className="space-y-4">
             <div className="flex gap-2">
-              <Input
-                placeholder="e.g., AAPL"
-                value={stockTicker}
-                onChange={(e) => onTickerChange(e.target.value.toUpperCase())}
-                onKeyDown={(e) => e.key === 'Enter' && !disabled && onAnalyze()}
-                className="font-mono text-lg h-11 rounded-full px-5"
-              />
+              <div className="flex-1">
+                <Input
+                  placeholder="e.g., AAPL or SPY"
+                  value={stockTicker}
+                  onChange={(e) => handleTickerChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className={`font-mono text-lg h-11 rounded-full px-5 ${
+                    !isValidInput ? 'border-destructive focus:ring-destructive' : ''
+                  }`}
+                  aria-invalid={!isValidInput}
+                  aria-describedby={!isValidInput ? 'ticker-error' : undefined}
+                />
+                {!isValidInput && (
+                  <p id="ticker-error" className="text-xs text-destructive mt-1 ml-3">
+                    Invalid format. Use 1-5 letters (e.g., AAPL, SPY)
+                  </p>
+                )}
+              </div>
               <Button 
-                onClick={onAnalyze}
-                disabled={disabled || analyzing}
+                onClick={handleAnalyzeClick}
+                disabled={disabled || analyzing || !isValidInput}
                 size="lg"
                 className="rounded-full px-8 h-11 min-w-[120px]"
               >
@@ -62,17 +112,27 @@ export function StockInput({
               </Button>
             </div>
 
-            {/* Popular Stocks Grid */}
+            {/* Popular Tickers Grid */}
             <div>
-              <p className="text-xs text-muted-foreground mb-3">Popular stocks</p>
+              <p className="text-xs text-muted-foreground mb-3">Popular stocks & ETFs</p>
               <div className="grid grid-cols-4 gap-2">
-                {POPULAR_STOCKS.map(ticker => (
+                {POPULAR_TICKERS.map(({ symbol, type }) => (
                   <button
-                    key={ticker}
-                    onClick={() => onTickerChange(ticker)}
-                    className="p-2.5 rounded-xl bg-background/50 hover:bg-muted/50 text-sm font-mono font-medium transition-all hover:scale-105"
+                    key={symbol}
+                    onClick={() => handleTickerChange(symbol)}
+                    className="group relative p-2.5 rounded-xl bg-background/50 hover:bg-muted/50 text-sm font-mono font-medium transition-all hover:scale-105"
                   >
-                    {ticker}
+                    <span className="flex items-center justify-center gap-1">
+                      {type === 'etf' ? (
+                        <Landmark className="h-3 w-3 opacity-60" />
+                      ) : (
+                        <TrendingUp className="h-3 w-3 opacity-60" />
+                      )}
+                      {symbol}
+                    </span>
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-popover text-popover-foreground text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
+                      {type === 'etf' ? 'ETF' : 'Stock'}
+                    </span>
                   </button>
                 ))}
               </div>

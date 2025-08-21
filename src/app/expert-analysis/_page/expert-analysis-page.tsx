@@ -98,7 +98,7 @@ export function ExpertAnalysisPage() {
     }
 
     if (!stockTicker.trim()) {
-      toast.error('Please enter a stock ticker')
+      toast.error('Please enter a stock or ETF ticker')
       return
     }
 
