@@ -95,7 +95,7 @@ export const updateExpertOptimistically = async (
       
       return {
         ...current,
-        experts: current.experts.map((expert) =>
+        experts: current.experts.map((expert: Expert) =>
           expert.id === expertId ? updater(expert) : expert
         ),
       }
@@ -107,11 +107,16 @@ export const updateExpertOptimistically = async (
   )
 }
 
-// Get a specific expert from cache
-export const getCachedExpert = (expertId: string): Expert | undefined => {
-  const cache = useSWR.cache.get(CACHE_KEY)
-  if (cache?.data?.experts) {
-    return cache.data.experts.find((e: Expert) => e.id === expertId)
+// Get a specific expert from cache using a hook
+export function useCachedExpert(expertId: string): Expert | undefined {
+  const { data } = useSWR<ExpertsResponse>(CACHE_KEY, null, {
+    revalidateOnMount: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  
+  if (data?.experts) {
+    return data.experts.find((e: Expert) => e.id === expertId)
   }
   return undefined
 }
