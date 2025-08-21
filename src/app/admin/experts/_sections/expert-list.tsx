@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2, ListChecks } from 'lucide-react'
+import { Search, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Trash2, ListChecks } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ExpertCard } from './expert-card'
 import { Expert } from '@/types/expert'
@@ -20,10 +20,7 @@ import { motion } from 'motion/react'
 interface ExpertListProps {
   experts: Expert[]
   searchQuery: string
-  categoryFilter: string
-  statusFilter: 'all' | 'active' | 'inactive'
-  typeFilter: 'all' | 'default' | 'custom'
-  sortBy: 'name' | 'created_at' | 'display_order'
+  sortBy: 'name' | 'created_at'
   sortOrder: 'asc' | 'desc'
   currentPage: number
   totalCount: number
@@ -31,10 +28,7 @@ interface ExpertListProps {
   selectionMode: boolean
   selectedExperts: string[]
   onSearch: (query: string) => void
-  onCategoryChange: (category: string) => void
-  onStatusChange: (status: 'all' | 'active' | 'inactive') => void
-  onTypeChange: (type: 'all' | 'default' | 'custom') => void
-  onSortChange: (sortBy: 'name' | 'created_at' | 'display_order') => void
+  onSortChange: (sortBy: 'name' | 'created_at') => void
   onPageChange: (page: number) => void
   onExpertUpdate: (expert: Expert) => void
   onExpertDelete: (expertId: string) => void
@@ -47,9 +41,6 @@ interface ExpertListProps {
 export function ExpertList({
   experts,
   searchQuery,
-  categoryFilter,
-  statusFilter,
-  typeFilter,
   sortBy,
   sortOrder,
   currentPage,
@@ -58,9 +49,6 @@ export function ExpertList({
   selectionMode,
   selectedExperts,
   onSearch,
-  onCategoryChange,
-  onStatusChange,
-  onTypeChange,
   onSortChange,
   onPageChange,
   onExpertUpdate,
@@ -80,12 +68,9 @@ export function ExpertList({
   const clearFilters = () => {
     setLocalSearch('')
     onSearch('')
-    onCategoryChange('all')
-    onStatusChange('all')
-    onTypeChange('all')
   }
 
-  const hasActiveFilters = searchQuery || categoryFilter !== 'all' || statusFilter !== 'all' || typeFilter !== 'all'
+  const hasActiveFilters = searchQuery
   const hasSelection = selectedExperts.length > 0
   const allSelected = experts.length > 0 && selectedExperts.length === experts.length
   
@@ -117,22 +102,6 @@ export function ExpertList({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onBulkAction('activate')}
-            >
-              <CheckSquare className="h-4 w-4 mr-2" />
-              Activate
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onBulkAction('deactivate')}
-            >
-              <Square className="h-4 w-4 mr-2" />
-              Deactivate
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
               className="text-destructive hover:text-destructive"
               onClick={() => {
                 if (confirm(`Are you sure you want to delete ${selectedExperts.length} expert${selectedExperts.length !== 1 ? 's' : ''}?`)) {
@@ -141,7 +110,7 @@ export function ExpertList({
               }}
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Delete
+              Delete Selected
             </Button>
           </div>
         </motion.div>
@@ -188,41 +157,6 @@ export function ExpertList({
             </div>
           )}
           
-          <Select value={categoryFilter} onValueChange={onCategoryChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="value">Value</SelectItem>
-              <SelectItem value="growth">Growth</SelectItem>
-              <SelectItem value="tech">Tech</SelectItem>
-              <SelectItem value="macro">Macro</SelectItem>
-              <SelectItem value="custom">Custom</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={typeFilter} onValueChange={onTypeChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="default">Default Experts</SelectItem>
-              <SelectItem value="custom">Custom Experts</SelectItem>
-            </SelectContent>
-          </Select>
 
           <div className="flex items-center gap-1">
             <Button
@@ -233,20 +167,18 @@ export function ExpertList({
             >
               {sortBy === 'name' && 'Name'}
               {sortBy === 'created_at' && 'Date'}
-              {sortBy === 'display_order' && 'Order'}
               {sortOrder === 'asc' ? (
                 <ArrowUp className="h-4 w-4 ml-1" />
               ) : (
                 <ArrowDown className="h-4 w-4 ml-1" />
               )}
             </Button>
-            <Select value={sortBy} onValueChange={(value) => onSortChange(value as 'name' | 'created_at' | 'display_order')}>
+            <Select value={sortBy} onValueChange={(value) => onSortChange(value as 'name' | 'created_at')}>
               <SelectTrigger className="w-[180px]">
                 <ArrowUpDown className="h-4 w-4 mr-2 flex-shrink-0" />
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="display_order">Display Order</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="created_at">Created Date</SelectItem>
               </SelectContent>
@@ -276,39 +208,6 @@ export function ExpertList({
                     setLocalSearch('')
                     onSearch('')
                   }}
-                  className="ml-2 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            )}
-            {categoryFilter !== 'all' && (
-              <Badge variant="secondary">
-                Category: {categoryFilter}
-                <button
-                  onClick={() => onCategoryChange('all')}
-                  className="ml-2 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            )}
-            {statusFilter !== 'all' && (
-              <Badge variant="secondary">
-                Status: {statusFilter}
-                <button
-                  onClick={() => onStatusChange('all')}
-                  className="ml-2 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            )}
-            {typeFilter !== 'all' && (
-              <Badge variant="secondary">
-                Type: {typeFilter === 'default' ? 'Default' : 'Custom'}
-                <button
-                  onClick={() => onTypeChange('all')}
                   className="ml-2 hover:text-destructive"
                 >
                   <X className="h-3 w-3" />

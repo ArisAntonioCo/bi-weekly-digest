@@ -39,12 +39,8 @@ import { toast } from 'sonner'
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   title: z.string().optional(),
-  focus_areas: z.string().optional(),
   investing_law: z.string().min(10, 'Investing law must be at least 10 characters').max(500),
   framework_description: z.string().optional(),
-  category: z.enum(['value', 'growth', 'tech', 'macro', 'custom']).optional(),
-  display_order: z.number().int().positive().optional(),
-  is_active: z.boolean(),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -65,12 +61,8 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
     defaultValues: {
       name: '',
       title: '',
-      focus_areas: '',
       investing_law: '',
       framework_description: '',
-      category: undefined,
-      display_order: undefined,
-      is_active: true,
     },
   })
 
@@ -79,23 +71,15 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
       form.reset({
         name: expert.name,
         title: expert.title || '',
-        focus_areas: expert.focus_areas || '',
         investing_law: expert.investing_law,
         framework_description: expert.framework_description || '',
-        category: expert.category,
-        display_order: expert.display_order,
-        is_active: expert.is_active,
       })
     } else {
       form.reset({
         name: '',
         title: '',
-        focus_areas: '',
         investing_law: '',
         framework_description: '',
-        category: undefined,
-        display_order: undefined,
-        is_active: true,
       })
     }
   }, [expert, form])
@@ -172,51 +156,6 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
 
             <FormField
               control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="value">Value</SelectItem>
-                      <SelectItem value="growth">Growth</SelectItem>
-                      <SelectItem value="tech">Tech</SelectItem>
-                      <SelectItem value="macro">Macro</SelectItem>
-                      <SelectItem value="custom">Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="focus_areas"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Focus Areas</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="e.g., Value investing, long-term holdings, fundamental analysis"
-                      className="resize-none"
-                      rows={2}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>Key areas of expertise (comma-separated)</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="investing_law"
               render={({ field }) => (
                 <FormItem>
@@ -257,49 +196,6 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
               )}
             />
 
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name="display_order"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Display Order</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="1"
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                      />
-                    </FormControl>
-                    <FormDescription>Order in lists</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="is_active"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Active Status</FormLabel>
-                    <div className="flex items-center gap-2 mt-2">
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <span className="text-sm text-muted-foreground">
-                        {field.value ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>

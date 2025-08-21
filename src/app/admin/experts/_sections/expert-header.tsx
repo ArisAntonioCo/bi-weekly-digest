@@ -11,17 +11,11 @@ import { format } from 'date-fns'
 
 interface ExpertHeaderProps {
   totalExperts: number
-  activeExperts: number
-  defaultExperts: number
-  customExperts: number
   onAddExpert: (expert: Expert) => void
 }
 
 export function ExpertHeader({ 
   totalExperts, 
-  activeExperts, 
-  defaultExperts,
-  customExperts,
   onAddExpert 
 }: ExpertHeaderProps) {
   const [showAddForm, setShowAddForm] = useState(false)
@@ -63,7 +57,7 @@ export function ExpertHeader({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3"
+        className="mb-3"
       >
         <StatCard
           label="Total Experts"
@@ -71,33 +65,6 @@ export function ExpertHeader({
           icon={
             <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
               <Users className="h-5 w-5 text-foreground" />
-            </div>
-          }
-        />
-        <StatCard
-          label="Active Experts"
-          value={activeExperts}
-          icon={
-            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-foreground" />
-            </div>
-          }
-        />
-        <StatCard
-          label="Default Experts"
-          value={defaultExperts}
-          icon={
-            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
-              <Star className="h-5 w-5 text-foreground" />
-            </div>
-          }
-        />
-        <StatCard
-          label="Custom Experts"
-          value={customExperts}
-          icon={
-            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
-              <Settings className="h-5 w-5 text-foreground" />
             </div>
           }
         />

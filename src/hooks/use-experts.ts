@@ -14,10 +14,7 @@ const fetcher = async (url: string) => {
 // Hook for fetching experts list with filters
 export function useExperts({
   search = '',
-  category = 'all',
-  status = 'all',
-  type = 'all',
-  sortBy = 'display_order',
+  sortBy = 'name',
   sortOrder = 'asc',
   page = 1,
   limit = 9,
@@ -25,9 +22,6 @@ export function useExperts({
   const params = new URLSearchParams()
   
   if (search) params.append('search', search)
-  if (category !== 'all') params.append('category', category)
-  if (status !== 'all') params.append('active', status === 'active' ? 'true' : 'false')
-  if (type !== 'all') params.append('type', type)
   params.append('sortBy', sortBy)
   params.append('sortOrder', sortOrder)
   params.append('page', page.toString())
@@ -184,27 +178,3 @@ export function useBulkUpdateExperts() {
 
   return { bulkUpdate }
 }
-
-// Hook for toggling expert status (active/inactive)
-export function useToggleExpertStatus() {
-  const { updateExpert } = useUpdateExpert()
-
-  const toggleStatus = async (expert: Expert) => {
-    return updateExpert(expert.id, { is_active: !expert.is_active })
-  }
-
-  return { toggleStatus }
-}
-
-// Hook for toggling expert default status
-export function useToggleExpertDefault() {
-  const { updateExpert } = useUpdateExpert()
-
-  const toggleDefault = async (expert: Expert) => {
-    return updateExpert(expert.id, { is_default: !expert.is_default })
-  }
-
-  return { toggleDefault }
-}
-
-// Optimistic update helper (removed - use mutate directly with proper options)

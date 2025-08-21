@@ -11,10 +11,7 @@ import { useExperts, useBulkUpdateExperts } from '@/hooks/use-experts'
 export function ExpertsPage() {
   // Filter state
   const [searchQuery, setSearchQuery] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<string>('all')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
-  const [typeFilter, setTypeFilter] = useState<'all' | 'default' | 'custom'>('all')
-  const [sortBy, setSortBy] = useState<'name' | 'created_at' | 'display_order'>('display_order')
+  const [sortBy, setSortBy] = useState<'name' | 'created_at'>('name')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   
   // Pagination state
@@ -34,9 +31,6 @@ export function ExpertsPage() {
     revalidate 
   } = useExperts({
     search: searchQuery,
-    category: categoryFilter,
-    status: statusFilter,
-    type: typeFilter,
     sortBy,
     sortOrder,
     page: currentPage,
@@ -51,26 +45,12 @@ export function ExpertsPage() {
     setCurrentPage(1) // Reset to first page on filter change
   }
 
-  const handleCategoryChange = (category: string) => {
-    setCategoryFilter(category)
-    setCurrentPage(1)
-  }
-
-  const handleStatusChange = (status: 'all' | 'active' | 'inactive') => {
-    setStatusFilter(status)
-    setCurrentPage(1)
-  }
-
-  const handleTypeChange = (type: 'all' | 'default' | 'custom') => {
-    setTypeFilter(type)
-    setCurrentPage(1)
-  }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
 
-  const handleSortChange = (newSortBy: 'name' | 'created_at' | 'display_order') => {
+  const handleSortChange = (newSortBy: 'name' | 'created_at') => {
     if (sortBy === newSortBy) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
@@ -111,7 +91,12 @@ export function ExpertsPage() {
   }
 
   const handleBulkAction = async (action: 'activate' | 'deactivate' | 'delete') => {
-    await bulkUpdate(selectedExperts, action)
+    if (action === 'delete') {
+      await bulkUpdate(selectedExperts, action)
+    } else {
+      // Activate/deactivate not supported in simplified version
+      return
+    }
     
     // Clear selection after action
     setSelectedExperts([])
@@ -168,17 +153,11 @@ export function ExpertsPage() {
       <div className="space-y-8">
         <ExpertHeader 
           totalExperts={totalCount || experts.length}
-          activeExperts={experts.filter((e: Expert) => e.is_active).length}
-          defaultExperts={experts.filter((e: Expert) => e.is_default).length}
-          customExperts={experts.filter((e: Expert) => !e.is_default).length}
           onAddExpert={handleExpertAdd}
         />
         <ExpertList 
           experts={experts}
           searchQuery={searchQuery}
-          categoryFilter={categoryFilter}
-          statusFilter={statusFilter}
-          typeFilter={typeFilter}
           sortBy={sortBy}
           sortOrder={sortOrder}
           currentPage={currentPage}
@@ -187,9 +166,6 @@ export function ExpertsPage() {
           selectionMode={selectionMode}
           selectedExperts={selectedExperts}
           onSearch={handleSearch}
-          onCategoryChange={handleCategoryChange}
-          onStatusChange={handleStatusChange}
-          onTypeChange={handleTypeChange}
           onSortChange={handleSortChange}
           onPageChange={handlePageChange}
           onExpertUpdate={handleExpertUpdate}

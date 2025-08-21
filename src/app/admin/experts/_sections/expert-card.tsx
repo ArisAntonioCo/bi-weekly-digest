@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from 'react'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +20,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { MoreVertical, Edit, Trash, Shield, Star, StarOff } from 'lucide-react'
+import { MoreVertical, Edit, Trash } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { ExpertForm } from './expert-form'
-import { useToggleExpertStatus, useToggleExpertDefault, useDeleteExpert } from '@/hooks/use-experts'
+import { useDeleteExpert } from '@/hooks/use-experts'
 
 interface ExpertCardProps {
   expert: Expert
@@ -38,33 +36,7 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   
-  const { toggleStatus } = useToggleExpertStatus()
-  const { toggleDefault } = useToggleExpertDefault()
   const { deleteExpert } = useDeleteExpert()
-
-  const handleToggleActive = async () => {
-    setIsUpdating(true)
-    try {
-      const updatedExpert = await toggleStatus(expert)
-      onUpdate(updatedExpert)
-    } catch {
-      // Error is handled by the hook with toast
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
-  const handleToggleDefault = async () => {
-    setIsUpdating(true)
-    try {
-      const updatedExpert = await toggleDefault(expert)
-      onUpdate(updatedExpert)
-    } catch {
-      // Error is handled by the hook with toast
-    } finally {
-      setIsUpdating(false)
-    }
-  }
 
   const handleDelete = async () => {
     try {
@@ -76,29 +48,13 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
     setIsDeleteOpen(false)
   }
 
-  const getCategoryColor = (category?: string) => {
-    switch (category) {
-      case 'value': return 'bg-blue-500/10 text-blue-500'
-      case 'growth': return 'bg-green-500/10 text-green-500'
-      case 'tech': return 'bg-purple-500/10 text-purple-500'
-      case 'macro': return 'bg-orange-500/10 text-orange-500'
-      case 'custom': return 'bg-gray-500/10 text-gray-500'
-      default: return 'bg-gray-500/10 text-gray-500'
-    }
-  }
-
   return (
     <>
       <Card className="relative border border-border/50 h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="space-y-1 flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-lg">{expert.name}</h3>
-                {expert.is_default && (
-                  <Star className="h-4 w-4 text-yellow-500" />
-                )}
-              </div>
+              <h3 className="font-semibold text-lg">{expert.name}</h3>
               <p className="text-sm text-muted-foreground line-clamp-1 h-5">
                 {expert.title || ' '}
               </p>
@@ -114,74 +70,33 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleToggleDefault} disabled={isUpdating}>
-                  {expert.is_default ? (
-                    <>
-                      <StarOff className="h-4 w-4 mr-2" />
-                      Remove from Defaults
-                    </>
-                  ) : (
-                    <>
-                      <Star className="h-4 w-4 mr-2" />
-                      Set as Default
-                    </>
-                  )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setIsDeleteOpen(true)}
+                  className="text-destructive"
+                >
+                  <Trash className="h-4 w-4 mr-2" />
+                  Delete
                 </DropdownMenuItem>
-                {!expert.is_default && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setIsDeleteOpen(true)}
-                      className="text-destructive"
-                    >
-                      <Trash className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </>
-                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-3 flex-1">
-          {expert.category && (
-            <Badge className={getCategoryColor(expert.category)} variant="secondary">
-              {expert.category}
-            </Badge>
-          )}
-
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">Focus Areas</p>
-            <p className="text-sm line-clamp-2 min-h-[2.5rem]">{expert.focus_areas || '—'}</p>
-          </div>
-
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground">Investing Law</p>
             <p className="text-sm italic line-clamp-3 min-h-[3.75rem]">&ldquo;{expert.investing_law}&rdquo;</p>
           </div>
+
+          {expert.framework_description && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">Framework Description</p>
+              <p className="text-sm line-clamp-2 min-h-[2.5rem]">{expert.framework_description}</p>
+            </div>
+          )}
         </CardContent>
 
-        <CardFooter className="pt-3 border-t">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={expert.is_active}
-                onCheckedChange={handleToggleActive}
-                disabled={isUpdating}
-              />
-              <span className="text-sm text-muted-foreground">
-                {expert.is_active ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-            {expert.is_default && (
-              <Badge variant="outline" className="text-xs">
-                <Shield className="h-3 w-3 mr-1" />
-                Default
-              </Badge>
-            )}
-          </div>
-        </CardFooter>
       </Card>
 
       <ExpertForm

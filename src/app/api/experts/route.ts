@@ -7,11 +7,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     
-    const active = searchParams.get('active')
-    const category = searchParams.get('category')
     const search = searchParams.get('search')
-    const type = searchParams.get('type')
-    const sortBy = searchParams.get('sortBy') || 'display_order'
+    const sortBy = searchParams.get('sortBy') || 'name'
     const sortOrder = searchParams.get('sortOrder') || 'asc'
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -20,33 +17,14 @@ export async function GET(request: NextRequest) {
     let query = supabase.from('experts').select('*', { count: 'exact' })
 
     // Apply filters
-    if (active !== null) {
-      query = query.eq('is_active', active === 'true')
-    }
-
-    if (category && category !== 'all') {
-      query = query.eq('category', category)
-    }
-
-    if (type && type !== 'all') {
-      if (type === 'default') {
-        query = query.eq('is_default', true)
-      } else if (type === 'custom') {
-        query = query.eq('is_default', false)
-      }
-    }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,focus_areas.ilike.%${search}%,investing_law.ilike.%${search}%`)
+      query = query.or(`name.ilike.%${search}%,title.ilike.%${search}%,investing_law.ilike.%${search}%`)
     }
 
     // Apply sorting
     const order = { ascending: sortOrder === 'asc' }
-    if (sortBy === 'display_order') {
-      query = query.order('display_order', order).order('created_at', order)
-    } else {
-      query = query.order(sortBy, order)
-    }
+    query = query.order(sortBy, order)
 
     // Apply pagination
     const startRange = (page - 1) * limit
@@ -119,13 +97,8 @@ export async function POST(request: NextRequest) {
       .insert({
         name: body.name,
         title: body.title,
-        focus_areas: body.focus_areas,
         investing_law: body.investing_law,
-        framework_description: body.framework_description,
-        category: body.category,
-        display_order: body.display_order,
-        is_active: body.is_active !== false,
-        is_default: false // New experts are never default
+        framework_description: body.framework_description
       })
       .select()
       .single()

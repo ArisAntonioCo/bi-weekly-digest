@@ -37,44 +37,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!action || !['activate', 'deactivate', 'delete'].includes(action)) {
+    if (!action || action !== 'delete') {
       return NextResponse.json(
-        { error: 'Invalid action' },
+        { error: 'Invalid action. Only delete is supported.' },
         { status: 400 }
       )
     }
 
-    // Perform bulk operation based on action
-    let result
-    
-    if (action === 'delete') {
-      // Check if any of the experts are default
-      const { data: defaultExperts } = await supabase
-        .from('experts')
-        .select('id')
-        .in('id', ids)
-        .eq('is_default', true)
-
-      if (defaultExperts && defaultExperts.length > 0) {
-        return NextResponse.json(
-          { error: 'Cannot delete default experts' },
-          { status: 400 }
-        )
-      }
-
-      // Delete the experts
-      result = await supabase
-        .from('experts')
-        .delete()
-        .in('id', ids)
-    } else {
-      // Update is_active status
-      const isActive = action === 'activate'
-      result = await supabase
-        .from('experts')
-        .update({ is_active: isActive })
-        .in('id', ids)
-    }
+    // Delete the experts
+    const result = await supabase
+      .from('experts')
+      .delete()
+      .in('id', ids)
 
     if (result.error) {
       throw result.error

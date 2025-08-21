@@ -74,13 +74,8 @@ export async function PUT(
       .update({
         ...(body.name !== undefined && { name: body.name }),
         ...(body.title !== undefined && { title: body.title }),
-        ...(body.focus_areas !== undefined && { focus_areas: body.focus_areas }),
         ...(body.investing_law !== undefined && { investing_law: body.investing_law }),
-        ...(body.framework_description !== undefined && { framework_description: body.framework_description }),
-        ...(body.category !== undefined && { category: body.category }),
-        ...(body.display_order !== undefined && { display_order: body.display_order }),
-        ...(body.is_active !== undefined && { is_active: body.is_active }),
-        ...(body.is_default !== undefined && { is_default: body.is_default }),
+        ...(body.framework_description !== undefined && { framework_description: body.framework_description })
       })
       .eq('id', id)
       .select()
@@ -136,18 +131,20 @@ export async function DELETE(
       )
     }
 
-    // Check if expert is default
-    const { data: expert } = await supabase
+    // Delete the expert
+    const { error } = await supabase
       .from('experts')
-      .select('is_default')
+      .delete()
       .eq('id', id)
-      .single()
 
-    if (expert?.is_default) {
-      return NextResponse.json(
-        { error: 'Cannot delete default expert' },
-        { status: 400 }
-      )
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Expert not found' },
+          { status: 404 }
+        )
+      }
+      throw error
     }
 
     // Delete the expert
