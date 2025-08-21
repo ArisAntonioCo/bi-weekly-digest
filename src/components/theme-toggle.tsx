@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
-import { useTheme } from "@/providers/theme-provider"
+import { useTheme } from "@/providers/selective-theme-provider"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
+  const { setTheme, isExcludedPath } = useTheme()
+
+  // Don't show theme toggle on excluded paths
+  if (isExcludedPath) {
+    return null
+  }
 
   return (
     <DropdownMenu>

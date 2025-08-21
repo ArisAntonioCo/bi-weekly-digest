@@ -1,14 +1,16 @@
 "use client"
 
-import { useTheme } from "next-themes"
+import { useTheme } from "@/providers/selective-theme-provider"
 import { Toaster as Sonner, ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system", isExcludedPath } = useTheme()
+  // Always use light theme for toasts on excluded paths
+  const toastTheme = isExcludedPath ? "light" : theme
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={toastTheme as ToasterProps["theme"]}
       className="toaster group"
       style={
         {

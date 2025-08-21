@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/ui/navbar";
-import { ThemeProvider } from "@/providers/theme-provider";
+import { SelectiveThemeProvider } from "@/providers/selective-theme-provider";
 import { SWRProvider } from "@/providers/swr-provider";
 import "./globals.css";
 
@@ -38,12 +38,16 @@ export default function RootLayout({
         className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-background`}
         suppressHydrationWarning
       >
-        <ThemeProvider defaultTheme="light" storageKey="bi-weekly-digest-theme">
+        <SelectiveThemeProvider 
+          defaultTheme="light" 
+          storageKey="bi-weekly-digest-theme"
+          excludedPaths={["/", "/login", "/signup", "/auth/*"]}
+        >
           <SWRProvider>
             <Navbar className="sticky top-0 z-50 bg-background" />
             {children}
           </SWRProvider>
-        </ThemeProvider>
+        </SelectiveThemeProvider>
       </body>
     </html>
   );
