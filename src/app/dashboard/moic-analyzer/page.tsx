@@ -161,7 +161,7 @@ export default function FinancePage() {
                 <PromptInputBox
                   onSend={handleSend}
                   isLoading={isLoading}
-                  placeholder="Enter a stock ticker (e.g., AAPL, NVDA) for 3-year MOIC projection..."
+                  placeholder="Enter a stock (or stocks) ticker, or ETFs, for 3-Year Forward MOIC projections!"
                   className="bg-background border-border shadow-sm"
                 />
               </div>
