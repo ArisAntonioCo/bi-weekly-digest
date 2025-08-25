@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -54,14 +55,16 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1">
               {expert.avatar_seed && (
-                <img
+                <Image
                   src={(() => {
                     const colors = ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf']
                     const colorIndex = expert.avatar_seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length
                     return `https://api.dicebear.com/9.x/notionists/svg?seed=${expert.avatar_seed}&backgroundColor=${colors[colorIndex]}`
                   })()}
                   alt={`${expert.name} avatar`}
-                  className="w-12 h-12 rounded-full bg-muted flex-shrink-0"
+                  width={48}
+                  height={48}
+                  className="rounded-full bg-muted flex-shrink-0"
                 />
               )}
               <div className="space-y-1 flex-1">

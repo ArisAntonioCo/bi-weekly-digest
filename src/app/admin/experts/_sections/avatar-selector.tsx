@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import Image from 'next/image'
 import {
   Popover,
   PopoverContent,
@@ -45,10 +46,12 @@ export function AvatarSelector({
           <div className="flex items-center gap-3">
             {value ? (
               <>
-                <img
+                <Image
                   src={getAvatarUrl(value)}
                   alt="Selected avatar"
-                  className="w-10 h-10 rounded-full bg-muted"
+                  width={40}
+                  height={40}
+                  className="rounded-full bg-muted"
                 />
                 <span className="text-sm">Avatar selected</span>
               </>
@@ -80,10 +83,12 @@ export function AvatarSelector({
                   value === seed && "bg-muted ring-2 ring-primary"
                 )}
               >
-                <img
+                <Image
                   src={getAvatarUrl(seed)}
                   alt={`Avatar ${seed}`}
-                  className="w-12 h-12 rounded-full bg-background"
+                  width={48}
+                  height={48}
+                  className="rounded-full bg-background"
                 />
                 {value === seed && (
                   <div className="absolute inset-1 flex items-center justify-center rounded-lg bg-primary/10 pointer-events-none">

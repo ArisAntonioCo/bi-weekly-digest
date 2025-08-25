@@ -7,7 +7,6 @@ import { Ripple } from '@/components/magicui/ripple'
 import { TrendingUp, TrendingDown, Zap, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import Avvvatars from 'avvvatars-react'
 
 const insights = [
   {

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from 'react'
+import Image from 'next/image'
 import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
@@ -159,14 +160,16 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
                     <div className="pr-10 space-y-2">
                       <div className="flex items-center gap-3">
                         {expert.avatar_seed && (
-                          <img
+                          <Image
                             src={(() => {
                               const colors = ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf']
                               const colorIndex = expert.avatar_seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length
                               return `https://api.dicebear.com/9.x/notionists/svg?seed=${expert.avatar_seed}&backgroundColor=${colors[colorIndex]}`
                             })()}
                             alt={`${expert.name} avatar`}
-                            className="w-10 h-10 rounded-full bg-background/10 flex-shrink-0"
+                            width={40}
+                            height={40}
+                            className="rounded-full bg-background/10 flex-shrink-0"
                           />
                         )}
                         <div>

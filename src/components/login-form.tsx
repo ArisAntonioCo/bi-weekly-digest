@@ -16,12 +16,12 @@ export function LoginForm() {
 
   return (
     <div className="w-full">
-      <div className="space-y-1 mb-8">
+      <div className="space-y-2 mb-8">
         <h2 className="text-2xl font-bold text-center text-foreground">
           Sign In
         </h2>
         <p className="text-center text-muted-foreground">
-          Enter your email to sign in to your account
+          Access projections, MOIC tables, and expert-driven signals
         </p>
       </div>
       <form action={formAction}>

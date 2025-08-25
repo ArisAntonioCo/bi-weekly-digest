@@ -6,9 +6,9 @@ export async function GET() {
   try {
     const supabase = await createClient()
     
-    // Check authentication
+    // Check authentication - allow any authenticated user to view schedule
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.email !== 'kyle@zaigo.ai') {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

@@ -14,7 +14,6 @@ import {
 import { 
   Mail, 
   User, 
-  CheckCircle, 
   BookOpen, 
   ArrowRight, 
   ChevronRight,
@@ -25,7 +24,8 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { motion } from 'motion/react'
-import { cn } from '@/lib/utils'
+import { NewsletterScheduleCard } from '@/components/newsletter-schedule-card'
+import { useNewsletterSchedule } from '@/hooks/useNewsletterSchedule'
 
 interface Blog {
   id: string
@@ -40,6 +40,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
+  const { schedule, loading: scheduleLoading, error: scheduleError } = useNewsletterSchedule()
 
   // Extract user initials for avatar (same as navbar)
   const getUserInitials = (email: string): string => {
@@ -393,88 +394,14 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <DashboardCard variant="default" padding="medium">
-                  <CardHeader
-                    title="Weekly Newsletter"
-                    subtitle="Investment digest every Sunday"
-                    icon={<Mail className="h-5 w-5 text-foreground" />}
-                  />
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Status Badge */}
-                      <div className={cn(
-                        "p-3 rounded-full text-center",
-                        subscriptionStatus 
-                          ? "bg-green-500/10 border border-green-500/20" 
-                          : "bg-muted border border-border"
-                      )}>
-                        <div className="flex items-center justify-center gap-2">
-                          {subscriptionStatus ? (
-                            <>
-                              <CheckCircle className="h-4 w-4 text-green-600" />
-                              <span className="text-sm font-medium text-green-600">Subscribed</span>
-                            </>
-                          ) : (
-                            <>
-                              <Bell className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-muted-foreground">Not Subscribed</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Schedule */}
-                      <div className="space-y-2 p-3 rounded-2xl bg-background/50">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">Frequency</span>
-                          <span className="text-xs font-medium">Weekly</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">Day</span>
-                          <span className="text-xs font-medium">Sunday</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">Time</span>
-                          <span className="text-xs font-medium">9:00 AM UTC</span>
-                        </div>
-                        {subscriptionStatus && (
-                          <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                            <span className="text-xs text-muted-foreground">Next Issue</span>
-                            <span className="text-xs font-medium">
-                              {(() => {
-                                const today = new Date()
-                                const nextSunday = new Date(today)
-                                nextSunday.setDate(today.getDate() + (7 - today.getDay()))
-                                return format(nextSunday, 'MMM d')
-                              })()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Action Button */}
-                      {subscriptionStatus ? (
-                        <Button 
-                          onClick={handleUnsubscribe}
-                          variant="outline" 
-                          size="lg"
-                          className="w-full rounded-full"
-                        >
-                          Unsubscribe
-                        </Button>
-                      ) : (
-                        <Button 
-                          onClick={handleSubscribe}
-                          variant="default"
-                          size="lg"
-                          className="w-full rounded-full"
-                        >
-                          Subscribe Now
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </DashboardCard>
+                <NewsletterScheduleCard
+                  subscriptionStatus={subscriptionStatus}
+                  onSubscribe={handleSubscribe}
+                  onUnsubscribe={handleUnsubscribe}
+                  schedule={schedule}
+                  loading={scheduleLoading}
+                  error={scheduleError}
+                />
               </motion.div>
 
               {/* Account Card */}
