@@ -170,6 +170,7 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
                             width={40}
                             height={40}
                             className="rounded-full bg-background/10 flex-shrink-0"
+                            unoptimized
                           />
                         )}
                         <div>

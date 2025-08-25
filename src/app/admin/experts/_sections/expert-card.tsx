@@ -65,6 +65,7 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
                   width={48}
                   height={48}
                   className="rounded-full bg-muted flex-shrink-0"
+                  unoptimized
                 />
               )}
               <div className="space-y-1 flex-1">

@@ -52,6 +52,7 @@ export function AvatarSelector({
                   width={40}
                   height={40}
                   className="rounded-full bg-muted"
+                  unoptimized
                 />
                 <span className="text-sm">Avatar selected</span>
               </>
@@ -89,6 +90,7 @@ export function AvatarSelector({
                   width={48}
                   height={48}
                   className="rounded-full bg-background"
+                  unoptimized
                 />
                 {value === seed && (
                   <div className="absolute inset-1 flex items-center justify-center rounded-lg bg-primary/10 pointer-events-none">
