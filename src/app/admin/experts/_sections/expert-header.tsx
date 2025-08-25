@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { StatCard } from '@/components/dashboard-card'
-import { Plus, Users } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { ExpertForm } from './expert-form'
 import { Expert } from '@/types/expert'
 import { motion } from 'motion/react'
@@ -27,15 +26,17 @@ export function ExpertHeader({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-10"
+        className="mb-8"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Expert Frameworks Management
             </h1>
-            <p className="text-muted-foreground mt-1">
-              {format(new Date(), 'EEEE, MMMM d, yyyy')}
+            <p className="text-muted-foreground mt-1 flex items-center gap-2">
+              <span className="font-medium">{totalExperts} {totalExperts === 1 ? 'expert' : 'experts'}</span>
+              <span className="text-muted-foreground/60">•</span>
+              <span>{format(new Date(), 'EEEE, MMMM d, yyyy')}</span>
             </p>
           </div>
           <div className="flex gap-2">
@@ -50,24 +51,6 @@ export function ExpertHeader({
             </Button>
           </div>
         </div>
-      </motion.div>
-
-      {/* Quick Stats Row */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="mb-3"
-      >
-        <StatCard
-          label="Total Experts"
-          value={totalExperts}
-          icon={
-            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
-              <Users className="h-5 w-5 text-foreground" />
-            </div>
-          }
-        />
       </motion.div>
 
       <ExpertForm

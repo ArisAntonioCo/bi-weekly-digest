@@ -75,7 +75,8 @@ export async function PUT(
         ...(body.name !== undefined && { name: body.name }),
         ...(body.title !== undefined && { title: body.title }),
         ...(body.investing_law !== undefined && { investing_law: body.investing_law }),
-        ...(body.framework_description !== undefined && { framework_description: body.framework_description })
+        ...(body.framework_description !== undefined && { framework_description: body.framework_description }),
+        ...(body.avatar_seed !== undefined && { avatar_seed: body.avatar_seed })
       })
       .eq('id', id)
       .select()

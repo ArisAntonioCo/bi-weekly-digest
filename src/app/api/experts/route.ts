@@ -98,7 +98,8 @@ export async function POST(request: NextRequest) {
         name: body.name,
         title: body.title,
         investing_law: body.investing_law,
-        framework_description: body.framework_description
+        framework_description: body.framework_description,
+        avatar_seed: body.avatar_seed
       })
       .select()
       .single()

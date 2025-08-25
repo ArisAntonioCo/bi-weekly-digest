@@ -157,14 +157,29 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
                     
                     {/* Expert Info */}
                     <div className="pr-10 space-y-2">
-                      <div className={`font-semibold text-base ${isSelected ? 'text-background' : 'text-foreground'}`}>
-                        {expert.name}
+                      <div className="flex items-center gap-3">
+                        {expert.avatar_seed && (
+                          <img
+                            src={(() => {
+                              const colors = ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf']
+                              const colorIndex = expert.avatar_seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length
+                              return `https://api.dicebear.com/9.x/notionists/svg?seed=${expert.avatar_seed}&backgroundColor=${colors[colorIndex]}`
+                            })()}
+                            alt={`${expert.name} avatar`}
+                            className="w-10 h-10 rounded-full bg-background/10 flex-shrink-0"
+                          />
+                        )}
+                        <div>
+                          <div className={`font-semibold text-base ${isSelected ? 'text-background' : 'text-foreground'}`}>
+                            {expert.name}
+                          </div>
+                          {expert.title && (
+                            <p className={`text-xs ${isSelected ? 'text-background/80' : 'text-muted-foreground'}`}>
+                              {expert.title}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      {expert.title && (
-                        <p className={`text-xs ${isSelected ? 'text-background/80' : 'text-muted-foreground'}`}>
-                          {expert.title}
-                        </p>
-                      )}
                       <p className={`text-xs italic line-clamp-2 ${isSelected ? 'text-background/70' : 'text-muted-foreground'}`}>
                         &quot;{expert.investing_law}&quot;
                       </p>

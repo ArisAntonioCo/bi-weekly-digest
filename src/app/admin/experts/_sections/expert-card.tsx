@@ -52,11 +52,24 @@ export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
       <Card className="relative border border-border/50 h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <div className="space-y-1 flex-1">
-              <h3 className="font-semibold text-lg">{expert.name}</h3>
-              <p className="text-sm text-muted-foreground line-clamp-1 h-5">
-                {expert.title || ' '}
-              </p>
+            <div className="flex items-start gap-3 flex-1">
+              {expert.avatar_seed && (
+                <img
+                  src={(() => {
+                    const colors = ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf']
+                    const colorIndex = expert.avatar_seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length
+                    return `https://api.dicebear.com/9.x/notionists/svg?seed=${expert.avatar_seed}&backgroundColor=${colors[colorIndex]}`
+                  })()}
+                  alt={`${expert.name} avatar`}
+                  className="w-12 h-12 rounded-full bg-muted flex-shrink-0"
+                />
+              )}
+              <div className="space-y-1 flex-1">
+                <h3 className="font-semibold text-lg">{expert.name}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-1 h-5">
+                  {expert.title || ' '}
+                </p>
+              </div>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -4,6 +4,7 @@ export interface Expert {
   title?: string
   investing_law: string
   framework_description?: string
+  avatar_seed?: string
   created_at: string
   updated_at: string
 }
@@ -27,6 +28,7 @@ export interface CreateExpertInput {
   title?: string
   investing_law: string
   framework_description?: string
+  avatar_seed?: string
 }
 
 export type UpdateExpertInput = Partial<CreateExpertInput>

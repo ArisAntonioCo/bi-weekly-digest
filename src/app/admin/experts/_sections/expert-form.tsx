@@ -27,12 +27,14 @@ import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { toast } from 'sonner'
+import { AvatarSelector } from './avatar-selector'
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   title: z.string().optional(),
   investing_law: z.string().min(10, 'Investing law must be at least 10 characters').max(500),
   framework_description: z.string().optional(),
+  avatar_seed: z.string().optional(),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -55,6 +57,7 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
       title: '',
       investing_law: '',
       framework_description: '',
+      avatar_seed: '',
     },
   })
 
@@ -65,6 +68,7 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
         title: expert.title || '',
         investing_law: expert.investing_law,
         framework_description: expert.framework_description || '',
+        avatar_seed: expert.avatar_seed || '',
       })
     } else {
       form.reset({
@@ -72,6 +76,7 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
         title: '',
         investing_law: '',
         framework_description: '',
+        avatar_seed: '',
       })
     }
   }, [expert, form])
@@ -126,6 +131,25 @@ export function ExpertForm({ open, onClose, onSubmit, expert }: ExpertFormProps)
                   <FormControl>
                     <Input placeholder="e.g., Warren Buffett" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="avatar_seed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Avatar</FormLabel>
+                  <FormControl>
+                    <AvatarSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select an avatar for this expert"
+                    />
+                  </FormControl>
+                  <FormDescription>Choose a unique avatar for this expert</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
