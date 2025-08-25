@@ -19,10 +19,9 @@ import {
   ArrowRight, 
   ChevronRight,
   Sparkles,
-  Bell,
-  FileText,
-  AlertCircle
+  FileText
 } from 'lucide-react'
+import Avvvatars from 'avvvatars-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { motion } from 'motion/react'
@@ -374,38 +373,42 @@ export default function DashboardPage() {
               >
                 <DashboardCard 
                   variant="default" 
-                  padding="medium"
-                  className="relative overflow-hidden cursor-pointer hover:bg-muted/70"
+                  padding="none"
+                  className="relative overflow-hidden cursor-pointer hover:bg-muted/70 h-full flex flex-col"
                 >
-                  {/* Decorative Background Shapes */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    {/* Dots pattern - top right */}
-                    <div className="absolute right-8 top-8">
-                      <div className="grid grid-cols-3 gap-2">
-                        {[...Array(9)].map((_, i) => (
-                          <div key={i} className="w-1.5 h-1.5 bg-foreground/15 rounded-full" />
-                        ))}
-                      </div>
+                  {/* Decorative Background Shape */}
+                  <div className="absolute top-6 right-6 pointer-events-none">
+                    <div 
+                      className="inline-block transition-transform duration-500 hover:rotate-[360deg]"
+                      style={{ 
+                        animation: 'spin 10s linear infinite' 
+                      }}
+                    >
+                      <Avvvatars 
+                        value="shape-05"
+                        style="shape"
+                        size={48}
+                      />
                     </div>
                   </div>
                   
-                  {/* Content */}
-                  <div className="relative z-10">
-                    <CardHeader
-                      title="AI Assistant"
-                      subtitle="Instant MOIC Analysis"
-                    />
-                    <CardContent className="mt-6">
-                      <Button 
-                        variant="default" 
-                        size="lg"
-                        className="w-full rounded-full"
-                        onClick={() => router.push('/dashboard/moic-analyzer')}
-                      >
-                        Start Analysis
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </CardContent>
+                  {/* Content Container */}
+                  <div className="relative z-10 p-6 flex flex-col flex-1">
+                    <div className="flex-1">
+                      <CardHeader
+                        title="AI Assistant"
+                        subtitle="Instant MOIC Analysis"
+                      />
+                    </div>
+                    <Button 
+                      variant="default" 
+                      size="lg"
+                      className="w-full rounded-full mt-auto"
+                      onClick={() => router.push('/dashboard/moic-analyzer')}
+                    >
+                      Start Analysis
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </div>
                 </DashboardCard>
               </motion.div>
@@ -428,27 +431,27 @@ export default function DashboardPage() {
                 
                 <DashboardCard 
                   variant="default" 
-                  padding="medium"
-                  className="overflow-hidden cursor-pointer hover:bg-muted/70 border-primary/20"
+                  padding="none"
+                  className="overflow-hidden cursor-pointer hover:bg-muted/70 border-primary/20 h-full flex flex-col"
                 >
-                  {/* Content */}
-                  <div className="relative z-10">
-                    <CardHeader
-                      title="Expert Analysis"
-                      subtitle="Stock insights via legendary investors"
-                      icon={<Sparkles className="h-5 w-5 text-primary" />}
-                    />
-                    <CardContent className="mt-6">
-                      <Button 
-                        variant="outline" 
-                        size="lg"
-                        className="w-full rounded-full border-primary/20 hover:bg-primary/5"
-                        onClick={() => router.push('/expert-analysis')}
-                      >
-                        Analyze Stocks
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </CardContent>
+                  {/* Content Container */}
+                  <div className="relative z-10 p-6 flex flex-col flex-1">
+                    <div className="flex-1">
+                      <CardHeader
+                        title="Expert Analysis"
+                        subtitle="Stock insights via legendary investors"
+                        icon={<Sparkles className="h-5 w-5 text-primary" />}
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      className="w-full rounded-full border-primary/20 hover:bg-primary/5 mt-auto"
+                      onClick={() => router.push('/expert-analysis')}
+                    >
+                      Analyze Stocks
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </div>
                 </DashboardCard>
               </motion.div>
