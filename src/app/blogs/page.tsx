@@ -28,7 +28,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
           {/* Page Header */}
           <div className="mb-10">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Investment Insights</h1>
-            <p className="text-muted-foreground mt-1">AI-Powered Market Analysis & Strategies</p>
+            <p className="text-muted-foreground mt-1">Drawing from Gurley, Meeker, Druckenmiller, and more</p>
           </div>
           
           {/* System Prompt Summary - Simplified */}

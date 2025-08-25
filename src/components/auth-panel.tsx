@@ -34,16 +34,21 @@ export function AuthPanel({ children }: AuthPanelProps) {
               showIcon={false}
               textClassName="text-white"
             />
+            {/* Founders and Company */}
+            <div className="mt-3 text-white/60">
+              <p className="text-sm">Kyle Richless & Peter Enestrom</p>
+              <p className="text-sm">a Zaigo Labs Company</p>
+            </div>
           </div>
           
           <div className="relative z-10">
             {/* Heading at bottom */}
             <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-              Expert Stock Analysis
+              Gurley. Gerstner. Meeker.
               <br />
-              Using World-Class
+              Druckenmiller. Kindig.
               <br />
-              Investment Frameworks
+              Their Frameworks. Your Edge.
             </h1>
           </div>
         </div>

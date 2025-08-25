@@ -14,9 +14,9 @@ export function HeroSection() {
       {/* Main Content */}
       <div className="mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-none">
-            Expert-Grade 3Y MOIC
+            See the Market the Way
             <br />
-            Projections In Your Inbox
+            Billion-Dollar Investors Do
           </h1>
         </div>
 
