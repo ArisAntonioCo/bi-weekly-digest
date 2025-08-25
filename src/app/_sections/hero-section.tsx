@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AnimatedNewsletterList } from '@/components/animated-newsletter-list'
 import { useState } from 'react'
+import Avvvatars from 'avvvatars-react'
 
 
 export function HeroSection() {
@@ -34,11 +35,25 @@ export function HeroSection() {
             </Link>
           </div>
           
-          <p className="text-base sm:text-lg font-semibold text-foreground max-w-full lg:max-w-md">
-            Leveraging frameworks from Gurley,
-            <br className="hidden sm:block" />
-            Gerstner, Druckenmiller & more.
-          </p>
+          <div className="flex items-center gap-3">
+            <div 
+              className="inline-block [&_div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-black"
+              style={{ 
+                animation: 'spin 8s linear infinite' 
+              }}
+            >
+              <Avvvatars 
+                value="sparkle"
+                style="shape"
+                size={32}
+              />
+            </div>
+            <p className="text-base sm:text-lg font-semibold text-foreground max-w-full lg:max-w-md">
+              Leveraging frameworks from Gurley,
+              <br className="hidden sm:block" />
+              Gerstner, Druckenmiller & more.
+            </p>
+          </div>
         </div>
 
         {/* Hero Images Container */}

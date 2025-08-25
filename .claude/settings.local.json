@@ -54,7 +54,9 @@
       "mcp__supabase__list_migrations",
       "mcp__supabase__search_docs",
       "Bash(pnpm list:*)",
-      "Bash(pnpm run:*)"
+      "Bash(pnpm run:*)",
+      "Bash(yarn add:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

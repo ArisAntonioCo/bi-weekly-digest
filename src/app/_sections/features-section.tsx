@@ -7,6 +7,7 @@ import { Ripple } from '@/components/magicui/ripple'
 import { TrendingUp, TrendingDown, Zap, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import Avvvatars from 'avvvatars-react'
 
 const insights = [
   {
@@ -161,6 +162,7 @@ const StackedCards = () => {
 const features = [
   {
     title: "Comprehensive 3-Year Forward MOIC",
+    shapeValue: "strawberry-red-500",
     bottomContent: (
       <div className="flex flex-col justify-center h-[200px] w-full space-y-4 px-4">
         <div className="flex items-center justify-between">
@@ -186,6 +188,7 @@ const features = [
   },
   {
     title: "World-Class Equity Frameworks",
+    shapeValue: "ultraviolet-burst-99",
     bottomContent: (
       <div className="absolute bottom-0 left-0 right-0 h-[400px] w-full flex items-end justify-center overflow-hidden">
         <div className="relative translate-y-[45%]">
@@ -198,6 +201,7 @@ const features = [
   },
   {
     title: "Current & Thoughtful Insights",
+    shapeValue: "neon-green-matrix",
     bottomContent: <StackedCards />
   }
 ]
@@ -219,6 +223,8 @@ export function FeaturesSection() {
             key={index}
             title={feature.title}
             bottomContent={feature.bottomContent}
+            showShape={true}
+            shapeValue={feature.shapeValue}
           />
         ))}
       </div>
