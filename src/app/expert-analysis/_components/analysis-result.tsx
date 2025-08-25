@@ -7,6 +7,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Building2, Copy, Calendar } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { motion } from 'motion/react'
+import { BlogList } from '@/components/ui/blog-list'
+import type { Blog } from '@/types/blog'
 import { toast } from 'sonner'
 
 interface AnalysisResult {
@@ -31,6 +33,13 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(result.analysis)
     toast.success('Analysis copied to clipboard')
+  }
+
+  const blogFromAnalysis: Blog = {
+    id: result.id,
+    title: `${result.company_name || result.stock_ticker} Analysis` ,
+    content: result.analysis,
+    created_at: result.timestamp,
   }
 
   return (
@@ -99,10 +108,8 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
         />
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                {result.analysis}
-              </div>
+            <div className="prose prose-lg max-w-none">
+              <BlogList blogs={[blogFromAnalysis]} />
             </div>
           </ScrollArea>
           

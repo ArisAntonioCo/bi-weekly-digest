@@ -77,8 +77,8 @@ export function BlogList({ blogs }: BlogListProps) {
                 </div>
               )}
               
-              <div className="w-full overflow-x-hidden">
-                <div className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-full overflow-x-hidden [&>*]:!max-w-full" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+              <div className="w-full">
+                <div className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-full [&>*]:!max-w-full break-words">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkBreaks]}
                     components={{
@@ -104,10 +104,10 @@ export function BlogList({ blogs }: BlogListProps) {
                              text.includes('Analysis'))) {
                           return <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>;
                         }
-                        return <p className="text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 text-muted-foreground break-words">{children}</p>;
+                        return <p className="text-sm sm:text-base leading-relaxed mt-0 mb-3 sm:mb-4 text-muted-foreground break-words">{children}</p>;
                       },
-                      ul: ({ children }) => <ul className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 ml-4 sm:ml-6 list-disc list-inside">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 ml-4 sm:ml-6 list-decimal list-inside">{children}</ol>,
+                      ul: ({ children }) => <ul className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 pl-5 sm:pl-6 list-disc list-outside">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 pl-5 sm:pl-6 list-decimal list-outside">{children}</ol>,
                       li: ({ children }) => (
                         <li className="leading-relaxed text-muted-foreground mb-2 break-words">
                           {children}
@@ -200,7 +200,7 @@ export function BlogList({ blogs }: BlogListProps) {
                       table: ({ children }) => (
                         <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
                           <div className="overflow-x-auto px-4 sm:px-0">
-                            <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl">
+                            <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl table-auto">
                               {children}
                             </table>
                           </div>
@@ -216,12 +216,12 @@ export function BlogList({ blogs }: BlogListProps) {
                         <tr className="hover:bg-muted/30 transition-colors">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider whitespace-normal break-words" style={{ hyphens: 'auto' }}>
                           {children}
                         </th>
                       ),
                       td: ({ children }) => (
-                        <td className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground">
+                        <td className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground align-top whitespace-normal break-words" style={{ hyphens: 'auto' }}>
                           {children}
                         </td>
                       ),
