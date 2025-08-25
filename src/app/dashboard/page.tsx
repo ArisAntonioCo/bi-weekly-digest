@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { 
   DashboardCard, 
   CardHeader, 
@@ -19,13 +20,15 @@ import {
   ChevronRight,
   Sparkles,
   Bell,
-  FileText
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { motion } from 'motion/react'
 import { NewsletterScheduleCard } from '@/components/newsletter-schedule-card'
 import { useNewsletterSchedule } from '@/hooks/useNewsletterSchedule'
+import { useBlogViews } from '@/hooks/use-blog-views'
 
 interface Blog {
   id: string
@@ -37,10 +40,13 @@ export default function DashboardPage() {
   const [user, setUser] = useState<{ email?: string; created_at?: string } | null>(null)
   const [subscriptionStatus, setSubscriptionStatus] = useState<boolean | null>(null)
   const [blogs, setBlogs] = useState<Blog[]>([])
+  const [totalBlogCount, setTotalBlogCount] = useState(0)
+  const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
   const { schedule, loading: scheduleLoading, error: scheduleError } = useNewsletterSchedule()
+  const { viewedBlogIds, markAsViewed } = useBlogViews()
 
   // Extract user initials for avatar (same as navbar)
   const getUserInitials = (email: string): string => {
@@ -73,12 +79,30 @@ export default function DashboardPage() {
 
         setSubscriptionStatus(subscriber?.subscribed || false)
 
-        // Fetch latest blogs
+        // Fetch total blog count
+        const { count: totalCount } = await supabase
+          .from('blogs')
+          .select('*', { count: 'exact', head: true })
+
+        setTotalBlogCount(totalCount || 0)
+
+        // Fetch ALL blog IDs to properly calculate unread count
+        const { data: allBlogIds } = await supabase
+          .from('blogs')
+          .select('id')
+
+        // Calculate unread count
+        if (allBlogIds) {
+          const unreadBlogsCount = allBlogIds.filter(blog => !viewedBlogIds.includes(blog.id)).length
+          setUnreadCount(unreadBlogsCount)
+        }
+
+        // Fetch latest blogs for display (max 10)
         const { data: blogsData } = await supabase
           .from('blogs')
           .select('id, title, created_at')
           .order('created_at', { ascending: false })
-          .limit(4)
+          .limit(10)
 
         setBlogs(blogsData || [])
       } catch (error) {
@@ -89,7 +113,7 @@ export default function DashboardPage() {
     }
 
     loadUserData()
-  }, [router, supabase])
+  }, [router, supabase, viewedBlogIds])
 
 
   const handleSubscribe = async () => {
@@ -165,24 +189,15 @@ export default function DashboardPage() {
                   {format(new Date(), 'EEEE, MMMM d, yyyy')}
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  className="rounded-full bg-muted/30 hover:bg-muted/50 border-0"
-                >
-                  <Bell className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="default"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => router.push('/dashboard/moic-analyzer')}
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  AI Assistant
-                </Button>
-              </div>
+              <Button 
+                variant="default"
+                size="lg"
+                className="rounded-full"
+                onClick={() => router.push('/dashboard/moic-analyzer')}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                AI Assistant
+              </Button>
             </div>
           </motion.div>
 
@@ -193,15 +208,22 @@ export default function DashboardPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3"
           >
-            <StatCard
-              label="Total Insights"
-              value={blogs.length}
-              icon={
-                <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-foreground" />
-                </div>
-              }
-            />
+            <div className="relative">
+              {unreadCount > 0 && (
+                <Badge variant="new" className="absolute -top-2 -right-2 z-10 text-[10px] px-2 py-0.5">
+                  {unreadCount} NEW
+                </Badge>
+              )}
+              <StatCard
+                label="Total Insights"
+                value={totalBlogCount}
+                icon={
+                  <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
+                    <BookOpen className="h-5 w-5 text-foreground" />
+                  </div>
+                }
+              />
+            </div>
             <StatCard
               label="Newsletter Status"
               value={subscriptionStatus ? "Active" : "Inactive"}
@@ -246,7 +268,14 @@ export default function DashboardPage() {
               >
                 <div className="h-full p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-2xl font-semibold text-foreground">Latest Investment Insights</h3>
+                    <div>
+                      <h3 className="text-2xl font-semibold text-foreground">Latest Investment Insights</h3>
+                      {totalBlogCount > 0 && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Showing {Math.min(blogs.length, 10)} of {totalBlogCount} insights
+                        </p>
+                      )}
+                    </div>
                     <Link href="/blogs">
                       <Button 
                         variant="ghost" 
@@ -259,34 +288,67 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     {blogs.length > 0 ? (
-                      <div className="space-y-2">
-                        {blogs.map((blog, index) => (
-                          <motion.div
-                            key={blog.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: index * 0.1 }}
-                          >
-                            <Link href={`/blogs/${blog.id}`}>
-                              <div className="group p-4 rounded-xl hover:bg-muted/50 transition-all cursor-pointer">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <h4 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                                      {blog.title}
-                                    </h4>
-                                    <div className="flex items-center gap-4 mt-2">
-                                      <span className="text-xs text-muted-foreground">
-                                        {format(new Date(blog.created_at), 'MMM d, yyyy')}
-                                      </span>
+                      <>
+                        <div className="space-y-2">
+                          {blogs.map((blog, index) => {
+                            const isNew = !viewedBlogIds.includes(blog.id)
+                            return (
+                              <motion.div
+                                key={blog.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: index * 0.1 }}
+                              >
+                                <Link 
+                                  href={`/blogs/${blog.id}`}
+                                  onClick={() => markAsViewed(blog.id)}
+                                >
+                                  <div className="group p-4 rounded-xl hover:bg-muted/50 transition-all cursor-pointer relative">
+                                    {isNew && (
+                                      <Badge 
+                                        variant="new" 
+                                        className="absolute -top-2 -left-2 text-[10px] px-1.5 py-0.5"
+                                      >
+                                        NEW
+                                      </Badge>
+                                    )}
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <h4 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                                          {blog.title}
+                                        </h4>
+                                        <div className="flex items-center gap-4 mt-2">
+                                          <span className="text-xs text-muted-foreground">
+                                            {format(new Date(blog.created_at), 'MMM d, yyyy')}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors mt-1" />
                                     </div>
                                   </div>
-                                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors mt-1" />
-                                </div>
-                              </div>
+                                </Link>
+                              </motion.div>
+                            )
+                          })}
+                        </div>
+                        {totalBlogCount > 10 && (
+                          <div className="mt-4 pt-4 border-t border-border/50 text-center">
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {totalBlogCount - 10} more insights available
+                            </p>
+                            <Link href="/blogs">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="rounded-full"
+                              >
+                                View All Insights
+                                <ArrowRight className="h-3 w-3 ml-2" />
+                              </Button>
                             </Link>
-                          </motion.div>
-                        ))}
-                      </div>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <div className="text-center py-12">
                         <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
@@ -353,19 +415,22 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.35 }}
+                className="relative"
               >
+                {/* New Feature Badge - Top Right */}
+                <Badge 
+                  variant="feature" 
+                  className="absolute -top-2 -right-2 z-10 text-[10px] px-2 py-0.5 flex items-center gap-1"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  NEW FEATURE
+                </Badge>
+                
                 <DashboardCard 
                   variant="default" 
                   padding="medium"
-                  className="relative overflow-hidden cursor-pointer hover:bg-muted/70 border-primary/20"
+                  className="overflow-hidden cursor-pointer hover:bg-muted/70 border-primary/20"
                 >
-                  {/* New Badge */}
-                  <div className="absolute top-3 right-3 z-10">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      NEW
-                    </span>
-                  </div>
-                  
                   {/* Content */}
                   <div className="relative z-10">
                     <CardHeader
@@ -429,7 +494,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div className="p-3 rounded-2xl bg-background/50 text-center">
-                          <p className="text-2xl font-bold text-foreground">{blogs.length}</p>
+                          <p className="text-2xl font-bold text-foreground">{totalBlogCount}</p>
                           <p className="text-xs text-muted-foreground mt-1">Total Insights</p>
                         </div>
                         <div className="p-3 rounded-2xl bg-background/50 text-center">

@@ -119,7 +119,7 @@ export function CardFooter({ children, className }: CardFooterProps) {
 
 interface StatCardProps {
   label: string
-  value: string | number
+  value: string | number | ReactNode
   change?: {
     value: string
     type: 'increase' | 'decrease' | 'neutral'
@@ -137,7 +137,7 @@ export function StatCard({ label, value, change, icon, className }: StatCardProp
         </div>
         <div>
           <p className="text-xs text-muted-foreground font-medium mb-1">{label}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
+          <div className="text-2xl font-bold text-foreground">{value}</div>
           {change && (
             <div className="flex items-center gap-1 mt-1">
               <span className={cn(

@@ -6,6 +6,7 @@ import { BlogList } from '@/components/ui/blog-list'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { createClient } from '@/utils/supabase/server'
+import { BlogViewTracker } from './blog-view-tracker'
 
 interface BlogDetailPageProps {
   params: Promise<{
@@ -56,6 +57,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Track blog view */}
+      <BlogViewTracker blogId={resolvedParams.id} />
+      
       {/* Main Content */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Back Button */}
