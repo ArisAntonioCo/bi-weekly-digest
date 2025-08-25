@@ -377,17 +377,17 @@ export default function DashboardPage() {
                   className="relative overflow-hidden cursor-pointer hover:bg-muted/70 h-full flex flex-col"
                 >
                   {/* Decorative Background Shape */}
-                  <div className="absolute top-6 right-6 pointer-events-none">
+                  <div className="absolute -top-24 -right-24 pointer-events-none opacity-50">
                     <div 
-                      className="inline-block transition-transform duration-500 hover:rotate-[360deg]"
+                      className="inline-block transition-transform duration-500 [&>div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-muted-foreground/10"
                       style={{ 
-                        animation: 'spin 10s linear infinite' 
+                        animation: 'spin 20s linear infinite' 
                       }}
                     >
                       <Avvvatars 
-                        value="shape-05"
+                        value="00"
                         style="shape"
-                        size={48}
+                        size={280}
                       />
                     </div>
                   </div>
@@ -440,7 +440,15 @@ export default function DashboardPage() {
                       <CardHeader
                         title="Expert Analysis"
                         subtitle="Stock insights via legendary investors"
-                        icon={<Sparkles className="h-5 w-5 text-primary" />}
+                        icon={
+                          <div className="[&>div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-primary">
+                            <Avvvatars 
+                              value="53"
+                              style="shape"
+                              size={32}
+                            />
+                          </div>
+                        }
                       />
                     </div>
                     <Button 
