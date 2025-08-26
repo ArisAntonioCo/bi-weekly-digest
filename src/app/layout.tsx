@@ -3,6 +3,7 @@ import { Instrument_Sans, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/ui/navbar";
 import { SelectiveThemeProvider } from "@/providers/selective-theme-provider";
 import { SWRProvider } from "@/providers/swr-provider";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -45,7 +46,7 @@ export default function RootLayout({
         >
           <SWRProvider>
             <Navbar />
-            <div className="pt-16">{children}</div>
+            <LayoutWrapper>{children}</LayoutWrapper>
           </SWRProvider>
         </SelectiveThemeProvider>
       </body>
