@@ -1,9 +1,48 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion'
 import { useExperts } from '@/hooks/use-experts'
 import { ExpertMarqueeCard } from './expert-marquee-card'
+
+interface AnimatedWordProps {
+  word: string
+  globalIndex: number
+  totalWords: number
+  scrollYProgress: MotionValue<number>
+}
+
+function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress }: AnimatedWordProps) {
+  const wordStart = globalIndex / totalWords
+  const wordEnd = (globalIndex + 1) / totalWords
+  
+  const y = useTransform(
+    scrollYProgress,
+    [wordStart * 0.8, wordEnd * 0.8 + 0.05],
+    [40, 0],
+    { clamp: true }
+  )
+  
+  const opacity = useTransform(
+    scrollYProgress,
+    [wordStart * 0.8, wordEnd * 0.8 + 0.05],
+    [0, 1],
+    { clamp: true }
+  )
+  
+  return (
+    <motion.span
+      className="inline-block mr-[0.25em] text-white"
+      style={{ 
+        y, 
+        opacity,
+        willChange: 'transform, opacity'
+      }}
+    >
+      {word}
+    </motion.span>
+  )
+}
 
 export function FrameworksSection() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -83,37 +122,14 @@ export function FrameworksSection() {
                       
                       if (!wordData) return null
                       
-                      // Calculate progress range for smooth reveal
-                      const wordStart = wordData.globalIndex / totalWords
-                      const wordEnd = (wordData.globalIndex + 1) / totalWords
-                      
-                      // Smoother transform with easing
-                      const y = useTransform(
-                        scrollYProgress,
-                        [wordStart * 0.8, wordEnd * 0.8 + 0.05],
-                        [40, 0],
-                        { clamp: true }
-                      )
-                      
-                      const opacity = useTransform(
-                        scrollYProgress,
-                        [wordStart * 0.8, wordEnd * 0.8 + 0.05],
-                        [0, 1],
-                        { clamp: true }
-                      )
-                      
                       return (
-                        <motion.span
+                        <AnimatedWord
                           key={`${lineIndex}-${wordIndex}`}
-                          className="inline-block mr-[0.25em] text-white"
-                          style={{ 
-                            y, 
-                            opacity,
-                            willChange: 'transform, opacity'
-                          }}
-                        >
-                          {word}
-                        </motion.span>
+                          word={word}
+                          globalIndex={wordData.globalIndex}
+                          totalWords={totalWords}
+                          scrollYProgress={scrollYProgress}
+                        />
                       )
                     })}
                   </p>

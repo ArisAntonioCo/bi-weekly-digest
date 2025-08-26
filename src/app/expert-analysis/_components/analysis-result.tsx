@@ -11,7 +11,6 @@ import { motion, AnimatePresence } from 'motion/react'
 import { BlogList } from '@/components/ui/blog-list'
 import type { Blog } from '@/types/blog'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 
 interface AnalysisResult {
   id: string
