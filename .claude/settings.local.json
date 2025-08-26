@@ -59,7 +59,8 @@
       "WebFetch(domain:github.com)",
       "Bash(rg:*)",
       "Bash(pnpm add:*)",
-      "mcp__supabase__get_advisors"
+      "mcp__supabase__get_advisors",
+      "Bash(pnpm dlx shadcn@latest add:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

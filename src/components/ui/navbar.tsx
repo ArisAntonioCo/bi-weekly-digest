@@ -163,7 +163,8 @@ export default function Navbar({ className }: NavbarProps) {
         right: 0, 
         zIndex: 50,
         backgroundColor: 'hsl(var(--background))',
-        borderBottom: '1px solid hsl(var(--border))'
+        borderBottom: '1px solid hsl(var(--border))',
+        transition: 'top 0.3s ease-in-out'
       }}
     >
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
