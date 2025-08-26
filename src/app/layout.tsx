@@ -44,8 +44,8 @@ export default function RootLayout({
           excludedPaths={["/", "/login", "/signup", "/auth/*"]}
         >
           <SWRProvider>
-            <Navbar className="sticky top-0 z-50 bg-background" />
-            {children}
+            <Navbar />
+            <div className="pt-16">{children}</div>
           </SWRProvider>
         </SelectiveThemeProvider>
       </body>

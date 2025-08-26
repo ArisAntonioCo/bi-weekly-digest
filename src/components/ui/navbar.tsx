@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
@@ -24,6 +24,7 @@ import {
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Logo } from '@/components/ui/logo'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 
 interface NavbarProps {
   className?: string
@@ -32,8 +33,35 @@ interface NavbarProps {
 export default function Navbar({ className }: NavbarProps) {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isVisible, setIsVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
   const router = useRouter()
   const pathname = usePathname()
+  
+  const { scrollY } = useScroll()
+  
+  // Handle scroll direction for show/hide behavior
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const currentScrollY = latest
+    
+    // Don't hide navbar if we're near the top
+    if (currentScrollY < 100) {
+      setIsVisible(true)
+      setLastScrollY(currentScrollY)
+      return
+    }
+    
+    // Determine scroll direction
+    if (currentScrollY < lastScrollY) {
+      // Scrolling up - show navbar
+      setIsVisible(true)
+    } else if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 10) {
+      // Scrolling down with threshold - hide navbar
+      setIsVisible(false)
+    }
+    
+    setLastScrollY(currentScrollY)
+  })
 
   useEffect(() => {
     const supabase = createClient()
@@ -123,7 +151,21 @@ export default function Navbar({ className }: NavbarProps) {
   if (isAuthPage || isAdminPage) return null
 
   return (
-    <nav className={className || ''}>
+    <motion.nav 
+      className={className || ''}
+      initial={{ y: 0 }}
+      animate={{ y: isVisible ? 0 : -100 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        zIndex: 50,
+        backgroundColor: 'hsl(var(--background))',
+        borderBottom: '1px solid hsl(var(--border))'
+      }}
+    >
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -260,6 +302,6 @@ export default function Navbar({ className }: NavbarProps) {
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   )
 }
