@@ -11,6 +11,14 @@ const faqs = [
     answer: "MOIC (Multiple on Invested Capital) is a key investment metric that measures the total value of an investment relative to its initial cost. Our 3Y Mode methodology specifically leverages battle-tested frameworks from world-class investors like Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker, and Beth Kindig to estimate potential returns over a 36-month holding period, helping you make informed long-term investment decisions."
   },
   {
+    question: "Why 3 Years MOIC Projections?",
+    answer: "Three years is the horizon where noise fades and earnings power speaks. Long enough for fundamentals to prove out, yet near enough to matter for your capital today."
+  },
+  {
+    question: "Why Proven Expert Frameworks?",
+    answer: "Conviction sharpens when perspectives collide. By layering five distinct frameworks from world-class investors, we cut through bias, surface blind spots, and reveal durable opportunities others overlook."
+  },
+  {
     question: "How do you calculate Base, Bear, and Bull cases?",
     answer: "We analyze multiple scenarios using proprietary algorithms that consider market conditions, company fundamentals, industry trends, and macroeconomic factors. The Base case represents the most likely outcome, the Bull case shows optimistic potential, and the Bear case presents conservative estimates to help you understand the full range of possibilities."
   },

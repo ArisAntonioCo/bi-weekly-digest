@@ -11,8 +11,8 @@ export function LandingPage() {
   return (
     <div>
       <HeroSection />
-      <FrameworksSection />
       <FeaturesSection />
+      <FrameworksSection />
       <AnalyticsSection />
       <BlogPreviewSection />
       <FAQSection />
