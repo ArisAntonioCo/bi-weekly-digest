@@ -121,10 +121,10 @@ export function ScheduleForm({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Schedule Settings</h2>
+          <h2 className="text-lg font-semibold">Schedule Settings</h2>
           <p className="text-sm text-muted-foreground">
             Choose when your newsletter should be sent automatically
           </p>
@@ -143,18 +143,18 @@ export function ScheduleForm({
 
       <Separator />
 
-      <div className="space-y-4">
-        <div className="bg-info/10 rounded-lg p-4 space-y-3">
+      <div className="space-y-3">
+        <div className="bg-muted/50 rounded-3xl p-4 space-y-3">
           <div className="flex items-start gap-2">
-            <Info className="h-4 w-4 text-info mt-0.5" />
+            <Info className="h-4 w-4 text-muted-foreground mt-0.5" />
             <div className="flex-1 space-y-2">
-              <h4 className="text-sm font-medium text-info">
+              <h4 className="text-sm font-medium text-foreground">
                 Fixed Schedule Time
               </h4>
-              <p className="text-xs text-info/80">
+              <p className="text-xs text-muted-foreground">
                 Checks run hourly. Newsletters are sent at 	9:00 AM America/New_York	.
               </p>
-              <p className="text-xs text-info/80">
+              <p className="text-xs text-muted-foreground">
                 Your frequency setting below determines on which days the newsletter is actually sent.
               </p>
             </div>
@@ -187,7 +187,7 @@ export function ScheduleForm({
 
       </div>
 
-      <div className="bg-muted/50 rounded-lg p-4">
+      <div className="bg-background/80 rounded-3xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <p className="text-sm font-medium">Schedule Summary</p>
@@ -209,7 +209,7 @@ export function ScheduleForm({
               size="sm"
               onClick={handleTest}
               disabled={isTesting || isSaving}
-              className="flex items-center gap-2"
+              className="rounded-full"
             >
               {isTesting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -222,7 +222,7 @@ export function ScheduleForm({
               size="sm"
               onClick={handleSave}
               disabled={isSaving || isTesting}
-              className="flex items-center gap-2"
+              className="rounded-full"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

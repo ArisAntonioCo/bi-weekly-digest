@@ -164,15 +164,20 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Schedule Preview</h3>
-        <Badge variant={isActive ? "default" : "secondary"}>
+        <Badge 
+          variant="outline"
+          className={isActive 
+            ? "border-0 bg-emerald-500 text-white" 
+            : "border-0 bg-orange-500 text-white"}
+        >
           {isActive ? "Active" : "Inactive"}
         </Badge>
       </div>
 
-      <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+      <div className="bg-muted/50 rounded-3xl p-4 space-y-3">
         <div className="flex items-center gap-2">
           <Timer className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Next Run</span>
@@ -198,7 +203,7 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
             <span className="text-sm font-medium">Upcoming Runs</span>
           </div>
           <Select value={previewTimezone} onValueChange={setPreviewTimezone}>
-            <SelectTrigger className="w-[200px] h-8 text-xs">
+            <SelectTrigger className="w-[200px] h-8 text-xs rounded-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -215,7 +220,7 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
           {nextRuns.map((run, index) => (
             <div 
               key={index}
-              className="flex items-start gap-3 p-3 rounded-lg border bg-background/50"
+              className="flex items-start gap-3 p-3 rounded-3xl border border-border/50 bg-background/50"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
                 {index + 1}
@@ -239,8 +244,8 @@ export function CronPreview({ scheduleSettings, isActive }: CronPreviewProps) {
         </div>
       </div>
 
-      <div className="bg-info/10 rounded-lg p-3">
-        <p className="text-xs text-info">
+      <div className="bg-muted/50 rounded-3xl p-3">
+        <p className="text-xs text-muted-foreground">
           <strong>Note:</strong> Newsletter checks run hourly. The schedule above shows when newsletters will actually be sent based on your frequency settings and local time ({scheduleSettings?.timezone || 'America/New_York'}).
         </p>
       </div>

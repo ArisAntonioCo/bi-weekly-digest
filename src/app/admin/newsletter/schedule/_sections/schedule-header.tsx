@@ -1,7 +1,6 @@
 "use client"
 
 import { Badge } from '@/components/ui/badge'
-import { Clock, Zap, Globe, Layers } from 'lucide-react'
 
 interface ScheduleHeaderProps {
   isActive: boolean
@@ -9,26 +8,26 @@ interface ScheduleHeaderProps {
 
 export function ScheduleHeader({ isActive }: ScheduleHeaderProps) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
+    <div className="mb-3">
+      <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Newsletter Schedule</h1>
+      <p className="text-muted-foreground mt-1">Automate your weekly newsletter delivery</p>
+      <div className="flex flex-wrap items-center gap-2 mt-3">
         <Badge 
-          variant={isActive ? "default" : "secondary"} 
-          className="flex items-center gap-1"
+          variant="outline"
+          className={isActive 
+            ? "border-0 bg-emerald-500 text-white" 
+            : "border-0 bg-orange-500 text-white"}
         >
-          <Clock className="h-3 w-3" />
-          Schedule {isActive ? "Active" : "Inactive"}
+          {isActive ? "Schedule Active" : "Schedule Inactive"}
         </Badge>
-        <Badge variant="outline" className="flex items-center gap-1">
-          <Zap className="h-3 w-3" />
+        <Badge variant="outline">
           Pro Plan
         </Badge>
-        <Badge variant="outline" className="flex items-center gap-1">
-          <Globe className="h-3 w-3" />
-          UTC Only
+        <Badge variant="outline">
+          UTC Timezone
         </Badge>
-        <Badge variant="outline" className="flex items-center gap-1">
-          <Layers className="h-3 w-3" />
-          40 Crons
+        <Badge variant="outline">
+          40 Crons Available
         </Badge>
       </div>
     </div>
