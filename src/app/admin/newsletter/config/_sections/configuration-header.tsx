@@ -6,7 +6,7 @@ export function ConfigurationHeader() {
   return (
     <div className="mb-3">
       <h1 className="text-2xl sm:text-3xl font-bold text-foreground">AI Configuration</h1>
-      <p className="text-muted-foreground mt-1">Configure Kyle's AI assistant behavior and expertise</p>
+      <p className="text-muted-foreground mt-1">Configure Kyle&apos;s AI assistant behavior and expertise</p>
       <div className="flex flex-wrap items-center gap-2 mt-3">
         <Badge variant="outline">
           System Prompt

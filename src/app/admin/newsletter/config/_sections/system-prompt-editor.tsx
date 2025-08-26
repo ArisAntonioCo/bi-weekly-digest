@@ -19,10 +19,7 @@ import {
   FileText,
   AlertCircle,
   CheckCircle2,
-  Sparkles,
-  TrendingUp,
-  Coins,
-  Brain
+  Sparkles
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { Configuration } from '@/types/configuration'
@@ -101,17 +98,7 @@ export function SystemPromptEditor({ config, loading, saving, onSave }: SystemPr
 
   const currentTheme = getPromptTheme(watchedPrompt || config?.system_prompt || '')
   
-  const getIconComponent = (iconName: string) => {
-    switch (iconName) {
-      case 'TrendingUp': return TrendingUp
-      case 'Coins': return Coins
-      case 'FileText': return FileText
-      case 'Brain': return Brain
-      default: return Brain
-    }
-  }
   
-  const ThemeIcon = getIconComponent(currentTheme.icon)
 
   if (loading) {
     return (

@@ -29,6 +29,8 @@ import { NewsletterScheduleCard } from '@/components/newsletter-schedule-card'
 import { useNewsletterSchedule } from '@/hooks/useNewsletterSchedule'
 import { useBlogViews } from '@/hooks/use-blog-views'
 import { useSubscription } from '@/hooks/useSubscription'
+import { SubscriptionConfirmDialog, UnsubscribeConfirmDialog } from '@/components/confirmation-dialog'
+import { toast } from 'sonner'
 
 interface Blog {
   id: string
@@ -43,6 +45,8 @@ export default function DashboardPage() {
   const [totalBlogCount, setTotalBlogCount] = useState(0)
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(false)
+  const [unsubscribeDialogOpen, setUnsubscribeDialogOpen] = useState(false)
   const router = useRouter()
   const supabase = createClient()
   const { schedule, loading: scheduleLoading, error: scheduleError } = useNewsletterSchedule()
@@ -59,79 +63,109 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    async function loadUserData() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        
-        if (!user) {
-          // Don't redirect here - let middleware handle it
-          setLoading(false)
-          return
-        }
-
-        setUser(user)
-
-        // Check subscription status
-        const { data: subscriber } = await supabase
-          .from('subscribers')
-          .select('subscribed')
-          .eq('email', user.email)
-          .single()
-
-        setSubscriptionStatus(subscriber?.subscribed || false)
-
-        // Fetch total blog count
-        const { count: totalCount } = await supabase
-          .from('blogs')
-          .select('*', { count: 'exact', head: true })
-
-        setTotalBlogCount(totalCount || 0)
-
-        // Fetch ALL blog IDs to properly calculate unread count
-        const { data: allBlogIds } = await supabase
-          .from('blogs')
-          .select('id')
-
-        // Calculate unread count
-        if (allBlogIds) {
-          const unreadBlogsCount = allBlogIds.filter(blog => !viewedBlogIds.includes(blog.id)).length
-          setUnreadCount(unreadBlogsCount)
-        }
-
-        // Fetch latest blogs for display (max 10)
-        const { data: blogsData } = await supabase
-          .from('blogs')
-          .select('id, title, created_at')
-          .order('created_at', { ascending: false })
-          .limit(10)
-
-        setBlogs(blogsData || [])
-      } catch (error) {
-        console.error('Error loading user data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     loadUserData()
-  }, [router, supabase, viewedBlogIds])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewedBlogIds]) // We intentionally exclude loadUserData to avoid infinite loops
 
 
   const handleSubscribe = async () => {
-    try {
-      await subscribe()
-      setSubscriptionStatus(true)
-    } catch (error) {
-      console.error('Error subscribing:', error)
-    }
+    setSubscribeDialogOpen(true)
   }
 
   const handleUnsubscribe = async () => {
+    setUnsubscribeDialogOpen(true)
+  }
+
+  const confirmSubscribe = async () => {
+    try {
+      await subscribe()
+      setSubscriptionStatus(true)
+      setSubscribeDialogOpen(false)
+      toast.success("Successfully subscribed!", {
+        description: "You'll receive our bi-weekly investment insights.",
+      })
+      // Refresh the subscription status after successful subscription
+      await loadUserData()
+    } catch (error) {
+      console.error('Error subscribing:', error)
+      const errorMessage = error instanceof Error ? error.message : "Unable to subscribe. Please try again."
+      toast.error("Subscription failed", {
+        description: errorMessage,
+      })
+    }
+  }
+
+  const confirmUnsubscribe = async () => {
     try {
       await unsubscribe()
       setSubscriptionStatus(false)
+      setUnsubscribeDialogOpen(false)
+      toast.success("Successfully unsubscribed", {
+        description: "You will no longer receive our newsletter.",
+      })
+      // Refresh the subscription status after successful unsubscription
+      await loadUserData()
     } catch (error) {
       console.error('Error unsubscribing:', error)
+      const errorMessage = error instanceof Error ? error.message : "Unable to unsubscribe. Please try again."
+      toast.error("Unsubscribe failed", {
+        description: errorMessage,
+      })
+    }
+  }
+
+  // Extract loadUserData function outside useEffect to make it reusable
+  const loadUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        // Don't redirect here - let middleware handle it
+        setLoading(false)
+        return
+      }
+
+      setUser(user)
+
+      // Check subscription status
+      const { data: subscriber } = await supabase
+        .from('subscribers')
+        .select('subscribed')
+        .eq('email', user.email)
+        .single()
+
+      setSubscriptionStatus(subscriber?.subscribed || false)
+
+      // Fetch total blog count
+      const { count: totalCount } = await supabase
+        .from('blogs')
+        .select('*', { count: 'exact', head: true })
+
+      setTotalBlogCount(totalCount || 0)
+
+      // Fetch ALL blog IDs to properly calculate unread count
+      const { data: allBlogIds } = await supabase
+        .from('blogs')
+        .select('id')
+
+      // Calculate unread count
+      if (allBlogIds) {
+        const unreadBlogsCount = allBlogIds.filter(blog => !viewedBlogIds.includes(blog.id)).length
+        setUnreadCount(unreadBlogsCount)
+      }
+
+      // Fetch latest blogs for display (max 10)
+      const { data: blogsData } = await supabase
+        .from('blogs')
+        .select('id, title, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      setBlogs(blogsData || [])
+    } catch (error) {
+      console.error('Error loading user data:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -153,6 +187,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Confirmation Dialogs */}
+      <SubscriptionConfirmDialog
+        open={subscribeDialogOpen}
+        onOpenChange={setSubscribeDialogOpen}
+        onConfirm={confirmSubscribe}
+      />
+      <UnsubscribeConfirmDialog
+        open={unsubscribeDialogOpen}
+        onOpenChange={setUnsubscribeDialogOpen}
+        onConfirm={confirmUnsubscribe}
+      />
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto">
@@ -496,7 +541,7 @@ export default function DashboardPage() {
                           <p className="text-2xl font-bold text-foreground">
                             {isSubscribed ? '✓' : '—'}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1">Newsletter</p>
+                          <p className="text-xs text-muted-foreground mt-1">Subscribed</p>
                         </div>
                       </div>
                     </div>

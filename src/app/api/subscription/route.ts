@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient()
     
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const supabase = await createClient()
     
@@ -58,28 +58,60 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data, error } = await supabase
+    // First check if subscriber exists
+    const { data: existingSubscriber } = await supabase
       .from('subscribers')
-      .upsert({
-        email: user.email,
-        subscribed: true
-      })
-      .select()
+      .select('*')
+      .eq('email', user.email)
       .single()
 
-    if (error) {
-      console.error('Error subscribing:', error)
-      return NextResponse.json(
-        { error: 'Failed to subscribe' },
-        { status: 500 }
-      )
-    }
+    if (existingSubscriber) {
+      // Update existing subscriber
+      const { data, error } = await supabase
+        .from('subscribers')
+        .update({ subscribed: true })
+        .eq('email', user.email)
+        .select()
+        .single()
 
-    return NextResponse.json({
-      success: true,
-      message: 'Successfully subscribed',
-      subscription: data
-    })
+      if (error) {
+        console.error('Error updating subscription:', error)
+        return NextResponse.json(
+          { error: 'Failed to update subscription' },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: existingSubscriber.subscribed ? 'Already subscribed' : 'Successfully subscribed',
+        subscription: data
+      })
+    } else {
+      // Create new subscriber
+      const { data, error } = await supabase
+        .from('subscribers')
+        .insert({
+          email: user.email,
+          subscribed: true
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error creating subscription:', error)
+        return NextResponse.json(
+          { error: 'Failed to create subscription' },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Successfully subscribed',
+        subscription: data
+      })
+    }
   } catch (error) {
     console.error('Subscribe error:', error)
     return NextResponse.json(
@@ -89,7 +121,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   try {
     const supabase = await createClient()
     

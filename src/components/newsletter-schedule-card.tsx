@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { DashboardCard } from '@/components/dashboard-card'
 import { CardHeader, CardContent } from '@/components/dashboard-card'
-import { Mail, CheckCircle, Bell } from 'lucide-react'
+import { Mail, Check, Bell } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NewsletterSchedule } from '@/types/newsletter'
 import { formatScheduleDisplay, calculateNextScheduledDate } from '@/utils/schedule'
@@ -58,7 +58,7 @@ export function NewsletterScheduleCard({
             <div className="flex items-center justify-center gap-2">
               {subscriptionStatus ? (
                 <>
-                  <CheckCircle className="h-4 w-4 text-white" />
+                  <Check className="h-4 w-4 text-white" />
                   <span className="text-sm font-medium text-white">Subscribed</span>
                 </>
               ) : (

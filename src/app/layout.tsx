@@ -4,6 +4,7 @@ import Navbar from "@/components/ui/navbar";
 import { SelectiveThemeProvider } from "@/providers/selective-theme-provider";
 import { SWRProvider } from "@/providers/swr-provider";
 import { LayoutWrapper } from "@/components/layout-wrapper";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -47,6 +48,7 @@ export default function RootLayout({
           <SWRProvider>
             <Navbar />
             <LayoutWrapper>{children}</LayoutWrapper>
+            <Toaster />
           </SWRProvider>
         </SelectiveThemeProvider>
       </body>
