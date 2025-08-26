@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Expert } from '@/types/expert'
 import { toast } from 'sonner'
 import { useActiveExperts } from '@/hooks/use-active-experts'
+import { AnimatePresence } from 'motion/react'
 
 // Import components
 import { PageHeader } from '../_components/page-header'
@@ -83,6 +84,12 @@ export function ExpertAnalysisPage() {
 
   const removeExpert = (expertToRemove: Expert) => {
     setSelectedExperts(prev => prev.filter(e => e.id !== expertToRemove.id))
+  }
+
+  const handleStartAgain = () => {
+    setAnalysisResult(null)
+    setStockTicker('')
+    // Keep selected experts for convenience
   }
 
   const handleAnalyze = async () => {
@@ -185,33 +192,45 @@ export function ExpertAnalysisPage() {
 
             {/* Right Column - Stock Input & Analysis Results */}
             <div className="lg:col-span-2 space-y-4">
-              <StockInput
-                stockTicker={stockTicker}
-                onTickerChange={setStockTicker}
-                onAnalyze={handleAnalyze}
-                analyzing={analyzing}
-                disabled={selectedExperts.length === 0 || !stockTicker}
-              />
+              {/* Stock Input with Animation */}
+              <AnimatePresence mode="wait">
+                {!analysisResult && (
+                  <StockInput
+                    key="stock-input"
+                    stockTicker={stockTicker}
+                    onTickerChange={setStockTicker}
+                    onAnalyze={handleAnalyze}
+                    analyzing={analyzing}
+                    disabled={selectedExperts.length === 0 || !stockTicker}
+                  />
+                )}
+              </AnimatePresence>
               
               {/* Analysis Display */}
-              {analyzing ? (
-                <LoadingState 
-                  stockTicker={stockTicker}
-                  selectedExperts={selectedExperts}
-                />
-              ) : analysisResult ? (
-                <AnalysisResult 
-                  result={analysisResult}
-                  selectedExpert={selectedExperts[0]} // For compatibility
-                />
-              ) : (
-                <EmptyState 
-                  selectedExperts={selectedExperts}
-                  onRemoveExpert={removeExpert}
-                  recentAnalyses={recentAnalyses}
-                  onSelectAnalysis={setAnalysisResult}
-                />
-              )}
+              <AnimatePresence mode="wait">
+                {analyzing ? (
+                  <LoadingState 
+                    key="loading"
+                    stockTicker={stockTicker}
+                    selectedExperts={selectedExperts}
+                  />
+                ) : analysisResult ? (
+                  <AnalysisResult 
+                    key="result"
+                    result={analysisResult}
+                    selectedExpert={selectedExperts[0]} // For compatibility
+                    onStartAgain={handleStartAgain}
+                  />
+                ) : !analysisResult && (
+                  <EmptyState 
+                    key="empty"
+                    selectedExperts={selectedExperts}
+                    onRemoveExpert={removeExpert}
+                    recentAnalyses={recentAnalyses}
+                    onSelectAnalysis={setAnalysisResult}
+                  />
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
