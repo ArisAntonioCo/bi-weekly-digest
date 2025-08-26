@@ -112,7 +112,7 @@ export function SubscribersPage() {
         <div className="space-y-3">
           {/* Header Section - Always visible */}
           <div className="mb-3">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Elite Members</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Subscribers</h1>
             <p className="text-muted-foreground mt-1">Manage your newsletter audience</p>
           </div>
           
@@ -139,7 +139,7 @@ export function SubscribersPage() {
           {/* Stats Grid - Show skeletons while loading */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <StatCard
-              label="Total Elite Members"
+              label="Total Subscribers"
               value={loading ? '—' : subscribers.length.toLocaleString()}
               icon={
                 <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
@@ -149,7 +149,7 @@ export function SubscribersPage() {
             />
             
             <StatCard
-              label="Active Members"
+              label="Active Subscribers"
               value={loading ? '—' : subscribers.filter(s => s.subscribed).length.toLocaleString()}
               icon={
                 <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
@@ -159,7 +159,7 @@ export function SubscribersPage() {
             />
             
             <StatCard
-              label="Inactive Members"
+              label="Inactive Subscribers"
               value={loading ? '—' : subscribers.filter(s => !s.subscribed).length.toLocaleString()}
               icon={
                 <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">

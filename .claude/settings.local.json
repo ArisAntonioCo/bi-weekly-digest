@@ -58,7 +58,8 @@
       "Bash(yarn add:*)",
       "WebFetch(domain:github.com)",
       "Bash(rg:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "mcp__supabase__get_advisors"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

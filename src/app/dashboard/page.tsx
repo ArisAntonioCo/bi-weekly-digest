@@ -28,6 +28,7 @@ import { motion } from 'motion/react'
 import { NewsletterScheduleCard } from '@/components/newsletter-schedule-card'
 import { useNewsletterSchedule } from '@/hooks/useNewsletterSchedule'
 import { useBlogViews } from '@/hooks/use-blog-views'
+import { useSubscription } from '@/hooks/useSubscription'
 
 interface Blog {
   id: string
@@ -46,6 +47,7 @@ export default function DashboardPage() {
   const supabase = createClient()
   const { schedule, loading: scheduleLoading, error: scheduleError } = useNewsletterSchedule()
   const { viewedBlogIds, markAsViewed } = useBlogViews()
+  const { isSubscribed, subscribe, unsubscribe } = useSubscription()
 
   // Extract user initials for avatar (same as navbar)
   const getUserInitials = (email: string): string => {
@@ -116,36 +118,18 @@ export default function DashboardPage() {
 
 
   const handleSubscribe = async () => {
-    if (!user?.email) return
-
     try {
-      const { error } = await supabase
-        .from('subscribers')
-        .upsert({
-          email: user.email,
-          subscribed: true
-        })
-
-      if (!error) {
-        setSubscriptionStatus(true)
-      }
+      await subscribe()
+      setSubscriptionStatus(true)
     } catch (error) {
       console.error('Error subscribing:', error)
     }
   }
 
   const handleUnsubscribe = async () => {
-    if (!user?.email) return
-
     try {
-      const { error } = await supabase
-        .from('subscribers')
-        .update({ subscribed: false })
-        .eq('email', user.email)
-
-      if (!error) {
-        setSubscriptionStatus(false)
-      }
+      await unsubscribe()
+      setSubscriptionStatus(false)
     } catch (error) {
       console.error('Error unsubscribing:', error)
     }
@@ -225,7 +209,7 @@ export default function DashboardPage() {
             </div>
             <StatCard
               label="Newsletter Status"
-              value={subscriptionStatus ? "Active" : "Inactive"}
+              value={isSubscribed ? "Active" : "Inactive"}
               icon={
                 <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center">
                   <Mail className="h-5 w-5 text-foreground" />
@@ -510,7 +494,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="p-3 rounded-2xl bg-background/50 text-center">
                           <p className="text-2xl font-bold text-foreground">
-                            {subscriptionStatus ? '✓' : '—'}
+                            {isSubscribed ? '✓' : '—'}
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">Newsletter</p>
                         </div>
