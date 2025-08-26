@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -69,39 +69,41 @@ export function SubscribersList({
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex items-center gap-4">
-              <Skeleton className="h-10 w-10 rounded-full" />
-              <div className="flex-1">
-                <Skeleton className="h-4 w-48 mb-2" />
-                <Skeleton className="h-3 w-24" />
+      <DashboardCard variant="default" padding="medium">
+        <CardHeader
+          title="Elite Members"
+          icon={<Users className="h-5 w-5 text-foreground" />}
+        />
+        <CardContent>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="flex items-center gap-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="flex-1">
+                  <Skeleton className="h-4 w-48 mb-2" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-8" />
               </div>
-              <Skeleton className="h-8 w-20" />
-              <Skeleton className="h-8 w-8" />
-            </div>
-          ))}
+            ))}
+          </div>
         </CardContent>
-      </Card>
+      </DashboardCard>
     )
   }
 
   return (
-    <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/10 rounded-3xl overflow-hidden">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-xl font-normal">
-          <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
-            <Users className="h-5 w-5" />
-          </div>
-          Elite Members
-        </CardTitle>
-      </CardHeader>
+    <DashboardCard variant="default" padding="none">
+      <div className="p-6 pb-4">
+        <CardHeader
+          title="Elite Members"
+          subtitle="Manage your newsletter subscribers"
+          icon={<Users className="h-5 w-5 text-foreground" />}
+        />
+      </div>
       
-      <CardContent className="px-0 pb-0">
+      <CardContent className="pb-0">
         {subscribers.length === 0 ? (
           <div className="text-center py-16 px-6">
             <div className="h-16 w-16 rounded-2xl bg-muted/50 mx-auto mb-4 flex items-center justify-center">
@@ -114,7 +116,7 @@ export function SubscribersList({
           <>
             {/* Desktop Table View */}
             <div className="hidden md:block">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto px-6 pb-6">
                 <Table className="border-0">
                   <TableHeader>
                     <TableRow className="border-t border-border/50 hover:bg-transparent">
@@ -129,16 +131,18 @@ export function SubscribersList({
                       <TableRow key={subscriber.id} className="border-b border-border/30 hover:bg-muted/20 transition-colors">
                         <TableCell className="py-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10 flex items-center justify-center">
-                              <Mail className="h-4 w-4 text-foreground/60" />
+                            <div className="h-9 w-9 rounded-full bg-muted/50 flex items-center justify-center">
+                              <Mail className="h-4 w-4 text-muted-foreground" />
                             </div>
                             <span className="font-normal text-foreground">{subscriber.email}</span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge 
-                            variant={subscriber.subscribed ? "default" : "secondary"}
-                            className={subscriber.subscribed ? "bg-green-500/10 text-green-600 border-0 px-3 py-1 font-normal" : "bg-yellow-500/10 text-yellow-600 border-0 px-3 py-1 font-normal"}
+                            variant="outline"
+                            className={subscriber.subscribed 
+                              ? "border-0 bg-emerald-500 text-white hover:bg-emerald-600" 
+                              : "border-0 bg-orange-500 text-white hover:bg-orange-600"}
                           >
                             {subscriber.subscribed ? 'Active' : 'Inactive'}
                           </Badge>
@@ -153,7 +157,7 @@ export function SubscribersList({
                               size="sm"
                               onClick={() => handleSendEmail(subscriber)}
                               disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
-                              className="h-9 px-3 hover:bg-muted/50 rounded-lg"
+                              className="h-9 px-3 hover:bg-muted/50 rounded-full"
                               title="Send AI Analysis"
                             >
                               {sendingEmail === subscriber.id ? (
@@ -171,7 +175,7 @@ export function SubscribersList({
                               size="sm"
                               onClick={() => handleToggleSubscription(subscriber)}
                               disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
-                              className="h-9 px-3 hover:bg-muted/50 rounded-lg"
+                              className="h-9 px-3 hover:bg-muted/50 rounded-full"
                             >
                               {actionLoading === subscriber.id ? (
                                 <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
@@ -188,7 +192,7 @@ export function SubscribersList({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-9 w-9 p-0 rounded-lg"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10 h-9 w-9 p-0 rounded-full"
                                   disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
                                 >
                                   <Trash2 className="h-3 w-3" />
@@ -223,14 +227,14 @@ export function SubscribersList({
             </div>
 
             {/* Mobile Card View */}
-            <div className="md:hidden space-y-3 px-4 pb-4">
+            <div className="md:hidden space-y-3 px-6 pb-6">
               {subscribers.map((subscriber) => (
-                <Card key={subscriber.id} className="p-4 border border-border/50 bg-gradient-to-br from-background to-muted/10 rounded-2xl">
+                <div key={subscriber.id} className="p-4 bg-muted/50 rounded-3xl">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10 flex items-center justify-center flex-shrink-0">
-                          <Mail className="h-4 w-4 text-foreground/60" />
+                        <div className="h-10 w-10 rounded-full bg-background/80 flex items-center justify-center flex-shrink-0">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="font-medium text-sm truncate">{subscriber.email}</div>
@@ -240,8 +244,10 @@ export function SubscribersList({
                         </div>
                       </div>
                       <Badge 
-                        variant={subscriber.subscribed ? "default" : "secondary"}
-                        className={`ml-2 ${subscriber.subscribed ? "bg-green-500/10 text-green-600 border-0 px-2 py-0.5 text-xs font-normal" : "bg-yellow-500/10 text-yellow-600 border-0 px-2 py-0.5 text-xs font-normal"}`}
+                        variant="outline"
+                        className={`ml-2 text-xs ${subscriber.subscribed 
+                          ? "border-0 bg-emerald-500 text-white hover:bg-emerald-600" 
+                          : "border-0 bg-orange-500 text-white hover:bg-orange-600"}`}
                       >
                         {subscriber.subscribed ? 'Active' : 'Inactive'}
                       </Badge>
@@ -254,7 +260,7 @@ export function SubscribersList({
                           size="sm"
                           onClick={() => handleSendEmail(subscriber)}
                           disabled={sendingEmail === subscriber.id || actionLoading === subscriber.id}
-                          className="h-10 text-xs justify-center border-border/50 bg-background/50 hover:bg-background rounded-xl"
+                          className="h-10 text-xs justify-center border-border/50 bg-background/50 hover:bg-background rounded-full"
                         >
                           {sendingEmail === subscriber.id ? (
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
@@ -271,7 +277,7 @@ export function SubscribersList({
                           size="sm"
                           onClick={() => handleToggleSubscription(subscriber)}
                           disabled={actionLoading === subscriber.id || sendingEmail === subscriber.id}
-                          className="h-10 text-xs justify-center border-border/50 bg-background/50 hover:bg-background rounded-xl"
+                          className="h-10 text-xs justify-center border-border/50 bg-background/50 hover:bg-background rounded-full"
                         >
                           {actionLoading === subscriber.id ? (
                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current" />
@@ -317,12 +323,12 @@ export function SubscribersList({
                       </AlertDialog>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           </>
         )}
       </CardContent>
-    </Card>
+    </DashboardCard>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -47,18 +47,15 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
   }
 
   return (
-    <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/10 rounded-3xl overflow-hidden">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-xl font-normal">
-          <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
-            <UserPlus className="h-5 w-5" />
-          </div>
-          Add Subscriber
-        </CardTitle>
-      </CardHeader>
+    <DashboardCard variant="default" padding="medium">
+      <CardHeader
+        title="Add Subscriber"
+        subtitle="Add new members to your elite list"
+        icon={<UserPlus className="h-5 w-5 text-foreground" />}
+      />
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -69,7 +66,7 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
                   })}
                   type="email"
                   placeholder="name@example.com"
-                  className="pl-10 h-12 text-base border-border/50 bg-background/70 focus:bg-background transition-all rounded-xl"
+                  className="pl-10 h-12 border-border/50 bg-background/70 focus:bg-background transition-all rounded-full"
                   disabled={adding}
                 />
               </div>
@@ -80,7 +77,9 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
             <Button 
               type="submit" 
               disabled={adding} 
-              className="min-w-[140px] sm:w-auto w-full h-12 text-base font-normal bg-black hover:bg-black/90 text-white border-0 rounded-xl transition-all"
+              variant="default"
+              size="lg"
+              className="min-w-[140px] sm:w-auto w-full rounded-full"
             >
               {adding ? (
                 <>
@@ -114,6 +113,6 @@ export function SubscriberForm({ onAddSubscriber, adding }: SubscriberFormProps)
           </div>
         </form>
       </CardContent>
-    </Card>
+    </DashboardCard>
   )
 }

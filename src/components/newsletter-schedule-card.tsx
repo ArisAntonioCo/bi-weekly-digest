@@ -47,24 +47,24 @@ export function NewsletterScheduleCard({
         icon={<Mail className="h-5 w-5 text-foreground" />}
       />
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Status Badge */}
           <div className={cn(
             "p-3 rounded-full text-center",
             subscriptionStatus 
-              ? "bg-green-500/10 border border-green-500/20" 
-              : "bg-muted border border-border"
+              ? "bg-emerald-500" 
+              : "bg-orange-500"
           )}>
             <div className="flex items-center justify-center gap-2">
               {subscriptionStatus ? (
                 <>
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-600">Subscribed</span>
+                  <CheckCircle className="h-4 w-4 text-white" />
+                  <span className="text-sm font-medium text-white">Subscribed</span>
                 </>
               ) : (
                 <>
-                  <Bell className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-muted-foreground">Not Subscribed</span>
+                  <Bell className="h-4 w-4 text-white" />
+                  <span className="text-sm font-medium text-white">Not Subscribed</span>
                 </>
               )}
             </div>
