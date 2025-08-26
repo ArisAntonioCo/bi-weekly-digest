@@ -45,10 +45,10 @@ export function HeroSection() {
               <Avvvatars 
                 value="sparkle"
                 style="shape"
-                size={32}
+                size={40}
               />
             </div>
-            <p className="text-base sm:text-lg font-semibold text-foreground max-w-full lg:max-w-md">
+            <p className="text-lg sm:text-xl font-semibold text-foreground max-w-full lg:max-w-md">
               Leveraging frameworks from Gurley,
               <br className="hidden sm:block" />
               Gerstner, Druckenmiller & more.

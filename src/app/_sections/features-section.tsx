@@ -199,7 +199,7 @@ const features = [
     )
   },
   {
-    title: "Current & Thoughtful Insights",
+    title: "Actionable & Thought-Provoking Insights",
     shapeValue: "neon-green-matrix",
     bottomContent: <StackedCards />
   }

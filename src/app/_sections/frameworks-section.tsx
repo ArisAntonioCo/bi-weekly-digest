@@ -66,7 +66,8 @@ export function FrameworksSection() {
   // Text content split by lines - complete sentences
   const lines = [
     'Leveraging Proven Expert Frameworks',
-    'Five expert lenses reveal what one voice misses.',
+    'Combining expert lenses can reveal',
+    'what one voice might miss.',
     'World-class investment frameworks expose blind spots,',
     'building conviction anchored in durable truth.'
   ]

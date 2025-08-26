@@ -7,11 +7,11 @@ export function AnalyticsSection() {
     <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="mb-12 sm:mb-16 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground leading-none max-w-5xl">
-          See What World-Class Investors
+          See How World-Class Investors
           <br />
-          Would Think About Any Stock&apos;s
+          May Project Any Public Equity&apos;s
           <br />
-          3-Year Potential
+          3-Year MOIC Potential
         </h2>
         <Link href="/signup">
           <Button variant="brand-cta" size="lg" className="w-full sm:w-auto">
