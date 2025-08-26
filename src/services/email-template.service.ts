@@ -437,6 +437,14 @@ export class EmailTemplateService {
           </span>
         </h1>
         <p class="header-tagline">Expert-Grade MOIC Projections</p>
+        <div style="margin-top: 24px; padding: 20px 32px; border-top: 1px solid #e5e7eb;">
+          <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 12px; text-align: center;">
+            Leveraging Proven, Expert Frameworks
+          </h2>
+          <p style="font-size: 14px; line-height: 1.6; color: #4b5563; text-align: center; max-width: 600px; margin: 0 auto;">
+            One voice is opinion. Five frameworks create clarity, via contrast. By stacking distinct lenses from world-class investors, we uncover blind spots and biases, sharpen conviction, and anchor to a fuller, more durable truth.
+          </p>
+        </div>
       </div>
       
       <div class="analysis-section">

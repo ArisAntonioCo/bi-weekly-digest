@@ -7,7 +7,6 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { 
   Settings, 
   MessageSquare, 
@@ -148,8 +147,6 @@ export function AdminHeader() {
         </div>
         
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-          
           {config.action && (
             config.action.onClick === 'emailAnalysis' ? (
               <Button 

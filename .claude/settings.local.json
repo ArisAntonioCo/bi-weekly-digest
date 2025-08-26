@@ -56,7 +56,9 @@
       "Bash(pnpm list:*)",
       "Bash(pnpm run:*)",
       "Bash(yarn add:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(rg:*)",
+      "Bash(pnpm add:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

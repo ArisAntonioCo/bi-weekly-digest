@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 import { logout } from '@/app/(auth)/login/actions'
+import { ThemeSwitcher } from '@/components/ui/theme-switcher'
 
 const sidebarItems = [
   {
@@ -105,7 +106,11 @@ export function AdminSidebar({ currentPath }: AdminSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter className="border-t">
-        <div className="p-2">
+        <div className="p-2 space-y-2">
+          <div className="flex items-center justify-between px-2 py-2">
+            <span className="text-sm text-muted-foreground">Theme</span>
+            <ThemeSwitcher />
+          </div>
           <SidebarMenuButton
             onClick={handleLogout}
             disabled={isLoggingOut}

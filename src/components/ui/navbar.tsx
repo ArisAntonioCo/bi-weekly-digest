@@ -22,7 +22,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
-import { ThemeToggle } from '@/components/theme-toggle'
+import { ThemeSwitcher } from '@/components/ui/theme-switcher'
 import { Logo } from '@/components/ui/logo'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 
@@ -178,7 +178,7 @@ export default function Navbar({ className }: NavbarProps) {
 
           {/* Navigation */}
           <div className="flex items-center gap-4">
-            {pathname !== '/' && <ThemeToggle />}
+            {pathname !== '/' && <ThemeSwitcher />}
             {loading ? (
               <div className="h-8 w-20 bg-muted animate-pulse rounded-md" />
             ) : user ? (
