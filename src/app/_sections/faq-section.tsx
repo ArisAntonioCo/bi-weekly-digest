@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     question: "Why 3 Years MOIC Projections?",
-    answer: "Three years is the horizon where noise fades and earnings power speaks. Long enough for fundamentals to prove out, yet near enough to matter for your capital today."
+    answer: "Three years is the horizon where noise fades and earnings power speaks. It's sufficient time for fundamental value to emerge, while remaining relevant for your current investment decisions."
   },
   {
     question: "Why Proven Expert Frameworks?",
@@ -28,15 +28,15 @@ const faqs = [
   },
   {
     question: "What data sources power your AI predictions?",
-    answer: "Our AI models are trained on comprehensive financial data including SEC filings, earnings reports, market data, industry research, and real-time news analysis. We leverage OpenAI's advanced language models combined with our proprietary investment frameworks to deliver institutional-grade insights."
+    answer: "Our AI models are trained on comprehensive financial data including SEC filings, earnings reports, market data, industry research, and real-time news analysis. We leverage cutting-edge open and closed language models which we combine with our proprietary investment frameworks to deliver institutional-grade insights."
   },
   {
     question: "How often are the investment newsletters sent?",
-    answer: "We deliver comprehensive investment analysis newsletters on a weekly basis, typically every Wednesday. Each newsletter includes updated MOIC projections, market insights, and actionable investment opportunities tailored to your portfolio preferences."
+    answer: "We deliver comprehensive investment analysis newsletters on a weekly basis, strategically timed to capture key market movements. Each newsletter includes updated MOIC projections, market insights, and actionable investment opportunities tailored to your portfolio preferences."
   },
   {
     question: "What makes your equity frameworks 'world-class'?",
-    answer: "Our frameworks are developed by combining insights from leading investment institutions, validated academic research, and real-world performance data. We continuously refine our models based on market outcomes and incorporate best practices from top-performing fund managers globally."
+    answer: "Our platform allows you to combine battle-tested investment frameworks with various time horizons, which collectively help orient your investment goals. Each framework represents proven methodologies from legendary investors, providing diverse perspectives that enhance decision-making clarity."
   },
   {
     question: "Can I customize my investment preferences?",
@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     question: "How accurate are your MOIC projections historically?",
-    answer: "Our projections have demonstrated strong correlation with actual market outcomes, with our Base case scenarios achieving approximately 78% directional accuracy over the past 24 months. We provide transparent performance tracking and regularly publish accuracy reports for our members."
+    answer: "As with all capital market investments, past performance does not guarantee future returns, and we encourage independent due diligence. Our projections have demonstrated strong correlation with actual market outcomes, with Base case scenarios achieving approximately 78% directional accuracy over the past 24 months. We maintain full transparency through regular performance tracking and published accuracy reports for our members."
   },
   {
     question: "Is my financial data secure?",

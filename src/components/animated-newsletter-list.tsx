@@ -12,28 +12,28 @@ interface NotificationItem {
 
 let notifications = [
   {
-    text: "New Newsletter",
-    date: "January 8, 2025",
+    text: "NVDA - 3Y MOIC Projection: 2.8x",
+    date: "January 15, 2025",
     time: "2m ago",
   },
   {
-    text: "New Newsletter",
-    date: "January 1, 2025",
+    text: "TSLA - Weekly Investment Analysis",
+    date: "January 8, 2025",
     time: "1w ago",
   },
   {
-    text: "New Newsletter",
-    date: "December 25, 2024",
+    text: "AAPL - Expert Framework Analysis",
+    date: "January 1, 2025",
     time: "2w ago",
   },
   {
-    text: "New Newsletter",
-    date: "December 18, 2024",
+    text: "MSFT - 3Y Return Forecast: 2.3x",
+    date: "December 25, 2025",
     time: "3w ago",
   },
   {
-    text: "New Newsletter",
-    date: "December 11, 2024",
+    text: "GOOGL - Weekly Digest Report",
+    date: "December 18, 2025",
     time: "4w ago",
   },
 ]
