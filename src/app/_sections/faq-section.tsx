@@ -1,9 +1,13 @@
+"use client"
+
+import { useState } from "react"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Plus, Minus } from "lucide-react"
 
 const faqs = [
   {
@@ -49,6 +53,9 @@ const faqs = [
 ]
 
 export function FAQSection() {
+  const [showAll, setShowAll] = useState(false)
+  const visibleFaqs = showAll ? faqs : faqs.slice(0, 8)
+
   return (
     <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
@@ -67,17 +74,38 @@ export function FAQSection() {
         {/* Accordions on the right */}
         <div>
           <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, index) => (
+            {visibleFaqs.map((faq, index) => (
               <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left">
+                <AccordionTrigger className="text-left text-base sm:text-lg">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
+                <AccordionContent className="text-muted-foreground text-sm sm:text-base">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
+          
+          {faqs.length > 8 && (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="text-muted-foreground hover:text-muted-foreground/80 transition-colors text-sm cursor-pointer inline-flex items-center gap-1"
+              >
+                {showAll ? (
+                  <>
+                    <Minus className="h-3 w-3" />
+                    <span>Show less</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-3 w-3" />
+                    <span>Show more ({faqs.length - 8} more)</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
