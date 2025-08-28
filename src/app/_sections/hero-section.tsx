@@ -25,7 +25,7 @@ export function HeroSection() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">Get Expert Analysis</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground">Forecast from Industry Titans</h3>
               <p className="text-sm text-foreground">In Your Inbox</p>
             </div>
             <Link href="/signup">
@@ -49,9 +49,7 @@ export function HeroSection() {
               />
             </div>
             <p className="text-lg sm:text-xl font-semibold text-foreground max-w-full lg:max-w-md">
-              Leveraging frameworks from Gurley,
-              <br className="hidden sm:block" />
-              Gerstner, Druckenmiller & more.
+              Leveraging frameworks from Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker & Beth Kindig.
             </p>
           </div>
         </div>
