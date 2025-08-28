@@ -9,7 +9,7 @@ import Link from 'next/link'
 
 export function FreemiumBanner() {
   const [isVisible, setIsVisible] = useState(true)
-  const [bannerHeight, setBannerHeight] = useState(0)
+  const [, setBannerHeight] = useState(0)
   const pathname = usePathname()
   
   // Only show on home page

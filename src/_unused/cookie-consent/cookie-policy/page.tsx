@@ -132,7 +132,7 @@ export default function CookiePolicyPage() {
         <section>
           <h2 className="text-2xl font-semibold mt-8 mb-4">Managing Your Cookie Preferences</h2>
           <p>
-            You can manage your cookie preferences at any time by clicking the "Cookie Settings" button that appears at the bottom of any page on our website. You can also manage cookies through your browser settings:
+            You can manage your cookie preferences at any time by clicking the &ldquo;Cookie Settings&rdquo; button that appears at the bottom of any page on our website. You can also manage cookies through your browser settings:
           </p>
           <ul className="list-disc pl-6 space-y-2 mt-4">
             <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Chrome</a></li>
@@ -160,7 +160,7 @@ export default function CookiePolicyPage() {
         <section>
           <h2 className="text-2xl font-semibold mt-8 mb-4">Changes to This Policy</h2>
           <p>
-            We may update this Cookie Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. We will notify you of any material changes by updating the "Last updated" date at the top of this policy.
+            We may update this Cookie Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. We will notify you of any material changes by updating the &ldquo;Last updated&rdquo; date at the top of this policy.
           </p>
         </section>
 

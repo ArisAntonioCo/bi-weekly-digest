@@ -15,9 +15,9 @@ export function HeroSection() {
       {/* Main Content */}
       <div className="mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-none">
-            See the Market the Way
+            Longterm Stock Projections,
             <br />
-            Billion-Dollar Investors Do
+            Leveraging Battle-Tested Investor Frameworks
           </h1>
         </div>
 

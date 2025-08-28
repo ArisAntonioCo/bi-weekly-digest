@@ -14,29 +14,30 @@ interface AnimatedWordProps {
 
 function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress }: AnimatedWordProps) {
   const wordStart = globalIndex / totalWords
-  const wordEnd = (globalIndex + 1) / totalWords
   
-  const y = useTransform(
+  // Instant transition from muted to highlighted
+  const opacity = useTransform(
     scrollYProgress,
-    [wordStart * 0.8, wordEnd * 0.8 + 0.05],
-    [40, 0],
+    [wordStart * 0.8, wordStart * 0.8 + 0.001],
+    [0.3, 1], // Instant jump from 30% to 100%
     { clamp: true }
   )
   
-  const opacity = useTransform(
+  // Instant color change from gray to white
+  const color = useTransform(
     scrollYProgress,
-    [wordStart * 0.8, wordEnd * 0.8 + 0.05],
-    [0, 1],
+    [wordStart * 0.8, wordStart * 0.8 + 0.001],
+    ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 1)'],
     { clamp: true }
   )
   
   return (
     <motion.span
-      className="inline-block mr-[0.25em] text-white"
+      className="inline-block mr-[0.3em]"
       style={{ 
-        y, 
         opacity,
-        willChange: 'transform, opacity'
+        color,
+        willChange: 'opacity, color'
       }}
     >
       {word}
@@ -56,39 +57,19 @@ export function FrameworksSection() {
   // Fetch experts data
   const { experts, isLoading } = useExperts({ limit: 20 })
 
+  // Text content as one continuous flow
+  const fullText = 'Leveraging Proven Expert Frameworks Combining expert lenses can reveal what one voice might miss. World-class investment frameworks expose blind spots, building conviction anchored in durable truth.'
+  
+  // Split into individual words for animation
+  const words = fullText.split(' ')
+
+  const totalWords = words.length
+
   // Calculate container height based on content
   useEffect(() => {
-    const totalWords = 24 // Approximate total word count
     const scrollMultiplier = 100 // pixels of scroll per word
     setContainerHeight(totalWords * scrollMultiplier)
-  }, [])
-
-  // Text content split by lines - complete sentences
-  const lines = [
-    'Leveraging Proven Expert Frameworks',
-    'Combining expert lenses can reveal',
-    'what one voice might miss.',
-    'World-class investment frameworks expose blind spots,',
-    'building conviction anchored in durable truth.'
-  ]
-
-  // Create word data with global indices for animation
-  const allWords: { word: string; lineIndex: number; wordIndex: number; globalIndex: number }[] = []
-  let globalIndex = 0
-  
-  lines.forEach((line, lineIndex) => {
-    const words = line.split(' ')
-    words.forEach((word, wordIndex) => {
-      allWords.push({
-        word,
-        lineIndex,
-        wordIndex,
-        globalIndex: globalIndex++
-      })
-    })
-  })
-
-  const totalWords = allWords.length
+  }, [totalWords])
 
   // Split experts into two lines for marquee
   const halfIndex = Math.ceil(experts.length / 2)
@@ -109,34 +90,19 @@ export function FrameworksSection() {
       <div className="sticky top-0 w-full bg-black min-h-screen flex items-center">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-32 w-full">
           <div className="w-full">
-            {lines.map((line, lineIndex) => {
-              const words = line.split(' ')
-              
-              return (
-                <div key={lineIndex} className="overflow-hidden">
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-medium text-white leading-tight whitespace-nowrap">
-                    {words.map((word, wordIndex) => {
-                      // Find the global index for this word
-                      const wordData = allWords.find(
-                        w => w.lineIndex === lineIndex && w.wordIndex === wordIndex
-                      )
-                      
-                      if (!wordData) return null
-                      
-                      return (
-                        <AnimatedWord
-                          key={`${lineIndex}-${wordIndex}`}
-                          word={word}
-                          globalIndex={wordData.globalIndex}
-                          totalWords={totalWords}
-                          scrollYProgress={scrollYProgress}
-                        />
-                      )
-                    })}
-                  </p>
-                </div>
-              )
-            })}
+            <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight">
+              {words.map((word, index) => {
+                return (
+                  <AnimatedWord
+                    key={index}
+                    word={word}
+                    globalIndex={index}
+                    totalWords={totalWords}
+                    scrollYProgress={scrollYProgress}
+                  />
+                )
+              })}
+            </p>
           </div>
 
           {/* Expert Marquee */}
