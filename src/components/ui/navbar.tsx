@@ -25,6 +25,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeSwitcher } from '@/components/ui/theme-switcher'
 import { Logo } from '@/components/ui/logo'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { useBanner } from '@/contexts/banner-context'
 
 interface NavbarProps {
   className?: string
@@ -37,6 +38,7 @@ export default function Navbar({ className }: NavbarProps) {
   const [lastScrollY, setLastScrollY] = useState(0)
   const router = useRouter()
   const pathname = usePathname()
+  const { bannerHeight } = useBanner()
   
   const { scrollY } = useScroll()
   
@@ -153,8 +155,10 @@ export default function Navbar({ className }: NavbarProps) {
   return (
     <motion.nav 
       className={className || ''}
-      initial={{ y: 0 }}
-      animate={{ y: isVisible ? 0 : -100 }}
+      initial={{ y: bannerHeight }}
+      animate={{ 
+        y: isVisible ? bannerHeight : -(100 + bannerHeight)
+      }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={{ 
         position: 'fixed', 
@@ -163,8 +167,7 @@ export default function Navbar({ className }: NavbarProps) {
         right: 0, 
         zIndex: 50,
         backgroundColor: 'hsl(var(--background))',
-        borderBottom: '1px solid hsl(var(--border))',
-        transition: 'top 0.3s ease-in-out'
+        borderBottom: '1px solid hsl(var(--border))'
       }}
     >
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
