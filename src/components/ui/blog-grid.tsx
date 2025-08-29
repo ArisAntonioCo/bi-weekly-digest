@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, memo } from 'react'
-import { BlogCard } from './blog-card'
 import { BlogPagination } from './blog-pagination'
+import { BlogCardObserver } from './blog-card-observer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TrendingUp, Clock, Calendar, Search } from 'lucide-react'
 import { Blog } from '@/types/blog'
@@ -146,7 +146,7 @@ export const BlogGrid = memo(function BlogGrid({
         <TabsContent value="latest" className="mt-0 space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} isAdmin={isAdmin} />
+              <BlogCardObserver key={blog.id} blog={blog} isAdmin={isAdmin} />
             ))}
           </div>
           
@@ -164,7 +164,7 @@ export const BlogGrid = memo(function BlogGrid({
         <TabsContent value="oldest" className="mt-0 space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} isAdmin={isAdmin} />
+              <BlogCardObserver key={blog.id} blog={blog} isAdmin={isAdmin} />
             ))}
           </div>
           

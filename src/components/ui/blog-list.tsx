@@ -1,20 +1,45 @@
 "use client"
 
+import { useState, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { CalendarDays, TrendingUp, AlertTriangle, BarChart3, LineChart, PieChart, Activity } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import remarkBreaks from 'remark-breaks'
+import { CalendarDays, TrendingUp, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 import { format } from 'date-fns'
+import dynamic from 'next/dynamic'
+import { Button } from '@/components/ui/button'
+import { extractPreviewText } from '@/utils/blog.utils'
 
 import { Blog } from '@/types/blog'
+
+const MarkdownRenderer = dynamic(() => import('./markdown-renderer'), {
+  loading: () => (
+    <div className="space-y-3 animate-pulse">
+      <div className="h-4 bg-muted rounded w-full"></div>
+      <div className="h-4 bg-muted rounded w-5/6"></div>
+      <div className="h-4 bg-muted rounded w-4/6"></div>
+    </div>
+  )
+})
 
 interface BlogListProps {
   blogs: Blog[]
 }
 
 export function BlogList({ blogs }: BlogListProps) {
+  const [expandedBlogs, setExpandedBlogs] = useState<Set<string>>(new Set())
+
+  const toggleBlogExpansion = useCallback((blogId: string) => {
+    setExpandedBlogs(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(blogId)) {
+        newSet.delete(blogId)
+      } else {
+        newSet.add(blogId)
+      }
+      return newSet
+    })
+  }, [])
+
   if (blogs.length === 0) {
     return (
       <div className="text-center py-12 space-y-4">
@@ -55,6 +80,9 @@ export function BlogList({ blogs }: BlogListProps) {
         {blogs.map((blog) => {
           const analysisType = getAnalysisType(blog.content)
           const Icon = analysisType.icon
+          const isExpanded = expandedBlogs.has(blog.id) || blogs.length === 1
+          const preview = extractPreviewText(blog.content, 500)
+          const hasMore = blog.content.length > 500
           
           return (
             <div key={blog.id} className="space-y-4">
@@ -78,213 +106,39 @@ export function BlogList({ blogs }: BlogListProps) {
               )}
               
               <div className="w-full">
-                <div className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-full [&>*]:!max-w-full break-words">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm, remarkBreaks]}
-                    components={{
-                      h1: ({ children }) => <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 mt-4 sm:mt-6 text-foreground">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-base sm:text-lg font-bold mb-2 mt-3 sm:mt-4 text-foreground">{children}</h3>,
-                      h4: ({ children }) => <h4 className="text-sm sm:text-base font-bold mb-2 mt-2 sm:mt-3 text-foreground">{children}</h4>,
-                      h5: ({ children }) => <h5 className="text-sm sm:text-base font-semibold mb-2 mt-2 sm:mt-3 text-foreground">{children}</h5>,
-                      h6: ({ children }) => <h6 className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 mt-2 text-foreground">{children}</h6>,
-                      p: ({ children }) => {
-                        // Check if this paragraph is actually a header-like text (no actual markdown header but should be)
-                        const text = String(children);
-                        if (text && typeof text === 'string' && 
-                            (text === 'Narrative Summary' || 
-                             text === 'AI Leverage' || 
-                             text === 'Risk Vectors' || 
-                             text === 'Valuation vs History' ||
-                             text === 'Expert POV Overlay' ||
-                             text === '3-Year MOIC Range' ||
-                             text === 'Classification' ||
-                             text.includes('3-Year MOIC') ||
-                             text.includes('Core Features') ||
-                             text.includes('Analysis'))) {
-                          return <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 mt-4 sm:mt-5 text-foreground">{children}</h2>;
-                        }
-                        return <p className="text-sm sm:text-base leading-relaxed mt-0 mb-3 sm:mb-4 text-muted-foreground break-words">{children}</p>;
-                      },
-                      ul: ({ children }) => <ul className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 pl-5 sm:pl-6 list-disc list-outside">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-sm sm:text-base space-y-1 sm:space-y-2 mb-3 sm:mb-4 pl-5 sm:pl-6 list-decimal list-outside">{children}</ol>,
-                      li: ({ children }) => (
-                        <li className="leading-relaxed text-muted-foreground mb-2 break-words">
-                          {children}
-                        </li>
-                      ),
-                      strong: ({ children }) => <strong className="font-semibold text-foreground break-words">{children}</strong>,
-                      em: ({ children }) => <em className="italic break-words">{children}</em>,
-                      blockquote: ({ children }) => (
-                        <blockquote className="border-l-4 border-primary/20 pl-4 sm:pl-6 py-2 sm:py-3 mb-3 sm:mb-4 italic text-muted-foreground bg-muted/30 rounded-r-lg">
-                          {children}
-                        </blockquote>
-                      ),
-                      code: ({ children }) => (
-                        <code className="bg-muted px-1 sm:px-2 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-mono" style={{ wordBreak: 'break-all' }}>{children}</code>
-                      ),
-                      pre: ({ children }) => {
-                        // Check if this is an ASCII table/chart
-                        // Safely extract text content from children
-                        let content = '';
-                        if (typeof children === 'string') {
-                          content = children;
-                        } else if (children && typeof children === 'object' && 'props' in children) {
-                          const childProps = children as { props?: { children?: unknown } };
-                          content = String(childProps.props?.children || '');
-                        }
-                        const isAsciiTable = content.includes('|') && 
-                                           (content.includes('-') || content.includes('Year') || 
-                                            content.includes('Revenue') || content.includes('Growth') || 
-                                            content.includes('Multiple') || content.includes('MOIC'));
-                        
-                        if (isAsciiTable) {
-                          // Parse the ASCII table and create a proper table
-                          const lines = content.trim().split('\n').filter(line => line.trim() && line.includes('|'));
-                          
-                          // Try to extract headers from the first non-separator line
-                          const headerLine = lines.find(line => !line.includes('---') && line.includes('|'));
-                          const headers = headerLine ? 
-                            headerLine.split('|').map(h => h.trim()).filter(h => h) : 
-                            ['Column 1', 'Column 2', 'Column 3', 'Column 4'];
-                          
-                          // Extract data rows
-                          const dataLines = lines.filter(line => 
-                            !line.includes('---') && 
-                            line !== headerLine &&
-                            line.split('|').filter(c => c.trim()).length > 1
-                          );
-                          
-                          if (dataLines.length > 0) {
-                            return (
-                              <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
-                                <div className="overflow-x-auto px-4 sm:px-0">
-                                  <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl">
-                                      <thead className="bg-muted/50">
-                                        <tr>
-                                          {headers.map((header, idx) => (
-                                            <th key={idx} className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider">
-                                              {header}
-                                            </th>
-                                          ))}
-                                        </tr>
-                                      </thead>
-                                      <tbody className="bg-background divide-y divide-border/50">
-                                        {dataLines.map((line, rowIdx) => {
-                                          const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
-                                          return (
-                                            <tr key={rowIdx} className="hover:bg-muted/30 transition-colors">
-                                              {cells.map((cell, cellIdx) => (
-                                                <td key={cellIdx} className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground">
-                                                  {cell}
-                                                </td>
-                                              ))}
-                                            </tr>
-                                          );
-                                        })}
-                                      </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            );
-                          }
-                        }
-                        
-                        // Regular code block
-                        return (
-                          <pre className="bg-muted p-2 sm:p-4 rounded-lg sm:rounded-xl overflow-x-auto mb-3 sm:mb-4 font-mono text-xs sm:text-sm max-w-full">
-                            {children}
-                          </pre>
-                        );
-                      },
-                      table: ({ children }) => (
-                        <div className="my-4 sm:my-6 -mx-4 sm:mx-0">
-                          <div className="overflow-x-auto px-4 sm:px-0">
-                            <table className="min-w-full divide-y divide-border/50 border border-border/50 rounded-xl table-auto">
-                              {children}
-                            </table>
-                          </div>
-                        </div>
-                      ),
-                      thead: ({ children }) => (
-                        <thead className="bg-muted/50">{children}</thead>
-                      ),
-                      tbody: ({ children }) => (
-                        <tbody className="bg-background divide-y divide-border/50">{children}</tbody>
-                      ),
-                      tr: ({ children }) => (
-                        <tr className="hover:bg-muted/30 transition-colors">{children}</tr>
-                      ),
-                      th: ({ children }) => (
-                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-foreground uppercase tracking-wider whitespace-normal break-words" style={{ hyphens: 'auto' }}>
-                          {children}
-                        </th>
-                      ),
-                      td: ({ children }) => (
-                        <td className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base text-muted-foreground align-top whitespace-normal break-words" style={{ hyphens: 'auto' }}>
-                          {children}
-                        </td>
-                      ),
-                      hr: () => <hr className="my-6 border-border/50" />,
-                      img: ({ alt, src }) => {
-                        // Check if this is a chart placeholder
-                        const altLower = alt?.toLowerCase() || '';
-                        // src can be string or Blob, only process if it's a string
-                        const srcLower = typeof src === 'string' ? src.toLowerCase() : '';
-                        const isChart = altLower.includes('chart') || 
-                                       altLower.includes('projection') ||
-                                       altLower.includes('graph') ||
-                                       altLower.includes('moic') ||
-                                       srcLower.includes('chart');
-                        
-                        if (isChart) {
-                          // Determine the appropriate chart icon based on the alt text
-                          let ChartIcon = BarChart3;
-                          let chartType = 'Chart Visualization';
-                          
-                          if (altLower.includes('line') || altLower.includes('projection') || altLower.includes('growth')) {
-                            ChartIcon = LineChart;
-                            chartType = 'Line Chart';
-                          } else if (altLower.includes('pie') || altLower.includes('allocation') || altLower.includes('portfolio')) {
-                            ChartIcon = PieChart;
-                            chartType = 'Pie Chart';
-                          } else if (altLower.includes('performance') || altLower.includes('metrics')) {
-                            ChartIcon = Activity;
-                            chartType = 'Performance Metrics';
-                          } else if (altLower.includes('trend')) {
-                            ChartIcon = TrendingUp;
-                            chartType = 'Trend Analysis';
-                          }
-                          
-                          // Show a nice chart placeholder instead of broken image
-                          return (
-                            <span className="block my-3 sm:my-4 p-4 sm:p-8 bg-gradient-to-br from-muted/20 to-muted/40 border border-border rounded-lg flex flex-col items-center justify-center">
-                              <ChartIcon className="h-10 w-10 sm:h-14 sm:w-14 text-muted-foreground/40 mb-2 sm:mb-3" />
-                              <span className="block text-xs sm:text-sm text-muted-foreground font-semibold">{alt || chartType}</span>
-                              <span className="block text-[10px] sm:text-xs text-muted-foreground/60 mt-1">Interactive chart would display here</span>
-                            </span>
-                          );
-                        }
-                        
-                        // For other images, try to render them normally but hide if broken
-                        return (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img 
-                            src={src} 
-                            alt={alt} 
-                            className="max-w-full h-auto rounded-lg"
-                            onError={(e) => {
-                              // Hide broken images
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        );
-                      },
-                    }}
-                  >
-                    {blog.content}
-                  </ReactMarkdown>
-                </div>
+                {isExpanded ? (
+                  <MarkdownRenderer content={blog.content} />
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">
+                      {preview}
+                      {hasMore && '...'}
+                    </p>
+                  </div>
+                )}
+                
+                {hasMore && blogs.length > 1 && (
+                  <div className="mt-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleBlogExpansion(blog.id)}
+                      className="text-primary hover:text-primary/80"
+                    >
+                      {isExpanded ? (
+                        <>
+                          <ChevronUp className="h-4 w-4 mr-2" />
+                          Show Less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="h-4 w-4 mr-2" />
+                          Read Full Analysis
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           )

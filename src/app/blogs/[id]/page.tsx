@@ -2,11 +2,12 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { BlogList } from '@/components/ui/blog-list'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { createClient } from '@/utils/supabase/server'
 import { BlogViewTracker } from './blog-view-tracker'
+import { Suspense } from 'react'
+import { BlogContent } from './blog-content'
 
 interface BlogDetailPageProps {
   params: Promise<{
@@ -104,11 +105,20 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
         {/* Blog Content */}
         <article className="w-full overflow-x-hidden">
-          <div className="bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 overflow-x-hidden">
-            <div className="max-w-full overflow-x-hidden">
-              <BlogList blogs={[blog]} />
+          <Suspense fallback={
+            <div className="bg-muted/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8">
+              <div className="space-y-4 animate-pulse">
+                <div className="h-6 bg-muted rounded w-3/4"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-muted rounded"></div>
+                  <div className="h-4 bg-muted rounded"></div>
+                  <div className="h-4 bg-muted rounded w-5/6"></div>
+                </div>
+              </div>
             </div>
-          </div>
+          }>
+            <BlogContent blog={blog} />
+          </Suspense>
         </article>
 
         {/* Related Posts */}

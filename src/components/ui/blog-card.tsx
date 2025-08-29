@@ -1,6 +1,7 @@
 "use client"
 
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { CalendarDays, ChevronRight, Clock } from 'lucide-react'
 import { format } from 'date-fns'
@@ -19,6 +20,8 @@ interface BlogCardProps {
 }
 
 export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCardProps) {
+  const router = useRouter()
+  
   // Use utility functions for business logic
   const previewText = extractPreviewText(blog.content)
   const analysisType = getAnalysisType(blog.content)
@@ -27,9 +30,14 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
   
   const Icon = analysisType.icon
   const href = isAdmin ? `/admin/blogs/${blog.id}` : `/blogs/${blog.id}`
+  
+  // Prefetch on hover for faster navigation
+  const handleMouseEnter = useCallback(() => {
+    router.prefetch(href)
+  }, [router, href])
 
   return (
-    <Link href={href} className="block h-full">
+    <Link href={href} className="block h-full" onMouseEnter={handleMouseEnter}>
       <div className="group h-full flex flex-col bg-muted/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 hover:bg-muted/70 transition-all duration-200 cursor-pointer">
         {/* Header */}
         <div className="mb-3 sm:mb-4">
