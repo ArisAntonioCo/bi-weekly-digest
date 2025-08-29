@@ -77,50 +77,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Get total count of blogs with filters
+    // Get total count of blogs with filters (HEAD-only for performance)
     const { count: totalCount } = await query
-
-    // Check if we have any blogs
-    if (totalCount === 0) {
-      // Generate new blog if none exist
-      await generateBlogFromSystemPrompt(supabase, systemPrompt)
-      
-      // Re-fetch count and data after generation
-      const { count: newCount } = await supabase
-        .from('blogs')
-        .select('*', { count: 'exact', head: true })
-      
-      // Fetch the newly created blog
-      const { data: newBlogs } = await supabase
-        .from('blogs')
-        .select('*')
-        .order('created_at', { ascending: sort === 'oldest' })
-        .range(offset, offset + limit - 1)
-      
-      const responseData: Paginated<Blog> & { systemPromptSummary: string; page: number; limit: number; totalPages: number } = {
-        data: newBlogs || [],
-        currentPage: page,
-        page,
-        limit,
-        perPage: limit,
-        total: newCount || 0,
-        totalPages: Math.ceil((newCount || 0) / limit),
-        systemPromptSummary
-      }
-      
-      const response = createSuccessResponse(responseData)
-      
-      // Add cache headers
-      response.headers.set(
-        'Cache-Control',
-        'public, s-maxage=60, stale-while-revalidate=120'
-      )
-      
-      return response
-    }
     
     // Now build the actual data query
-    let dataQuery = supabase.from('blogs').select('*')
+    let dataQuery = supabase.from('blogs').select('id,title,content,created_at')
     
     // Apply filters again for data query
     if (search) {
@@ -157,8 +118,14 @@ export async function GET(request: NextRequest) {
     // Calculate total pages
     const totalPages = Math.ceil((totalCount || 0) / limit)
     
+    // Trim content to reduce payload for list views
+    const trimmedBlogs: Blog[] = (blogs || []).map((b) => ({
+      ...b,
+      content: b.content ? b.content.substring(0, 800) : ''
+    }))
+
     const responseData: Paginated<Blog> & { systemPromptSummary: string; page: number; limit: number; totalPages: number } = {
-      data: blogs || [],
+      data: trimmedBlogs,
       currentPage: page,
       page,
       limit,
@@ -171,9 +138,10 @@ export async function GET(request: NextRequest) {
     const response = createSuccessResponse(responseData)
     
     // Add cache headers for better performance
+    const isSearch = !!search
     response.headers.set(
       'Cache-Control',
-      'public, s-maxage=60, stale-while-revalidate=120'
+      isSearch ? 'no-store' : 'public, s-maxage=60, stale-while-revalidate=120'
     )
     
     return response

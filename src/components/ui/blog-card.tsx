@@ -42,7 +42,7 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
         {/* Header */}
         <div className="mb-3 sm:mb-4">
           <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
-            <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs rounded-full">
+            <Badge variant="default" className="flex items-center gap-1 text-xs rounded-full">
               <Icon className="h-3 w-3" />
               {analysisType.type}
             </Badge>

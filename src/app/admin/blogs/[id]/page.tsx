@@ -130,7 +130,7 @@ export default function BlogDetailPage() {
         {/* Header */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Badge variant={analysisType.variant} className="flex items-center gap-1">
+            <Badge variant="default" className="flex items-center gap-1">
               <Icon className="h-3 w-3" />
               {analysisType.type}
             </Badge>

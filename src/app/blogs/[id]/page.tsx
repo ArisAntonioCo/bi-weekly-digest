@@ -81,7 +81,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
           <div className="flex items-center gap-3 flex-wrap">
             <Badge 
-              variant={analysisType.variant}
+              variant="default"
               className="rounded-full px-4 py-1 text-sm font-medium"
             >
               {analysisType.type}

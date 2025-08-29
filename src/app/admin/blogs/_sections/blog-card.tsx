@@ -58,7 +58,7 @@ export function BlogCard({ blog }: BlogCardProps) {
     <Card className="group h-full flex flex-col hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs">
+          <Badge variant="default" className="flex items-center gap-1 text-xs">
             <Icon className="h-3 w-3" />
             {analysisType.type}
           </Badge>

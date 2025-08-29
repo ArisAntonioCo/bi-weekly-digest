@@ -45,7 +45,8 @@ export const getBlogs = cache(async (params: BlogQueryParams): Promise<BlogRespo
   const offset = (page - 1) * limit
   
   // Build query
-  let query = supabase.from('blogs').select('*', { count: 'exact' })
+  // Use HEAD-only count to avoid fetching rows during count
+  let query = supabase.from('blogs').select('*', { count: 'exact', head: true })
   
   // Add search filter
   if (search) {
@@ -73,7 +74,8 @@ export const getBlogs = cache(async (params: BlogQueryParams): Promise<BlogRespo
   const { count: totalCount } = await query
   
   // Build the same query for fetching data
-  let dataQuery = supabase.from('blogs').select('*')
+  // Fetch only required fields for list view
+  let dataQuery = supabase.from('blogs').select('id,title,content,created_at')
   
   // Apply the same search filter
   if (search) {
@@ -106,8 +108,14 @@ export const getBlogs = cache(async (params: BlogQueryParams): Promise<BlogRespo
   
   const lastPage = Math.ceil((totalCount || 0) / limit)
   
+  // Trim content to reduce RSC serialization size
+  const trimmed = (blogs || []).map((b) => ({
+    ...b,
+    content: b.content ? b.content.substring(0, 800) : ''
+  }))
+
   return {
-    data: blogs || [],
+    data: trimmed,
     currentPage: page,
     perPage: limit,
     total: totalCount || 0,

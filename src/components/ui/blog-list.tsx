@@ -96,7 +96,7 @@ export function BlogList({ blogs }: BlogListProps) {
                         {format(new Date(blog.created_at), 'MMM d, yyyy')}
                       </div>
                       <Separator orientation="vertical" className="h-3" />
-                      <Badge variant={analysisType.variant} className="flex items-center gap-1 text-xs rounded-full px-3">
+                      <Badge variant="default" className="flex items-center gap-1 text-xs rounded-full px-3">
                         <Icon className="h-3 w-3" />
                         {analysisType.type}
                       </Badge>
