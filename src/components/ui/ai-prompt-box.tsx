@@ -5,7 +5,7 @@ import Image from "next/image";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowUp, Paperclip, Square, X, BrainCog } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 // Utility function for className merging
 const cn = (...classes: (string | undefined | null | false)[]) => classes.filter(Boolean).join(" ");
@@ -31,11 +31,18 @@ const styles = `
   }
 `;
 
-// Inject styles into document (client-side only)
+// Style injection with proper cleanup (client-side only)
+let styleSheet: HTMLStyleElement | null = null;
+
 if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement("style");
-  styleSheet.innerText = styles;
-  document.head.appendChild(styleSheet);
+  // Check if style already exists to avoid duplicates
+  const existingStyle = document.head.querySelector('[data-ai-prompt-box-styles]');
+  if (!existingStyle) {
+    styleSheet = document.createElement("style");
+    styleSheet.setAttribute('data-ai-prompt-box-styles', 'true');
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+  }
 }
 
 // Textarea Component

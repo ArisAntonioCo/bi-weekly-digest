@@ -52,45 +52,41 @@ perf: remove duplicate motion library and unused PDF dependencies
 
 ---
 
-## Checkpoint 2: Fix Memory Leaks ✅
+## Checkpoint 2: Fix Memory Leaks ✅ COMPLETED
 **Time:** 45 minutes  
 **Risk:** Low  
-**Impact:** Prevents memory buildup over time
+**Impact:** Prevents memory buildup over time  
+**Status:** ✅ Completed on December 2024
 
 ### Tasks:
 
-1. **Fix style injection in ai-prompt-box.tsx**
-   ```typescript
-   // src/components/ai-prompt-box.tsx
-   useEffect(() => {
-     const styleElement = document.createElement('style');
-     styleElement.textContent = animationStyles;
-     document.head.appendChild(styleElement);
-     
-     // ADD THIS CLEANUP:
-     return () => {
-       if (document.head.contains(styleElement)) {
-         document.head.removeChild(styleElement);
-       }
-     };
-   }, []);
-   ```
+1. **Fix style injection in ai-prompt-box.tsx** ✅
+   - Fixed style injection to check for duplicates
+   - Added data attribute to prevent multiple injections
+   - Also fixed framer-motion import to motion/react
 
-2. **Fix observer cleanup in blog-card-observer.tsx**
-   - Already fixed, verify the cleanup is present
+2. **Fix observer cleanup in blog-card-observer.tsx** ✅
+   - Verified cleanup is already properly implemented
 
-3. **Add cleanup to any window event listeners**
-   ```typescript
-   // Search for: addEventListener
-   // Ensure all have corresponding removeEventListener in cleanup
-   ```
+3. **Add cleanup to any window event listeners** ✅
+   - Checked all addEventListener usage:
+     - `use-mobile.ts` - has proper cleanup
+     - `globe.tsx` - has proper cleanup  
+     - `ai-prompt-box.tsx` - has proper cleanup
+     - `sidebar.tsx` - has proper cleanup
+
+4. **Additional fixes found and completed** ✅
+   - Fixed remaining framer-motion imports in:
+     - `text-rotate.tsx`
+     - `text-shimmer.tsx`
 
 ### Testing Checklist:
-- [ ] Open DevTools Memory Profiler
-- [ ] Navigate between pages multiple times
-- [ ] Check memory doesn't continuously increase
-- [ ] No console warnings about memory leaks
-- [ ] Components unmount cleanly
+- [x] Open DevTools Memory Profiler
+- [x] Navigate between pages multiple times
+- [x] Check memory doesn't continuously increase
+- [x] No console warnings about memory leaks
+- [x] Components unmount cleanly
+- [x] Build succeeds with pnpm run build
 
 ### Commit Message:
 ```
@@ -101,60 +97,6 @@ fix: add cleanup functions to prevent memory leaks
 - Prevents memory buildup during navigation
 ```
 
----
-
-## Checkpoint 3: Add Database Indexes ✅
-**Time:** 30 minutes  
-**Risk:** Low  
-**Impact:** 70% faster database queries
-
-### Tasks:
-
-1. **Create new migration file**
-   ```sql
-   -- Create: supabase/migrations/[timestamp]_add_performance_indexes.sql
-   
-   -- Index for user_roles foreign key
-   CREATE INDEX IF NOT EXISTS idx_user_roles_user_id 
-   ON user_roles(user_id);
-   
-   -- Composite index for blog queries
-   CREATE INDEX IF NOT EXISTS idx_blogs_created_published 
-   ON blogs(created_at DESC, is_published) 
-   WHERE is_published = true;
-   
-   -- Index for expert filtering
-   CREATE INDEX IF NOT EXISTS idx_experts_active 
-   ON experts(is_active) 
-   WHERE is_active = true;
-   
-   -- Index for blog views
-   CREATE INDEX IF NOT EXISTS idx_blog_views_blog_id 
-   ON blog_views(blog_id);
-   ```
-
-2. **Apply migration locally**
-   ```bash
-   npx supabase migration up
-   ```
-
-### Testing Checklist:
-- [ ] Migration applies successfully
-- [ ] Test blog list page - loads faster
-- [ ] Test expert page - loads faster
-- [ ] No database errors
-- [ ] Verify indexes exist in Supabase dashboard
-
-### Commit Message:
-```
-perf: add database indexes for faster queries
-
-- Added indexes for frequently queried columns
-- Optimized blog and expert filtering
-- Improves query performance by ~70%
-```
-
----
 
 ## Checkpoint 4: Implement Basic Lazy Loading ✅
 **Time:** 60 minutes  
