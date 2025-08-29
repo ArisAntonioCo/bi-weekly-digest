@@ -19,7 +19,8 @@ import {
   LayoutDashboard, 
   BookOpen,
   ChevronDown,
-  TrendingUp
+  TrendingUp,
+  Bookmark
 } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeSwitcher } from '@/components/ui/theme-switcher'
@@ -138,6 +139,9 @@ export default function Navbar({ className }: NavbarProps) {
     if (route === '/dashboard') {
       return pathname === '/dashboard'
     }
+    if (route === '/dashboard/saved') {
+      return pathname === '/dashboard/saved'
+    }
     if (route === '/blogs') {
       return pathname.startsWith('/blogs')
     }
@@ -248,6 +252,21 @@ export default function Navbar({ className }: NavbarProps) {
                     <BookOpen className="h-4 w-4 mr-2" />
                     Insights
                     {isActiveRoute('/blogs') && (
+                      <span className="ml-auto text-xs text-muted-foreground">●</span>
+                    )}
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem 
+                    onClick={() => handleNavigation('/dashboard/saved')}
+                    className={`text-muted-foreground cursor-pointer transition-colors ${
+                      isActiveRoute('/dashboard/saved') 
+                        ? 'bg-muted text-foreground' 
+                        : 'hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    <Bookmark className="h-4 w-4 mr-2" />
+                    Saved
+                    {isActiveRoute('/dashboard/saved') && (
                       <span className="ml-auto text-xs text-muted-foreground">●</span>
                     )}
                   </DropdownMenuItem>

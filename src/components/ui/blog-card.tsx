@@ -13,6 +13,7 @@ import {
   calculateReadingTime, 
   formatReadingTime 
 } from '@/utils/blog.utils'
+import { SaveToggle } from '@/components/ui/save-toggle'
 
 interface BlogCardProps {
   blog: Blog
@@ -46,6 +47,7 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
               <Icon className="h-3 w-3" />
               {analysisType.type}
             </Badge>
+            <SaveToggle blogId={blog.id} />
           </div>
           <h3 className="font-semibold text-base sm:text-lg line-clamp-2 text-foreground group-hover:text-foreground/90 transition-colors">
             {blog.title}

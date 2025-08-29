@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/server'
 import { BlogViewTracker } from './blog-view-tracker'
 import { Suspense } from 'react'
 import { BlogContent } from './blog-content'
+import { SaveToggle } from '@/components/ui/save-toggle'
 
 interface BlogDetailPageProps {
   params: Promise<{
@@ -96,6 +97,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                 {readingTime} min read
               </span>
             </div>
+            <SaveToggle blogId={resolvedParams.id} />
           </div>
           
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">

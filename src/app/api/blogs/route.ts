@@ -238,20 +238,7 @@ async function generateBlogContent(systemPrompt: string): Promise<string> {
   }
 }
 
-async function generateBlogFromSystemPrompt(supabase: ReturnType<typeof createClient> extends Promise<infer T> ? T : never, systemPrompt: string) {
-  const aiResponse = await generateBlogContent(systemPrompt)
-  
-  const { error } = await supabase
-    .from('blogs')
-    .insert({
-      title: `AI Investment Analysis - ${new Date().toLocaleDateString()}`,
-      content: aiResponse,
-    })
-  
-  if (error) {
-    throw new ApiError(500, 'Failed to create initial blog', error)
-  }
-}
+// generation of initial blog content is no longer triggered from GET
 
 async function getSystemPromptSummary(systemPrompt: string): Promise<string> {
   // Extract a meaningful summary from the system prompt
