@@ -60,7 +60,8 @@
       "Bash(rg:*)",
       "Bash(pnpm add:*)",
       "mcp__supabase__get_advisors",
-      "Bash(pnpm dlx shadcn@latest add:*)"
+      "Bash(pnpm dlx shadcn@latest add:*)",
+      "Bash(npx @next/bundle-analyzer build:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
