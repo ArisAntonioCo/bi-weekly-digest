@@ -151,16 +151,118 @@ export function ExpertAnalysisPage() {
   if (loadingExperts) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-6 py-8 max-w-7xl">
-          <div className="space-y-6">
-            <Skeleton className="h-12 w-64 mx-auto" />
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="space-y-4">
-                <Skeleton className="h-[500px] w-full rounded-3xl" />
-                <Skeleton className="h-[200px] w-full rounded-3xl" />
+        {/* Page Header - Exact match to PageHeader component */}
+        <div className="container mx-auto px-4 pt-6 pb-8">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <Skeleton className="h-9 w-64 mb-2" />
+              <Skeleton className="h-5 w-96" />
+            </div>
+            <Skeleton className="h-9 w-20 rounded-md" />
+          </div>
+        </div>
+        
+        {/* Main Content - Exact grid structure */}
+        <div className="container mx-auto px-4 pb-12">
+          <div className="grid gap-4 lg:grid-cols-3">
+            {/* Left Column - Expert Selector Card */}
+            <div>
+              {/* Using DashboardCard structure with bg-muted/50 */}
+              <div className="bg-muted/50 rounded-3xl p-6 min-h-[200px]">
+                {/* CardHeader structure */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-muted/50 flex items-center justify-center">
+                        <Skeleton className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <Skeleton className="h-5 w-32 mb-1" />
+                        <Skeleton className="h-4 w-48" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* CardContent with mt-4 */}
+                <div className="mt-4">
+                  {/* Search and Sort Controls */}
+                  <div className="flex gap-2 mb-4">
+                    <Skeleton className="h-10 flex-1 rounded-md" />
+                    <Skeleton className="h-10 w-[140px] rounded-md" />
+                  </div>
+                  
+                  {/* ScrollArea with expert cards */}
+                  <div className="h-[calc(100vh-380px)] pr-3">
+                    <div className="space-y-3">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className="p-5 rounded-2xl bg-background/50">
+                          <div className="relative">
+                            {/* Selection indicator position */}
+                            <div className="absolute right-4 top-4">
+                              <Skeleton className="h-6 w-6 rounded-full" />
+                            </div>
+                            {/* Expert info */}
+                            <div className="pr-10 space-y-2">
+                              <div className="flex items-center gap-3">
+                                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                                <div>
+                                  <Skeleton className="h-5 w-32 mb-1" />
+                                  <Skeleton className="h-3 w-24" />
+                                </div>
+                              </div>
+                              <Skeleton className="h-3 w-full" />
+                              <Skeleton className="h-3 w-4/5" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="lg:col-span-2">
-                <Skeleton className="h-[600px] w-full rounded-3xl" />
+            </div>
+
+            {/* Right Column - Stock Input & Empty State */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Stock Input Card - DashboardCard structure */}
+              <div className="bg-muted/50 rounded-3xl p-6 min-h-[200px]">
+                {/* CardHeader */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-muted/50 flex items-center justify-center">
+                        <Skeleton className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <Skeleton className="h-5 w-40 mb-1" />
+                        <Skeleton className="h-4 w-56" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* CardContent */}
+                <div className="mt-4">
+                  <div className="space-y-4">
+                    <Skeleton className="h-12 w-full rounded-md" />
+                    <div className="grid grid-cols-4 gap-2">
+                      {[...Array(8)].map((_, i) => (
+                        <Skeleton key={i} className="h-9 rounded-lg" />
+                      ))}
+                    </div>
+                    <Skeleton className="h-12 w-full rounded-lg" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Empty State Card */}
+              <div className="bg-muted/50 rounded-3xl p-8 min-h-[200px]">
+                <div className="flex flex-col items-center justify-center h-full space-y-4">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-64" />
+                </div>
               </div>
             </div>
           </div>
