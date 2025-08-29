@@ -74,7 +74,13 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    return createSuccessResponse({ data: result }, 200)
+    const response = createSuccessResponse({ data: result }, 200)
+    // Add cache headers for analysis results
+    response.headers.set(
+      'Cache-Control',
+      'private, s-maxage=1800, stale-while-revalidate=3600'
+    )
+    return response
   } catch (error) {
     return handleApiError(error)
   }

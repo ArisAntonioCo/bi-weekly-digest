@@ -38,13 +38,17 @@ export async function GET(request: NextRequest) {
       throw error
     }
 
-    // Return paginated response
+    // Return paginated response with cache headers
     return NextResponse.json({
       experts: experts || [],
       total: count || 0,
       page,
       limit,
       totalPages: Math.ceil((count || 0) / limit)
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+      }
     })
   } catch (error) {
     console.error('Error fetching experts:', error)
