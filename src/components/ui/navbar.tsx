@@ -24,7 +24,7 @@ import {
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeSwitcher } from '@/components/ui/theme-switcher'
 import { Logo } from '@/components/ui/logo'
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { motion, useScroll, useMotionValueEvent } from 'motion/react'
 import { useBanner } from '@/contexts/banner-context'
 
 interface NavbarProps {

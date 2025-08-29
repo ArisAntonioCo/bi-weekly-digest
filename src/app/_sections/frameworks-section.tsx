@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { motion, useScroll, useTransform, MotionValue } from 'framer-motion'
+import { motion, useScroll, useTransform, MotionValue } from 'motion/react'
 import { useExperts } from '@/hooks/use-experts'
 import { ExpertMarqueeCard } from './expert-marquee-card'
 
