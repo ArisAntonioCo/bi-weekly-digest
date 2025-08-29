@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react'
 
 interface BannerContextValue {
   isVisible: boolean
@@ -33,13 +33,13 @@ export function BannerProvider({ children }: BannerProviderProps) {
     setBannerHeight(height)
   }, [])
 
-  const value: BannerContextValue = {
+  const value: BannerContextValue = useMemo(() => ({
     isVisible,
     bannerHeight,
     showBanner,
     hideBanner,
     setBannerHeight: updateBannerHeight
-  }
+  }), [isVisible, bannerHeight, showBanner, hideBanner, updateBannerHeight])
 
   return (
     <BannerContext.Provider value={value}>

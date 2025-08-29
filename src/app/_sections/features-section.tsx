@@ -6,7 +6,7 @@ import { NumberTicker } from '@/components/magicui/number-ticker'
 import { Ripple } from '@/components/magicui/ripple'
 import { TrendingUp, TrendingDown, Zap, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 
 const insights = [
   {
@@ -205,7 +205,7 @@ const features = [
   }
 ]
 
-export function FeaturesSection() {
+export const FeaturesSection = memo(function FeaturesSection() {
   return (
     <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="mb-12 sm:mb-16">
@@ -230,4 +230,4 @@ export function FeaturesSection() {
       
     </section>
   )
-}
+})

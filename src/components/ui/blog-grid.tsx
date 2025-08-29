@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, memo, useCallback } from 'react'
 import { BlogPagination } from './blog-pagination'
 import { BlogCardObserver } from './blog-card-observer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -61,12 +61,12 @@ export const BlogGrid = memo(function BlogGrid({
     setActiveTab(currentSort)
   }, [currentSort])
 
-  const handleTabChange = (value: string) => {
+  const handleTabChange = useCallback((value: string) => {
     const newSort = value as 'latest' | 'oldest'
     setActiveTab(newSort)
     onSortChange(newSort)
     onPageChange(1)
-  }
+  }, [onSortChange, onPageChange])
 
   if (blogs.length === 0 && total === 0 && !searchQuery) {
     return (
