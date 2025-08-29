@@ -7,7 +7,7 @@ export function BlogPreviewSection() {
     <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="text-center mb-12 sm:mb-16">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-none">
-          Latest Investment Insights
+          Latest 3Y Dispatch
         </h2>
         <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 leading-snug px-4">
           Explore our AI-powered analysis and stay ahead of market trends with comprehensive investment research.
