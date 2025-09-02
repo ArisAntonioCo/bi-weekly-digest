@@ -15,6 +15,7 @@ import { LoadingState } from '../_components/loading-state'
 import { AnalysisResult } from '../_components/analysis-result'
 import { EmptyState } from '../_components/empty-state'
 import { DisclaimerDialog } from '../_components/disclaimer-dialog'
+import type { HoldPeriod } from '../_components/hold-period-selector'
 
 interface AnalysisResultType {
   id: string
@@ -27,6 +28,7 @@ interface AnalysisResultType {
   current_price?: number
   market_cap?: string
   pe_ratio?: number
+  hold_period?: number
 }
 
 export function ExpertAnalysisPage() {
@@ -37,6 +39,7 @@ export function ExpertAnalysisPage() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultType | null>(null)
   const [recentAnalyses, setRecentAnalyses] = useState<AnalysisResultType[]>([])
   const [showDisclaimer, setShowDisclaimer] = useState(true)
+  const [holdPeriod, setHoldPeriod] = useState<HoldPeriod>(3)
 
   useEffect(() => {
     loadRecentAnalyses()
@@ -77,7 +80,8 @@ export function ExpertAnalysisPage() {
       console.warn('Attempted to save invalid analysis result')
       return
     }
-    const updated = [analysis, ...recentAnalyses.slice(0, 4)]
+    const withHorizon = { ...analysis, hold_period: analysis.hold_period ?? holdPeriod }
+    const updated = [withHorizon, ...recentAnalyses.slice(0, 4)]
     setRecentAnalyses(updated)
     localStorage.setItem('recentAnalyses', JSON.stringify(updated))
   }
@@ -95,6 +99,11 @@ export function ExpertAnalysisPage() {
   const handleAnalyze = async () => {
     if (selectedExperts.length === 0) {
       toast.error('Please select at least one expert')
+      return
+    }
+
+    if (selectedExperts.length < 3 || selectedExperts.length > 5) {
+      toast.error('Please select between 3 and 5 experts')
       return
     }
 
@@ -122,7 +131,8 @@ export function ExpertAnalysisPage() {
           expert_id: expertsToUse.id,
           stock_ticker: stockTicker.toUpperCase().trim(),
           // For future: pass all expert IDs
-          expert_ids: selectedExperts.map(e => e.id)
+          expert_ids: selectedExperts.map(e => e.id),
+          hold_period: holdPeriod
         })
       })
 
@@ -297,14 +307,19 @@ export function ExpertAnalysisPage() {
               {/* Stock Input with Animation */}
               <AnimatePresence mode="wait">
                 {!analysisResult && (
-                  <StockInput
-                    key="stock-input"
-                    stockTicker={stockTicker}
-                    onTickerChange={setStockTicker}
-                    onAnalyze={handleAnalyze}
-                    analyzing={analyzing}
-                    disabled={selectedExperts.length === 0 || !stockTicker}
-                  />
+                <StockInput
+                  key="stock-input"
+                  stockTicker={stockTicker}
+                  onTickerChange={setStockTicker}
+                  onAnalyze={handleAnalyze}
+                  analyzing={analyzing}
+                  disabled={
+                    !stockTicker || analyzing || selectedExperts.length < 3 || selectedExperts.length > 5
+                  }
+                  holdPeriod={holdPeriod}
+                  onHoldPeriodChange={setHoldPeriod}
+                  expertCount={selectedExperts.length}
+                />
                 )}
               </AnimatePresence>
               

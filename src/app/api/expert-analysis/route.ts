@@ -14,10 +14,11 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const { expert_id, expert_ids, stock_ticker } = body as {
+    const { expert_id, expert_ids, stock_ticker, hold_period } = body as {
       expert_id?: string
       expert_ids?: string[]
       stock_ticker?: string
+      hold_period?: number
     }
 
     if (!stock_ticker) throw new ApiError(400, 'Stock or ETF ticker is required')
@@ -31,6 +32,13 @@ export async function POST(request: NextRequest) {
       ? expert_ids
       : (expert_id ? [expert_id] : [])
     if (selectedExpertIds.length === 0) throw new ApiError(400, 'At least one expert must be selected')
+    if (selectedExpertIds.length < 3 || selectedExpertIds.length > 5) {
+      throw new ApiError(400, 'Please select between 3 and 5 experts')
+    }
+
+    // Validate hold period (default 3)
+    const allowedHorizons = new Set([3, 5, 10])
+    const horizon = allowedHorizons.has(hold_period ?? 3) ? (hold_period as 3 | 5 | 10) : 3
 
     // Fetch experts
     const { data: experts, error: expertsError } = await supabase
@@ -40,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (expertsError || !experts || experts.length === 0) throw new ApiError(404, 'Selected experts not found or inactive')
 
     // Generate analysis
-    const analysis = await generateExpertAnalysis(experts, stock_ticker)
+    const analysis = await generateExpertAnalysis(experts, stock_ticker, horizon)
 
     // Prepare response
     const result = {
@@ -54,6 +62,7 @@ export async function POST(request: NextRequest) {
       current_price: analysis.current_price,
       market_cap: analysis.market_cap,
       pe_ratio: analysis.pe_ratio,
+      hold_period: horizon,
     }
 
     // Optionally store in database for logged-in users
@@ -70,6 +79,7 @@ export async function POST(request: NextRequest) {
           market_cap: analysis.market_cap,
           pe_ratio: analysis.pe_ratio,
           experts: experts.map(e => ({ id: e.id, name: e.name })),
+          hold_period: horizon,
         },
       })
     }
@@ -94,14 +104,14 @@ interface ExpertRecord {
   framework_description?: string
 }
 
-async function generateExpertAnalysis(experts: ExpertRecord[], ticker: string) {
+async function generateExpertAnalysis(experts: ExpertRecord[], ticker: string, holdYears: 3 | 5 | 10) {
   try {
     // Pull system prompt using service role (bypass RLS)
     const serviceSupabase = createServiceClient()
     const config = await NewsletterService.getConfiguration(serviceSupabase)
 
     // Compose prompt and request a meta JSON block (price only)
-    const composedPrompt = adaptSystemPrompt(config.system_prompt, experts, ticker)
+    const composedPrompt = adaptSystemPrompt(config.system_prompt, experts, ticker, holdYears)
     const metaInstruction = `\n\nAt the very end of your response, add a single fenced code block with json containing exactly this object and nothing else:\n{\n  \"meta\": {\n    \"ticker\": \"${ticker.toUpperCase()}\",\n    \"price\": <number>\n  }\n}\n`
 
     let content = await ContentGenerationService.generateContent(composedPrompt + metaInstruction)
@@ -132,13 +142,13 @@ async function generateExpertAnalysis(experts: ExpertRecord[], ticker: string) {
   }
 }
 
-function adaptSystemPrompt(systemPrompt: string, experts: ExpertRecord[], ticker: string): string {
+function adaptSystemPrompt(systemPrompt: string, experts: ExpertRecord[], ticker: string, holdYears: 3 | 5 | 10): string {
   let prompt = systemPrompt
 
   // Replace target company/ticker in the task line
   prompt = prompt.replace(
     /## YOUR TASK:[^\n]*/,
-    `## YOUR TASK: For ${ticker.toUpperCase()} (the company) and provide a complete investment analysis using the framework below. Use web search to get current market data.`
+    `## YOUR TASK: For ${ticker.toUpperCase()} (the company) and provide a complete investment analysis using the framework below. Use web search to get current market data. Calibrate all scenarios and MOIC projections to a ${holdYears}-year hold period.`
   )
 
   // Replace company in "What X Does" heading
@@ -176,6 +186,11 @@ function adaptSystemPrompt(systemPrompt: string, experts: ExpertRecord[], ticker
   // Adjust summary judgment count
   prompt = prompt.replace(/5 expert views/g, `${experts.length} expert views`)
 
+  // Add clear horizon guidance near the top if not present
+  if (!/hold\s*period/i.test(prompt)) {
+    prompt = `### Horizon\nUse a ${holdYears}-year investment horizon for all projections.\n\n` + prompt
+  }
+
   // Remove personas/requirements/quality/red flags sections
   const removeBlocks: RegExp[] = [
     /###\s*Expert Personas for Reference[\s\S]*?(?=\n###\s|\n##\s|$)/,
@@ -205,4 +220,3 @@ function trimContentAfterUnwantedHeadings(content: string): string {
   if (cutIndex !== null) return content.slice(0, cutIndex).trim()
   return content
 }
-

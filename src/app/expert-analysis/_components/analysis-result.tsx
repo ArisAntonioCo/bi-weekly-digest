@@ -23,6 +23,7 @@ interface AnalysisResult {
   current_price?: number
   market_cap?: string
   pe_ratio?: number
+  hold_period?: number
 }
 
 interface AnalysisResultProps {
@@ -87,6 +88,11 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
                         <span className="text-xs sm:text-sm text-muted-foreground">
                           Analysis by {result.expert_name}
                         </span>
+                        {result.hold_period && (
+                          <Badge variant="secondary" className="text-xs sm:text-sm">
+                            Horizon: {result.hold_period}y
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -180,6 +186,11 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
                   <span className="text-sm text-muted-foreground">
                     by {result.expert_name}
                   </span>
+                  {result.hold_period && (
+                    <Badge variant="secondary" className="text-xs">
+                      {result.hold_period}y horizon
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>

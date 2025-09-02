@@ -11,6 +11,7 @@ import { User, Check, Search, ArrowUpDown } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
+import { ExpertSelectionFooter } from './expert-selection-footer'
 
 interface ExpertSelectorProps {
   experts: Expert[]
@@ -63,9 +64,9 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
       // Remove expert
       onSelectExperts(selectedExperts.filter(e => e.id !== expert.id))
     } else {
-      // Add expert (max 3)
-      if (selectedExperts.length >= 3) {
-        toast.error('Maximum 3 experts can be selected')
+      // Add expert (max 5)
+      if (selectedExperts.length >= 5) {
+        toast.error('You can select up to 5 experts')
         return
       }
       onSelectExperts([...selectedExperts, expert])
@@ -85,7 +86,7 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
       <DashboardCard variant="default" padding="medium">
         <CardHeader
           title="Select Experts"
-          subtitle={`Choose up to 3 frameworks (${selectedExperts.length}/3)`}
+          subtitle={`Choose 3–5 frameworks (${selectedExperts.length}/5)`}
           icon={<User className="h-5 w-5 text-foreground" />}
           action={
             selectedExperts.length > 0 && (
@@ -201,6 +202,7 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
               )}
             </div>
           </ScrollArea>
+          <ExpertSelectionFooter count={selectedExperts.length} min={3} max={5} />
         </CardContent>
       </DashboardCard>
     </motion.div>

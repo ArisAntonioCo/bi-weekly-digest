@@ -41,7 +41,7 @@ export function EmptyState({ selectedExperts, onRemoveExpert, recentAnalyses, on
           <div className="flex items-center gap-3">
             <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
             <p className="text-sm font-medium text-foreground">
-              Selected ({selectedExperts.length}/3):
+              Selected ({selectedExperts.length}/5):
             </p>
             <div className="flex flex-wrap gap-2">
               {selectedExperts.map(expert => (

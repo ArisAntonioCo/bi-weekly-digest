@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, ChevronRight, Loader2, TrendingUp, Landmark } from 'lucide-react'
 import { motion } from 'motion/react'
+import { HoldPeriodSelector } from './hold-period-selector'
 
 interface StockInputProps {
   stockTicker: string
@@ -12,6 +13,9 @@ interface StockInputProps {
   onAnalyze: () => void
   analyzing: boolean
   disabled: boolean
+  holdPeriod: 3 | 5 | 10
+  onHoldPeriodChange: (value: 3 | 5 | 10) => void
+  expertCount: number
 }
 
 interface TickerOption {
@@ -40,7 +44,10 @@ export function StockInput({
   onTickerChange, 
   onAnalyze, 
   analyzing, 
-  disabled 
+  disabled,
+  holdPeriod,
+  onHoldPeriodChange,
+  expertCount
 }: StockInputProps) {
   const handleTickerChange = (value: string) => {
     const upperCaseValue = value.toUpperCase()
@@ -72,7 +79,7 @@ export function StockInput({
       <DashboardCard variant="default" padding="medium">
         <CardHeader
           title="Stock or ETF Symbol"
-          subtitle="Enter a ticker to analyze"
+          subtitle="Enter a ticker and choose your hold period"
           icon={<Search className="h-5 w-5 text-foreground" />}
         />
         <CardContent>
@@ -111,6 +118,22 @@ export function StockInput({
                   </>
                 )}
               </Button>
+            </div>
+
+            {/* Hold Period Selector */}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground mb-2">Hold Period</p>
+                <HoldPeriodSelector 
+                  value={holdPeriod} 
+                  onChange={onHoldPeriodChange}
+                  disabled={analyzing}
+                />
+              </div>
+              <div className="text-right text-xs text-muted-foreground">
+                <p>Experts selected: {expertCount}</p>
+                <p className={expertCount >= 3 && expertCount <= 5 ? '' : 'text-destructive'}>Choose 3–5 experts</p>
+              </div>
             </div>
 
             {/* Popular Tickers Grid */}
