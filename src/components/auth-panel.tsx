@@ -57,6 +57,16 @@ export function AuthPanel({ children }: AuthPanelProps) {
         <div className="bg-card rounded-2xl p-8 lg:p-12 flex items-center justify-center">
           <div className="w-full max-w-md">
             {children}
+
+            {/* Disclaimer */}
+            <div className="mt-6 text-xs text-muted-foreground leading-relaxed">
+              <p>
+                <strong>Disclaimer:</strong> This is not investment advice. Stock market
+                conditions are subject to change. Investors should perform their own due
+                diligence and consider their individual financial goals and risk tolerance
+                before making any investment decisions.
+              </p>
+            </div>
           </div>
         </div>
       </div>
