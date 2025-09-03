@@ -57,7 +57,6 @@ export function BlogsUrlSync() {
   useEffect(() => {
     const current: Partial<BlogsParams> = parseBlogsParams(sp)
     const next: Partial<BlogsParams> = { search, sort, type, page }
-    // Avoid loops: only update when values differ
     if (
       current.search === next.search &&
       current.sort === next.sort &&
@@ -73,3 +72,4 @@ export function BlogsUrlSync() {
 
   return null
 }
+
