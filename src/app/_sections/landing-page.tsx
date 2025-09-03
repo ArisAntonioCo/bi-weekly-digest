@@ -5,6 +5,14 @@ import { HeroSection } from './hero-section'
 import { SectionSkeleton } from '@/components/ui/section-skeleton'
 
 // Lazy load all below-the-fold sections for better performance
+const Why3YSection = dynamic(
+  () => import('./why-3y-section').then(mod => ({ default: mod.Why3YSection })),
+  {
+    loading: () => <SectionSkeleton />,
+    ssr: true,
+  }
+)
+
 const FeaturesSection = dynamic(
   () => import('./features-section').then(mod => ({ default: mod.FeaturesSection })),
   { 
@@ -66,6 +74,8 @@ export function LandingPage() {
     <div>
       {/* Hero section loads immediately - above the fold */}
       <HeroSection />
+      {/* Why 3Y section directly after hero */}
+      <Why3YSection />
       
       {/* All other sections lazy load for optimal performance */}
       <FeaturesSection />
