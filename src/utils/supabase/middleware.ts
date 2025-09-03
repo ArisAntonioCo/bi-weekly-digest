@@ -10,14 +10,16 @@ export async function updateSession(request: NextRequest) {
 
   const isApiRoute = pathname.startsWith('/api')
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
-  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/admin')
+
+  // Only homepage and auth pages are public. Everything else requires auth.
+  const isPublicRoute = pathname === '/' || isAuthRoute
 
   if (isApiRoute) return response
 
   // Basic auth detection via Supabase cookie prefix
   const hasAuthCookie = request.cookies.getAll().some(c => c.name.startsWith('sb-'))
 
-  if (!hasAuthCookie && isProtectedRoute && !isAuthRoute) {
+  if (!hasAuthCookie && !isPublicRoute) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
