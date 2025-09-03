@@ -14,7 +14,7 @@ interface Why3YSectionProps {
 
 export function Why3YSection({
   headline = 'Get results and',
-  subhead = 'analysis, through expert frameworks — a clear, durable view.',
+  subhead = 'analysis',
   ctaPrimary = { label: 'Analyze a ticker', href: '/expert-analysis' },
   ctaSecondary = { label: 'See a sample', href: '/blogs' },
   className,
@@ -24,12 +24,10 @@ export function Why3YSection({
       {/* Headline */}
       <div className="max-w-6xl">
         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.06] tracking-tight text-foreground">
-          {/* Use provided headline/subhead to avoid unused warnings and allow customization */}
-          <span className="text-muted-foreground">{headline.split(' ')[0]}</span>{' '}
-          <span>{headline.replace(/^\S+\s?/, '') || 'results and'}</span>
+          {headline}
           <br />
-          <span>{subhead.split(',')[0] || 'analysis'}</span>
-          <span className="text-muted-foreground">{subhead.replace(/^.*?/, ', through expert frameworks')}</span>
+          {subhead}
+          <span className="text-muted-foreground">, through expert frameworks</span>
           <ExpertAvatarStack size={44} className="ml-3 align-middle -translate-y-[2px]" />
           <span className="text-muted-foreground"> — a clear, durable view.</span>
         </h2>
