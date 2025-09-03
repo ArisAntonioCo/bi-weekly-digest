@@ -3,8 +3,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Hold, AnalysisParams, parseAnalysisParams, analysisParamsToQuery } from '@/utils/query-params'
+import { useSearchParams } from 'next/navigation'
+import { Hold, parseAnalysisParams } from '@/utils/query-params'
 
 type AnalysisState = {
   selectedExperts: string[]
@@ -33,40 +33,17 @@ export const useAnalysisStore = create<AnalysisState>()(
   )
 )
 
+// One-way sync: URL -> store (page code is free to push URL when needed)
 export function AnalysisUrlSync() {
-  const router = useRouter()
   const sp = useSearchParams()
-  const params = parseAnalysisParams(sp)
-  const { selectedExperts, ticker, hold, setExperts, setTicker, setHold } = useAnalysisStore()
+  const { setExperts, setTicker, setHold } = useAnalysisStore()
 
-  // Hydrate from URL on mount
   useEffect(() => {
-    if (params.experts) setExperts(params.experts)
-    if (params.ticker) setTicker(params.ticker)
-    if (params.hold) setHold(params.hold)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Push URL when core params change
-  useEffect(() => {
-    const current: AnalysisParams = parseAnalysisParams(sp)
-    const next: AnalysisParams = {
-      experts: selectedExperts.length ? selectedExperts : undefined,
-      ticker: ticker || undefined,
-      hold,
-    }
-    if (
-      (current.ticker || '') === (next.ticker || '') &&
-      (current.hold || 3) === (next.hold || 3) &&
-      (current.experts || []).join(',') === (next.experts || []).join(',')
-    ) {
-      return
-    }
-    const q = analysisParamsToQuery(next)
-    const url = q ? `/expert-analysis?${q}` : '/expert-analysis'
-    router.replace(url)
-  }, [selectedExperts, ticker, hold, router, sp])
+    const p = parseAnalysisParams(sp)
+    if (p.experts) setExperts(p.experts)
+    if (p.ticker) setTicker(p.ticker)
+    if (p.hold) setHold(p.hold)
+  }, [sp, setExperts, setTicker, setHold])
 
   return null
 }
-

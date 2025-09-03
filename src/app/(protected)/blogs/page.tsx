@@ -1,5 +1,6 @@
 import { BlogListWrapper } from '@/components/blog-list-wrapper'
 import { BlogSearchClient } from '@/components/blog-search-client'
+import { BlogsUrlSync } from './_providers/blogs-store'
 import { getCachedSystemPromptSummary, getCachedTotalCount } from '@/lib/blog-cache'
 
 interface BlogsPageProps {
@@ -39,6 +40,9 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
               </p>
             </div>
           )}
+
+          {/* URL ↔ UI sync for blogs filters/sort/page */}
+          <BlogsUrlSync />
 
           {/* Blog Content with Search and Suspense */}
           <BlogSearchClient totalCount={totalCount}>

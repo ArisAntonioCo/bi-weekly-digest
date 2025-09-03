@@ -3,8 +3,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { BlogsParams, parseBlogsParams, blogsParamsToQuery, BlogSort, BlogType } from '@/utils/query-params'
+import { useSearchParams } from 'next/navigation'
+import { parseBlogsParams, BlogSort, BlogType } from '@/utils/query-params'
 
 type BlogsState = {
   search: string
@@ -38,38 +38,18 @@ export const useBlogsStore = create<BlogsState>()(
 )
 
 // Optional URL sync helper to be used in page client leaves
+// One-way sync: URL -> store (avoid loops; pushing URL handled by page client code)
 export function BlogsUrlSync() {
-  const router = useRouter()
   const sp = useSearchParams()
-  const params = parseBlogsParams(sp)
-  const { search, sort, type, page, setSearch, setSort, setType, setPage } = useBlogsStore()
+  const { setSearch, setSort, setType, setPage } = useBlogsStore()
 
-  // Hydrate from URL on mount
   useEffect(() => {
-    setSearch(params.search || '')
-    setSort(params.sort || 'latest')
-    setType((params.type || 'all') as BlogType)
-    setPage(params.page || 1)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Push URL when key params change
-  useEffect(() => {
-    const current: Partial<BlogsParams> = parseBlogsParams(sp)
-    const next: Partial<BlogsParams> = { search, sort, type, page }
-    if (
-      current.search === next.search &&
-      current.sort === next.sort &&
-      (current.type || 'all') === (next.type || 'all') &&
-      (current.page || 1) === (next.page || 1)
-    ) {
-      return
-    }
-    const q = blogsParamsToQuery(next)
-    const url = q ? `/blogs?${q}` : '/blogs'
-    router.replace(url)
-  }, [search, sort, type, page, router, sp])
+    const p = parseBlogsParams(sp)
+    setSearch(p.search || '')
+    setSort(p.sort || 'latest')
+    setType((p.type || 'all') as BlogType)
+    setPage(p.page || 1)
+  }, [sp, setSearch, setSort, setType, setPage])
 
   return null
 }
-
