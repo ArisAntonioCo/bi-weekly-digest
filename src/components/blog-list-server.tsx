@@ -1,4 +1,5 @@
 import { BlogGridServer } from './blog-grid-server'
+import { createClient } from '@/utils/supabase/server'
 import { getBlogs, prefetchAdjacentPages } from '@/lib/blog-cache'
 
 interface BlogListServerProps {
@@ -21,6 +22,23 @@ export async function BlogListServer({ searchParams }: BlogListServerProps) {
   
   // Fetch current page data
   const data = await getBlogs(params)
+
+  // Fetch saved status in one query for current user
+  let savedIds: string[] | undefined
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const ids = (data.data || []).map(b => b.id)
+      if (ids.length > 0) {
+        const { data: savedRows } = await supabase
+          .from('saved_blogs')
+          .select('blog_id')
+          .in('blog_id', ids)
+        savedIds = (savedRows || []).map(r => r.blog_id)
+      }
+    }
+  } catch {}
   
   // Prefetch adjacent pages in background
   prefetchAdjacentPages(params)
@@ -33,6 +51,7 @@ export async function BlogListServer({ searchParams }: BlogListServerProps) {
       total={data.total}
       perPage={data.perPage}
       searchQuery={searchParams.search}
+      savedIds={savedIds}
     />
   )
 }

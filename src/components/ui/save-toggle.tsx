@@ -11,13 +11,14 @@ import { Toggle } from '@/components/ui/toggle'
 interface SaveToggleProps {
   blogId: string
   className?: string
+  initialSaved?: boolean
 }
 
-export function SaveToggle({ blogId, className }: SaveToggleProps) {
+export function SaveToggle({ blogId, className, initialSaved }: SaveToggleProps) {
   const supabase = createClient()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [saved, setSaved] = useState<boolean>(false)
+  const [saved, setSaved] = useState<boolean>(initialSaved ?? false)
   const [authed, setAuthed] = useState<boolean>(false)
 
   useEffect(() => {
@@ -26,24 +27,26 @@ export function SaveToggle({ blogId, className }: SaveToggleProps) {
       const { data: { user } } = await supabase.auth.getUser()
       if (!mounted) return
       setAuthed(!!user)
-      if (!user) return
-      const { data } = await supabase
+      if (!user || initialSaved !== undefined) return
+      // Head-only existence check (lighter payload)
+      const { count } = await supabase
         .from('saved_blogs')
-        .select('id')
+        .select('id', { count: 'exact', head: true })
         .eq('blog_id', blogId)
-        .maybeSingle()
       if (!mounted) return
-      setSaved(!!data)
+      setSaved((count || 0) > 0)
     }
     init()
     return () => { mounted = false }
-  }, [blogId, supabase])
+  }, [blogId, supabase, initialSaved])
 
   const handleToggle = useCallback(async (next: boolean) => {
     if (!authed) {
       router.push('/login')
       return
     }
+    // Optimistic update for instant UI feedback
+    setSaved(next)
     setLoading(true)
     try {
       if (saved && next === false) {
@@ -52,21 +55,21 @@ export function SaveToggle({ blogId, className }: SaveToggleProps) {
           .delete()
           .eq('blog_id', blogId)
         if (error) throw error
-        setSaved(false)
         toast.success('Removed from saved')
       } else if (!saved && next === true) {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error('Not authenticated')
         const { error } = await supabase
           .from('saved_blogs')
-          .insert({ user_id: user.id, blog_id: blogId })
+          .upsert({ user_id: user.id, blog_id: blogId }, { onConflict: 'user_id,blog_id' })
         if (error) throw error
-        setSaved(true)
         toast.success('Saved')
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to update saved state'
       toast.error('Action failed', { description: message })
+      // Revert optimistic update on failure
+      setSaved(!next)
     } finally {
       setLoading(false)
     }

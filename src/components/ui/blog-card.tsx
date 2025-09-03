@@ -18,9 +18,10 @@ import { SaveToggle } from '@/components/ui/save-toggle'
 interface BlogCardProps {
   blog: Blog
   isAdmin?: boolean
+  initialSaved?: boolean
 }
 
-export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCardProps) {
+export const BlogCard = memo(function BlogCard({ blog, isAdmin = false, initialSaved }: BlogCardProps) {
   const router = useRouter()
   
   // Use utility functions for business logic
@@ -47,7 +48,7 @@ export const BlogCard = memo(function BlogCard({ blog, isAdmin = false }: BlogCa
               <Icon className="h-3 w-3" />
               {analysisType.type}
             </Badge>
-            <SaveToggle blogId={blog.id} />
+            <SaveToggle blogId={blog.id} initialSaved={initialSaved} />
           </div>
           <h3 className="font-semibold text-base sm:text-lg line-clamp-2 text-foreground group-hover:text-foreground/90 transition-colors">
             {blog.title}

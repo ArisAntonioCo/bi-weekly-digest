@@ -9,7 +9,7 @@ import rehypeHighlight from 'rehype-highlight'
 import type { Components } from 'react-markdown'
 import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/github-dark.css'
-import '@/app/dashboard/moic-analyzer/katex-theme.css'
+import '@/app/(protected)/dashboard/moic-analyzer/katex-theme.css'
 
 interface AIResponseProps {
   content: string

@@ -1,8 +1,4 @@
 "use client"
-
-import Link from 'next/link'
-import Image from 'next/image'
-import { Button } from '@/components/ui/button'
 import { ExpertAvatarStack } from '@/components/ui/expert-avatar-stack'
 import { SectionStrip } from '@/components/ui/section-strip'
 
@@ -13,7 +9,6 @@ interface Why3YSectionProps {
   subhead?: string
   ctaPrimary?: CTA
   ctaSecondary?: CTA
-  showTable?: boolean
   className?: string
 }
 
@@ -22,7 +17,6 @@ export function Why3YSection({
   subhead = 'analysis, through expert frameworks — a clear, durable view.',
   ctaPrimary = { label: 'Analyze a ticker', href: '/expert-analysis' },
   ctaSecondary = { label: 'See a sample', href: '/blogs' },
-  showTable = false,
   className,
 }: Why3YSectionProps) {
   return (
@@ -30,12 +24,12 @@ export function Why3YSection({
       {/* Headline */}
       <div className="max-w-6xl">
         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.06] tracking-tight text-foreground">
-          <span className="text-muted-foreground">Get</span>{' '}
-          <span>results</span>{' '}
-          <span className="text-muted-foreground">and</span>
+          {/* Use provided headline/subhead to avoid unused warnings and allow customization */}
+          <span className="text-muted-foreground">{headline.split(' ')[0]}</span>{' '}
+          <span>{headline.replace(/^\S+\s?/, '') || 'results and'}</span>
           <br />
-          <span>analysis</span>
-          <span className="text-muted-foreground">, through expert frameworks</span>
+          <span>{subhead.split(',')[0] || 'analysis'}</span>
+          <span className="text-muted-foreground">{subhead.replace(/^.*?/, ', through expert frameworks')}</span>
           <ExpertAvatarStack size={44} className="ml-3 align-middle -translate-y-[2px]" />
           <span className="text-muted-foreground"> — a clear, durable view.</span>
         </h2>

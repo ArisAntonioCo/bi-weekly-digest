@@ -8,9 +8,10 @@ import { Skeleton } from './skeleton'
 interface BlogCardObserverProps {
   blog: Blog
   isAdmin?: boolean
+  initialSaved?: boolean
 }
 
-export function BlogCardObserver({ blog, isAdmin = false }: BlogCardObserverProps) {
+export function BlogCardObserver({ blog, isAdmin = false, initialSaved }: BlogCardObserverProps) {
   const [isVisible, setIsVisible] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -50,7 +51,7 @@ export function BlogCardObserver({ blog, isAdmin = false }: BlogCardObserverProp
   return (
     <div ref={cardRef} className="min-h-[200px]">
       {isVisible ? (
-        <BlogCard blog={blog} isAdmin={isAdmin} />
+        <BlogCard blog={blog} isAdmin={isAdmin} initialSaved={initialSaved} />
       ) : (
         <BlogCardSkeleton />
       )}

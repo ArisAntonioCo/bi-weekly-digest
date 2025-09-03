@@ -25,17 +25,17 @@ export function SectionStrip({ label, text, ctas = [], className, ctaAlign = 'en
       <div className={cn('lg:col-span-4 flex', ctaAlign === 'end' ? 'lg:justify-end' : 'lg:justify-start')}>
         {ctas.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {ctas.map((cta, i) => (
-              <Link key={`${cta.label}-${i}`} href={cta.href}>
-                <Button 
-                  variant={(cta.variant as any) ?? 'default'} 
-                  size={(cta.size as any) ?? 'default'}
-                  className="rounded-full"
-                >
-                  {cta.label}
-                </Button>
-              </Link>
-            ))}
+            {ctas.map((cta, i) => {
+              const variant: 'default' | 'brand-cta' | 'secondary' | 'outline' = cta.variant ?? 'default'
+              const size: 'sm' | 'default' | 'lg' = cta.size ?? 'default'
+              return (
+                <Link key={`${cta.label}-${i}`} href={cta.href}>
+                  <Button variant={variant} size={size} className="rounded-full">
+                    {cta.label}
+                  </Button>
+                </Link>
+              )
+            })}
           </div>
         )}
       </div>

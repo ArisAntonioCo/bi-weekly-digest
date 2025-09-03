@@ -68,7 +68,7 @@ export default async function SavedBlogsPage() {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {blogs.map((blog) => (
-                <BlogCardObserver key={blog.id} blog={blog} />
+                <BlogCardObserver key={blog.id} blog={blog} initialSaved={true} />
               ))}
             </div>
           )}

@@ -10,6 +10,7 @@ interface BlogGridServerProps {
   total: number
   perPage: number
   searchQuery?: string
+  savedIds?: string[]
 }
 
 export function BlogGridServer({ 
@@ -18,7 +19,8 @@ export function BlogGridServer({
   totalPages,
   total,
   perPage,
-  searchQuery
+  searchQuery,
+  savedIds
 }: BlogGridServerProps) {
   if (blogs.length === 0 && total === 0 && !searchQuery) {
     return (
@@ -56,7 +58,7 @@ export function BlogGridServer({
     <div className="space-y-8">
       <div className="grid gap-6 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {blogs.map((blog) => (
-          <BlogCard key={blog.id} blog={blog} />
+          <BlogCard key={blog.id} blog={blog} initialSaved={savedIds ? savedIds.includes(blog.id) : undefined} />
         ))}
       </div>
       

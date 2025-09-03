@@ -49,6 +49,12 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   const analysisType = getAnalysisType(blog.content)
 
+  // Determine initial saved state for faster icon paint
+  const { count: savedCount } = await supabase
+    .from('saved_blogs')
+    .select('id', { count: 'exact', head: true })
+    .eq('blog_id', resolvedParams.id)
+
   // Fetch related blogs (same type, different post)
   const { data: relatedBlogs } = await supabase
     .from('blogs')
@@ -97,7 +103,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                 {readingTime} min read
               </span>
             </div>
-            <SaveToggle blogId={resolvedParams.id} />
+            <SaveToggle blogId={resolvedParams.id} initialSaved={(savedCount || 0) > 0} />
           </div>
           
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
