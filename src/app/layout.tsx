@@ -22,12 +22,68 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Weekly Digest - AI-Powered Investment Intelligence",
-  description: "Get comprehensive weekly analysis of market trends, investment opportunities, and strategic insights",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://3ymode.com'),
+  title: {
+    default: "3YMode - Personalized 3-Year MOIC Projections & Portfolio Analysis",
+    template: "%s | 3YMode",
+  },
+  description:
+    "3YMode delivers personalized 3-year MOIC projections and analysis through stacked expert frameworks—helping you build conviction in your long-term investment strategy.",
+  keywords: [
+    "3YMode",
+    "MOIC",
+    "3-year MOIC",
+    "investment analysis",
+    "expert frameworks",
+    "personalized investing",
+    "stock projections",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': "large",
+      'max-video-preview': -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    title: "3YMode - Personalized 3-Year MOIC Projections & Portfolio Analysis",
+    siteName: "3YMode",
+    description:
+      "Personalized 3-year MOIC projections and analysis through expert frameworks.",
+    images: [
+      {
+        url: "/3YMode.png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "3YMode - Personalized 3-Year MOIC Projections & Portfolio Analysis",
+    description:
+      "Personalized 3-year MOIC projections and analysis through expert frameworks.",
+    images: ["/3YMode.png"],
+  },
+  icons: {
+    icon: [
+      { url: "/3YMode.svg", type: "image/svg+xml" },
+      { url: "/3YMode.png", sizes: "any" },
+    ],
+    apple: "/3YMode.png",
+    shortcut: "/3YMode.png",
+  },
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 

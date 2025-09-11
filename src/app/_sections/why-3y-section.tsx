@@ -24,12 +24,9 @@ export function Why3YSection({
       {/* Headline */}
       <div className="max-w-6xl">
         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.06] tracking-tight text-foreground">
-          {headline}
-          <br />
-          {subhead}
-          <span className="text-muted-foreground">, through expert frameworks</span>
+          A clear, analytical view of your portfolio
+          <span className="text-muted-foreground">, through expert frameworks.</span>
           <ExpertAvatarStack size={44} className="ml-3 align-middle -translate-y-[2px]" />
-          <span className="text-muted-foreground"> — a clear, durable view.</span>
         </h2>
       </div>
 
@@ -42,7 +39,7 @@ export function Why3YSection({
         />
         <SectionStrip 
           label="What You Can Do"
-          text="Analyze any ticker through stacked expert frameworks. See 3‑year MOIC (bear / base / bull), compare, save, and refine."
+          text="Personalize your lens stack to your investing style. Analyze any ticker with 3‑year MOIC bands (bear / base / bull). Compare, save, and refine."
           ctas={[{ label: 'Analyze a ticker', href: ctaPrimary.href }]}
         />
         <SectionStrip 

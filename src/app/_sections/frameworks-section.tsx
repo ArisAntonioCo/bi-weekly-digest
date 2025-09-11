@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, MotionValue } from 'motion/react'
+import { ChevronDown } from 'lucide-react'
 import { useExperts } from '@/hooks/use-experts'
 import { ExpertMarqueeCard } from './expert-marquee-card'
 
@@ -54,11 +55,14 @@ export function FrameworksSection() {
     offset: ['start start', 'end start']
   })
 
+  // Scroll indicator visibility (fade out as user begins to scroll)
+  const indicatorOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0], { clamp: true })
+
   // Fetch experts data
   const { experts, isLoading } = useExperts({ limit: 20 })
 
   // Text content as one continuous flow
-  const fullText = 'Leveraging Proven Expert Frameworks Combining expert lenses can reveal what one voice might miss. World-class investment frameworks expose blind spots, building conviction anchored in durable truth.'
+  const fullText = 'Leveraging Proven Expert Frameworks Combining expert lenses can reveal what one voice might miss. World-class frameworks expose blind spots, building conviction in your long-term investment strategy.'
   
   // Split into individual words for animation
   const words = fullText.split(' ')
@@ -87,7 +91,7 @@ export function FrameworksSection() {
       style={{ height: `${containerHeight}px` }}
     >
       {/* Sticky content container */}
-      <div className="sticky top-0 w-full bg-black min-h-screen flex items-center">
+      <div className="sticky top-0 w-full bg-black min-h-screen flex items-center relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-32 w-full">
           <div className="w-full">
             <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight">
@@ -170,6 +174,23 @@ export function FrameworksSection() {
             </div>
           )}
         </div>
+
+        {/* Scroll indicator (top-left, text + bouncing chevron, fades out on scroll) */}
+        <motion.div
+          aria-hidden
+          style={{ opacity: indicatorOpacity }}
+          className="absolute top-6 left-6 text-white pointer-events-none select-none z-50"
+        >
+          <div className="flex items-center gap-2 text-sm sm:text-base text-white/90">
+            <span>Scroll to explore</span>
+            <motion.span
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6" />
+            </motion.span>
+          </div>
+        </motion.div>
       </div>
     </div>
   )

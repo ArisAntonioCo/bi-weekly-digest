@@ -13,11 +13,11 @@ export function HeroSection() {
   return (
     <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
       {/* Main Content */}
-      <div className="mb-8 sm:mb-12">
+        <div className="mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-none">
-            Longterm Stock Projections,
+            Long‑Term MOIC Forecasts,
             <br />
-            Leveraging Battle-Tested Investor Frameworks
+            Personalized to Your Investing Style
           </h1>
         </div>
 
@@ -81,7 +81,9 @@ export function HeroSection() {
           {/* Square Newsletter Updates Card */}
           <div className="bg-foreground rounded-3xl w-full lg:w-[500px] h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col overflow-hidden">
             <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4">
-              <h3 className="text-xl sm:text-2xl font-bold text-background leading-tight">Weekly 3Y MOIC<br />Predictions Delivered</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-background leading-tight">
+                Weekly 3Y MOIC Predictions According to Your Investment Preferences
+              </h3>
             </div>
             
             <div className="flex-1 relative px-6 sm:px-8 pb-6 sm:pb-8">
