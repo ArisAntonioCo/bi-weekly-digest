@@ -17,16 +17,20 @@ export async function updateSession(request: NextRequest) {
 
   if (isApiRoute) return response
 
-  // Basic auth detection via Supabase cookie prefix
-  const hasAuthCookie = request.cookies.getAll().some(c => c.name.startsWith('sb-'))
+  // Robust auth detection: require a valid access token cookie
+  const cookies = request.cookies.getAll()
+  const access = cookies.find(c => /^(sb-access-token|sb-.*-access-token)$/.test(c.name))
+  const token = access?.value ?? ''
+  // JWTs have 2 dots (header.payload.signature) and are non-empty
+  const hasValidAuthCookie = token.split('.').length === 3 && token.length > 10
 
-  if (!hasAuthCookie && !isPublicRoute) {
+  if (!hasValidAuthCookie && !isPublicRoute) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
   // If authenticated and hitting auth screens, send to user dashboard
-  if (hasAuthCookie && isAuthRoute) {
+  if (hasValidAuthCookie && isAuthRoute) {
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }

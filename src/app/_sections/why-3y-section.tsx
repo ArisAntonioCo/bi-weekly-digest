@@ -5,16 +5,12 @@ import { SectionStrip } from '@/components/ui/section-strip'
 type CTA = { label: string; href: string }
 
 interface Why3YSectionProps {
-  headline?: string
-  subhead?: string
   ctaPrimary?: CTA
   ctaSecondary?: CTA
   className?: string
 }
 
 export function Why3YSection({
-  headline = 'Get results and',
-  subhead = 'analysis',
   ctaPrimary = { label: 'Analyze a ticker', href: '/expert-analysis' },
   ctaSecondary = { label: 'See a sample', href: '/blogs' },
   className,

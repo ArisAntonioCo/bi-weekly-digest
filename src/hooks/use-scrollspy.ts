@@ -1,9 +1,12 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export function useScrollSpy(ids: string[], options?: IntersectionObserverInit) {
   const [activeId, setActiveId] = useState<string | null>(null)
+
+  const rootMargin = useMemo(() => options?.rootMargin ?? '-40% 0px -55% 0px', [options?.rootMargin])
+  const thresholdValue = useMemo(() => options?.threshold ?? [0, 1], [options?.threshold])
 
   useEffect(() => {
     const elements = ids
@@ -23,16 +26,14 @@ export function useScrollSpy(ids: string[], options?: IntersectionObserverInit) 
         }
       },
       {
-        rootMargin: '-40% 0px -55% 0px',
-        threshold: [0, 1],
-        ...options,
+        rootMargin,
+        threshold: Array.isArray(thresholdValue) ? thresholdValue : [thresholdValue as number],
       }
     )
 
     elements.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
-  }, [ids.join(','), options?.rootMargin])
+  }, [ids, rootMargin, thresholdValue])
 
   return activeId
 }
-

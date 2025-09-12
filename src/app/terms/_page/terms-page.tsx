@@ -1,6 +1,3 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
 import { TermsContent } from '@/components/legal/terms-content'
 import { LegalLayout } from '@/components/legal/legal-layout'
 
