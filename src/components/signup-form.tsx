@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/utils/supabase/client"
-import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { PrivacyContent } from "@/components/legal/privacy-content"
 import { TermsContent } from "@/components/legal/terms-content"
@@ -15,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Clock } from "lucide-react"
+import EmailConfirmationBanner from "@/components/ui/email-confirmation-banner"
 export function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,27 +28,6 @@ export function SignupForm() {
   const router = useRouter()
   const supabase = createClient()
   
-  async function handleResend() {
-    if (!email) {
-      toast.error('Enter your email above, then click Resend.')
-      return
-    }
-    try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email,
-        options: {
-          emailRedirectTo: `${siteUrl}/auth/confirm?next=%2Flogin`,
-        },
-      })
-      if (error) throw error
-      toast.success('Confirmation email resent. Check your inbox.')
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to resend confirmation email'
-      toast.error(msg)
-    }
-  }
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -109,24 +88,16 @@ export function SignupForm() {
           Enter your email below to create your account
         </p>
       </div>
-      <form onSubmit={handleSignUp}>
-        <div className="space-y-4">
+      <form onSubmit={handleSignUp} className="w-full">
+        <div className="space-y-4 w-full">
           {info && (
-            <Alert className="bg-info/10 border-info/20">
-              <AlertDescription className="text-foreground">
-                {info}
-                <div className="mt-2 flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Using: {email}</span>
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    className="underline underline-offset-4 hover:text-foreground"
-                  >
-                    Resend confirmation email
-                  </button>
-                </div>
-              </AlertDescription>
-            </Alert>
+            <EmailConfirmationBanner
+              email={email}
+              onEditEmail={() => {
+                const el = document.getElementById('email') as HTMLInputElement | null
+                el?.focus()
+              }}
+            />
           )}
           {error && (
             <Alert className="bg-destructive/10 border-destructive/20">
