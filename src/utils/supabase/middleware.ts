@@ -9,7 +9,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = url.pathname
 
   const isApiRoute = pathname.startsWith('/api')
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
+  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/auth')
   const isLegalRoute = pathname === '/privacy' || pathname === '/terms'
 
   // Only homepage and auth pages are public. Everything else requires auth.
