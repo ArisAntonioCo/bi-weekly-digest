@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/utils/supabase/client"
+import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { PrivacyContent } from "@/components/legal/privacy-content"
 import { TermsContent } from "@/components/legal/terms-content"
@@ -19,12 +20,35 @@ export function SignupForm() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [agree, setAgree] = useState(false)
   const [showTerms, setShowTerms] = useState(false)
   const [showPrivacy, setShowPrivacy] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  
+  async function handleResend() {
+    if (!email) {
+      toast.error('Enter your email above, then click Resend.')
+      return
+    }
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${siteUrl}/auth/confirm?next=%2Flogin`,
+        },
+      })
+      if (error) throw error
+      toast.success('Confirmation email resent. Check your inbox.')
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to resend confirmation email'
+      toast.error(msg)
+    }
+  }
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,11 +67,14 @@ export function SignupForm() {
     setLoading(true)
 
     try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+      const confirmNext = encodeURIComponent('/login')
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          // Send users to our confirm handler in production-safe URL
+          emailRedirectTo: `${siteUrl}/auth/confirm?next=${confirmNext}`,
           data: {
             agreed_to_terms_at: new Date().toISOString(),
           },
@@ -57,8 +84,13 @@ export function SignupForm() {
       if (error) {
         setError(error.message)
       } else if (data?.user) {
-        // User created successfully
-        router.push('/dashboard')
+        // If email confirmation is required, session will be null
+        if (!data.session) {
+          setInfo('We sent a confirmation link to your email. Please verify your email, then log in.')
+        } else {
+          // If your project doesn't require email confirmation, user may be signed in immediately
+          router.push('/dashboard')
+        }
       }
     } catch {
       setError('An unexpected error occurred')
@@ -79,6 +111,23 @@ export function SignupForm() {
       </div>
       <form onSubmit={handleSignUp}>
         <div className="space-y-4">
+          {info && (
+            <Alert className="bg-info/10 border-info/20">
+              <AlertDescription className="text-foreground">
+                {info}
+                <div className="mt-2 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Using: {email}</span>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    className="underline underline-offset-4 hover:text-foreground"
+                  >
+                    Resend confirmation email
+                  </button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
           {error && (
             <Alert className="bg-destructive/10 border-destructive/20">
               <AlertDescription className="text-destructive">

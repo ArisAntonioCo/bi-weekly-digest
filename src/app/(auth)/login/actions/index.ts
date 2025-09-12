@@ -61,14 +61,19 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { error } = await supabase.auth.signUp({
+    ...data,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm?next=%2Flogin`,
+    },
+  })
 
   if (error) {
     redirect('/login?error=Signup failed')
   }
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  redirect('/login?checkEmail=1')
 }
 
 export async function logout() {

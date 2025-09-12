@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +14,10 @@ const initialState: LoginState = {}
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(login, initialState)
+  const search = useSearchParams()
+  const checkEmail = search.get('checkEmail')
+  const linkError = search.get('error')
+  const confirmed = search.get('confirmed')
 
   return (
     <div className="w-full">
@@ -26,6 +31,27 @@ export function LoginForm() {
       </div>
       <form action={formAction}>
         <div className="space-y-4">
+          {confirmed && (
+            <Alert className="bg-success/10 border-success/20">
+              <AlertDescription className="text-foreground">
+                Email confirmed. You can now sign in.
+              </AlertDescription>
+            </Alert>
+          )}
+          {checkEmail && (
+            <Alert className="bg-info/10 border-info/20">
+              <AlertDescription className="text-foreground">
+                We sent a confirmation link to your email. Please verify your email, then sign in here.
+              </AlertDescription>
+            </Alert>
+          )}
+          {linkError && !state?.error && (
+            <Alert className="bg-destructive/10 border-destructive/20">
+              <AlertDescription className="text-destructive">
+                {decodeURIComponent(linkError)}
+              </AlertDescription>
+            </Alert>
+          )}
           {state?.error && (
             <Alert className="bg-destructive/10 border-destructive/20">
               <AlertDescription className="text-destructive">
@@ -63,6 +89,7 @@ export function LoginForm() {
           </div>
         </div>
         <div className="flex flex-col space-y-4 pt-6">
+          {/* Resend confirmation is now handled on Sign Up after submission */}
           <Button
             type="submit"
             size="lg"

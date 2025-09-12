@@ -11,11 +11,17 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { error } = await supabase.auth.signUp({
+    ...data,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm?next=%2Flogin`,
+    },
+  })
 
   if (error) {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`)
   }
 
-  redirect('/dashboard')
+  // Ask user to confirm email before logging in
+  redirect('/login?checkEmail=1')
 }
