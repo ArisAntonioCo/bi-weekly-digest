@@ -73,8 +73,8 @@ export function SignupForm() {
         email,
         password,
         options: {
-          // Send users to our confirm handler in production-safe URL
-          emailRedirectTo: `${siteUrl}/auth/confirm?next=${confirmNext}`,
+          // Send users to our confirm handler with email context for bot‑prefetch resilience
+          emailRedirectTo: `${siteUrl}/auth/confirm?next=${confirmNext}&email=${encodeURIComponent(email)}`,
           data: {
             agreed_to_terms_at: new Date().toISOString(),
           },
