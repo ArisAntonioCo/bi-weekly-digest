@@ -31,8 +31,11 @@ export async function login(prevState: LoginState | undefined, formData: FormDat
 
   if (authData?.user) {
     // Enforce email confirmation in-app: if user not confirmed, sign out and block login
-    const u = authData.user as any
-    const emailConfirmedAt = u?.email_confirmed_at || u?.confirmed_at
+    const { email_confirmed_at, confirmed_at } = authData.user as unknown as {
+      email_confirmed_at?: string | null
+      confirmed_at?: string | null
+    }
+    const emailConfirmedAt = email_confirmed_at ?? confirmed_at
     if (!emailConfirmedAt) {
       await supabase.auth.signOut()
       return { error: 'Please confirm your email before signing in.' }
