@@ -34,9 +34,10 @@ export async function GET(request: NextRequest) {
       const svc = createServiceClient()
       const { data } = await svc.auth.admin.listUsers({ page: 1, perPage: 100 })
       const users: User[] = (data?.users as User[]) || []
-      const found = users.find((u) => (u.email || '').toLowerCase() === email.toLowerCase())
-      const { email_confirmed_at } = (found ?? {}) as Pick<User, 'email_confirmed_at'> & { confirmed_at?: string | null }
-      const alreadyConfirmed = !!email_confirmed_at
+      const found = users.find((u: User) => (u.email || '').toLowerCase() === email.toLowerCase())
+      type ConfirmState = { confirmed_at?: string | null; email_confirmed_at?: string | null }
+      const { email_confirmed_at, confirmed_at } = (found ?? {}) as ConfirmState
+      const alreadyConfirmed = Boolean(email_confirmed_at ?? confirmed_at)
       if (alreadyConfirmed) {
         redirect('/login?confirmed=1')
       }
