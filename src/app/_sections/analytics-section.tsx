@@ -32,35 +32,16 @@ export function AnalyticsSection() {
             </p>
           </div>
           
-          {/* Screenshots - Dashboard overlapping AI Chat */}
+          {/* Screenshot - Single image anchored bottom-right (no overflow) */}
           <div className="hidden lg:block absolute right-12 bottom-0">
-            <div className="relative">
-              {/* AI Chat Screenshot (back layer) */}
-              <Image
-                src="/ai-chat-sc.png"
-                alt="AI Financial Assistant Interface"
-                width={800}
-                height={900}
-                className="rounded-t-xl shadow-2xl"
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAA8A/9k="
-              />
-              
-              {/* Dashboard Screenshot (front layer, overlapping from left) */}
-              <div className="absolute -left-96 top-20">
-                <Image
-                  src="/dashboard-sc.png"
-                  alt="Dashboard Interface"
-                  width={700}
-                  height={800}
-                  className="rounded-xl shadow-2xl"
-                  loading="lazy"
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAA8A/9k="
-                />
-              </div>
-            </div>
+            <Image
+              src="/feat-1.png"
+              alt="Expert Stock Analysis screenshot"
+              width={760}
+              height={400}
+              className="rounded-xl shadow-2xl"
+              loading="lazy"
+            />
           </div>
         </div>
       </div>
