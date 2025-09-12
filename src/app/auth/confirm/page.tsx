@@ -1,4 +1,4 @@
-import { ConfirmPage } from './_page/confirm-page'
+import ConfirmRedirect from './_page/confirm-redirect'
 
 export default async function Page({
   searchParams,
@@ -6,5 +6,5 @@ export default async function Page({
   searchParams: Promise<{ [k: string]: string | string[] | undefined }>
 }) {
   const sp = await searchParams
-  return <ConfirmPage searchParams={sp} />
+  return <ConfirmRedirect searchParams={sp} />
 }
