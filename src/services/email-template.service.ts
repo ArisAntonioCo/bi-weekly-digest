@@ -149,8 +149,17 @@ export class EmailTemplateService {
 
   /**
    * Creates the email HTML template
-   */
+  */
   static createEmailTemplate(content: string): string {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://3ymode.vercel.app'
+    let logoUrl: string
+
+    try {
+      logoUrl = new URL('/3YMode.png', baseUrl).toString()
+    } catch {
+      logoUrl = 'https://3ymode.vercel.app/3YMode.png'
+    }
+
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -431,7 +440,7 @@ export class EmailTemplateService {
       <div class="header">
         <div class="header-pattern"></div>
         <h1 class="brand-logo" style="text-align: center; margin: 0; font-size: 32px; line-height: 1.2;">
-          <img src="https://bi-weekly-digest-4xcy.vercel.app/3YMode.png" alt="3YMode Logo" style="height: 35px; width: auto; vertical-align: middle; display: inline-block; margin-right: 12px;" />
+          <img src="${logoUrl}" alt="3YMode Logo" style="height: 35px; width: auto; vertical-align: middle; display: inline-block; margin-right: 12px;" />
           <span style="vertical-align: middle;">
             <span class="three-y">3Y</span><span class="mode-text">Mode</span>
           </span>
