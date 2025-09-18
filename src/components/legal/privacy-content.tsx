@@ -12,6 +12,7 @@ export function PrivacyContent() {
           <li>Payment information (processed securely through Stripe)</li>
           <li>Communication preferences</li>
           <li>Feedback and correspondence</li>
+          <li>Investment preferences and usage data</li>
         </ul>
       </section>
 
@@ -35,8 +36,8 @@ export function PrivacyContent() {
           We may share your information only in the following circumstances:
         </p>
         <ul className="list-disc pl-5 space-y-1.5 text-sm md:text-base text-muted-foreground">
-          <li>With your consent or at your direction</li>
-          <li>To comply with legal obligations</li>
+          <li>With your explicit consent or at your direction</li>
+          <li>To comply with legal and regulatory obligations</li>
           <li>To protect the rights, property, and safety of our company and users</li>
           <li>With service providers who assist in our operations (under strict confidentiality agreements)</li>
         </ul>
@@ -59,6 +60,9 @@ export function PrivacyContent() {
           <li>Opt out of marketing communications</li>
           <li>Data portability</li>
         </ul>
+        <p className="text-sm md:text-base leading-7 text-muted-foreground mt-3">
+          To exercise these rights, contact us at: ______
+        </p>
       </section>
 
       <section className="border-t pt-6">
