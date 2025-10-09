@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { PromptInputBox } from '@/components/ui/ai-prompt-box'
@@ -9,6 +9,8 @@ import { AIResponse } from '@/components/ui/ai-response'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
 import { createClient } from '@/utils/supabase/client'
+import { toast } from 'sonner'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface Message {
   id: string
@@ -30,9 +32,24 @@ export default function FinancePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState<{ email?: string } | null>(null)
   const [showSuggestions, setShowSuggestions] = useState(true)
+  const [isRestoringHistory, setIsRestoringHistory] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const supabase = createClient()
+  const abortRef = useRef<AbortController | null>(null)
+  const hydratedKeyRef = useRef<string | null>(null)
+
+  const storageKey = useMemo(() => {
+    const email = user?.email?.toLowerCase() || 'anonymous'
+    return `moic-chat-history:${email}`
+  }, [user?.email])
+
+  const createMessageId = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID()
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  }
 
   // Get user initials for avatar
   const getUserInitials = (email: string): string => {
@@ -60,6 +77,52 @@ export default function FinancePage() {
     loadUser()
   }, [supabase.auth])
 
+  // Hydrate persisted conversation once
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (hydratedKeyRef.current === storageKey) return
+    try {
+      const stored = window.localStorage.getItem(storageKey)
+      setMessages([])
+
+      if (!stored) {
+        setIsRestoringHistory(false)
+        hydratedKeyRef.current = storageKey
+        return
+      }
+
+      setIsRestoringHistory(true)
+
+      const parsed = JSON.parse(stored) as Message[]
+      const hydrated = parsed.map(msg => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      }))
+      setMessages(hydrated)
+      hydratedKeyRef.current = storageKey
+      setIsRestoringHistory(false)
+    } catch (error) {
+      console.error('Failed to restore chat history', error)
+      hydratedKeyRef.current = storageKey
+      setIsRestoringHistory(false)
+    }
+  }, [storageKey])
+
+  // Persist conversation per user
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (hydratedKeyRef.current !== storageKey) return
+    try {
+      const serialisable = messages.map(msg => ({
+        ...msg,
+        timestamp: msg.timestamp.toISOString()
+      }))
+      window.localStorage.setItem(storageKey, JSON.stringify(serialisable))
+    } catch (error) {
+      console.error('Failed to persist chat history', error)
+    }
+  }, [messages, storageKey])
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -68,11 +131,17 @@ export default function FinancePage() {
     scrollToBottom()
   }, [messages])
 
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
+
   const handleSend = async (message: string) => {
     if (!message.trim()) return
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: createMessageId(),
       role: 'user',
       content: message,
       timestamp: new Date()
@@ -82,6 +151,10 @@ export default function FinancePage() {
     setIsLoading(true)
 
     try {
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
+
       const response = await fetch('/api/finance-chat', {
         method: 'POST',
         headers: {
@@ -92,7 +165,8 @@ export default function FinancePage() {
             role: msg.role,
             content: msg.content
           }))
-        })
+        }),
+        signal: controller.signal
       })
 
       if (!response.ok) {
@@ -104,13 +178,18 @@ export default function FinancePage() {
       if (data.message) {
         setMessages(prev => [...prev, {
           ...data.message,
+          id: data.message.id || createMessageId(),
           timestamp: new Date(data.message.timestamp)
         }])
       }
     } catch (error) {
+      if ((error as { name?: string }).name === 'AbortError') {
+        return
+      }
       console.error('Chat error:', error)
+      toast.error('Something went wrong fetching the analysis. Please try again.')
       const errorMessage: Message = {
-        id: Date.now().toString(),
+        id: createMessageId(),
         content: 'Sorry, I encountered an error processing your request. Please try again.',
         role: 'assistant',
         timestamp: new Date()
@@ -160,31 +239,43 @@ export default function FinancePage() {
               
               {/* Centered Prompt Box */}
               <div className="w-full max-w-2xl mb-8">
-                <PromptInputBox
-                  onSend={handleSend}
-                  isLoading={isLoading}
-                  placeholder="Enter a stock (or stocks) ticker, or ETFs, for 3-Year Forward MOIC projections!"
-                  className="bg-background border-border shadow-sm"
-                />
+                {isRestoringHistory ? (
+                  <Skeleton className="h-20 w-full rounded-3xl" />
+                ) : (
+                  <PromptInputBox
+                    onSend={handleSend}
+                    isLoading={isLoading}
+                    placeholder="Enter a stock (or stocks) ticker, or ETFs, for 3-Year Forward MOIC projections!"
+                    className="bg-background border-border shadow-sm"
+                  />
+                )}
               </div>
               
               {/* Suggested Prompts List */}
               <div className="w-full max-w-2xl">
-                {suggestedPrompts.map((prompt, index) => (
-                  <div key={prompt}>
-                    <button
-                      onClick={() => handlePromptClick(prompt)}
-                      disabled={isLoading}
-                      className="group w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-all text-sm rounded-lg flex items-center justify-between disabled:opacity-60 disabled:pointer-events-none"
-                    >
-                      <span>{prompt}</span>
-                      <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
-                    </button>
-                    {index < suggestedPrompts.length - 1 && (
-                      <div className="h-px bg-border/50 mx-4" />
-                    )}
+                {isRestoringHistory ? (
+                  <div className="space-y-2">
+                    {[...Array(4)].map((_, idx) => (
+                      <Skeleton key={idx} className="h-10 w-full rounded-lg" />
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  suggestedPrompts.map((prompt, index) => (
+                    <div key={prompt}>
+                      <button
+                        onClick={() => handlePromptClick(prompt)}
+                        disabled={isLoading}
+                        className="group w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-all text-sm rounded-lg flex items-center justify-between disabled:opacity-60 disabled:pointer-events-none"
+                      >
+                        <span>{prompt}</span>
+                        <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
+                      </button>
+                      {index < suggestedPrompts.length - 1 && (
+                        <div className="h-px bg-border/50 mx-4" />
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -265,21 +356,29 @@ export default function FinancePage() {
                   
                   {showSuggestions && (
                     <div className="border border-border/50 rounded-xl bg-muted/20 p-2 mb-4">
-                      {suggestedPrompts.map((prompt, index) => (
-                        <div key={prompt}>
-                          <button
-                            onClick={() => handlePromptClick(prompt)}
-                            disabled={isLoading}
-                            className="group flex items-center justify-between w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-background/60 rounded-lg transition-all text-sm disabled:opacity-60 disabled:pointer-events-none"
-                          >
-                            <span>{prompt}</span>
-                            <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
-                          </button>
-                          {index < suggestedPrompts.length - 1 && (
-                            <div className="h-px bg-border/30 mx-2" />
-                          )}
+                      {isRestoringHistory ? (
+                        <div className="space-y-2">
+                          {[...Array(3)].map((_, idx) => (
+                            <Skeleton key={idx} className="h-10 w-full rounded-lg" />
+                          ))}
                         </div>
-                      ))}
+                      ) : (
+                        suggestedPrompts.map((prompt, index) => (
+                          <div key={prompt}>
+                            <button
+                              onClick={() => handlePromptClick(prompt)}
+                              disabled={isLoading}
+                              className="group flex items-center justify-between w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-background/60 rounded-lg transition-all text-sm disabled:opacity-60 disabled:pointer-events-none"
+                            >
+                              <span>{prompt}</span>
+                              <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
+                            </button>
+                            {index < suggestedPrompts.length - 1 && (
+                              <div className="h-px bg-border/30 mx-2" />
+                            )}
+                          </div>
+                        ))
+                      )}
                     </div>
                   )}
                   

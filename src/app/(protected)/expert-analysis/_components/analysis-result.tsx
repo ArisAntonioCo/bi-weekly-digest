@@ -18,6 +18,7 @@ interface AnalysisResult {
   company_name: string
   expert_name: string
   expert_id: string
+  expert_ids?: string[]
   analysis: string
   timestamp: string
   current_price?: number
@@ -28,11 +29,11 @@ interface AnalysisResult {
 
 interface AnalysisResultProps {
   result: AnalysisResult
-  selectedExpert?: Expert | null
+  expertsUsed?: Expert[]
   onStartAgain?: () => void
 }
 
-export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
+export function AnalysisResult({ result, expertsUsed, onStartAgain }: AnalysisResultProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   
   const copyToClipboard = () => {
@@ -124,6 +125,15 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
                           </Badge>
                         )}
                       </div>
+                      {expertsUsed && expertsUsed.length > 1 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {expertsUsed.map((expert) => (
+                            <Badge key={expert.id} variant="secondary" className="text-xs">
+                              {expert.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -249,6 +259,15 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
                     </Badge>
                   )}
                 </div>
+                {expertsUsed && expertsUsed.length > 1 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {expertsUsed.map((expert) => (
+                      <Badge key={expert.id} variant="secondary" className="text-xs">
+                        {expert.name}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             

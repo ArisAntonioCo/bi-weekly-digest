@@ -18,6 +18,8 @@ interface AnalysisType {
   current_price?: number
   market_cap?: string
   pe_ratio?: number
+  expert_ids?: string[]
+  hold_period?: number
 }
 
 interface EmptyStateProps {

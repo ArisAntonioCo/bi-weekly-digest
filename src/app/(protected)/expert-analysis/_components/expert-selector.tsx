@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { User, Check, Search, ArrowUpDown } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { motion } from 'motion/react'
@@ -17,11 +18,12 @@ interface ExpertSelectorProps {
   experts: Expert[]
   selectedExperts: Expert[]
   onSelectExperts: (experts: Expert[]) => void
+  loading?: boolean
 }
 
 type SortOption = 'name-asc' | 'name-desc' | 'default'
 
-export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: ExpertSelectorProps) {
+export function ExpertSelector({ experts, selectedExperts, onSelectExperts, loading = false }: ExpertSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortOption, setSortOption] = useState<SortOption>('default')
   
@@ -58,6 +60,7 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
   }, [experts, searchQuery, sortOption])
   
   const toggleExpert = (expert: Expert) => {
+    if (loading) return
     const isSelected = selectedExperts.some(e => e.id === expert.id)
     
     if (isSelected) {
@@ -95,6 +98,7 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
                 size="sm"
                 onClick={clearSelection}
                 className="text-xs h-7"
+                disabled={loading}
               >
                 Clear all
               </Button>
@@ -112,9 +116,10 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
+                disabled={loading}
               />
             </div>
-            <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
+            <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)} disabled={loading}>
               <SelectTrigger className="w-[140px]">
                 <ArrowUpDown className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Sort" />
@@ -129,7 +134,23 @@ export function ExpertSelector({ experts, selectedExperts, onSelectExperts }: Ex
           
           <ScrollArea className="h-[calc(100vh-380px)] pr-3">
             <div className="space-y-3">
-              {filteredAndSortedExperts.length === 0 ? (
+              {loading ? (
+                [...Array(5)].map((_, idx) => (
+                  <div key={`skeleton-${idx}`} className="p-5 rounded-2xl bg-background/50">
+                    <div className="pr-10 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-24" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-4/5" />
+                    </div>
+                  </div>
+                ))
+              ) : filteredAndSortedExperts.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   No experts found matching &quot;{searchQuery}&quot;
                 </div>

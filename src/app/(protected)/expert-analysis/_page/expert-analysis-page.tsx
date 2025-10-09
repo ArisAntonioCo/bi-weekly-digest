@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Expert } from '@/types/expert'
 import { toast } from 'sonner'
@@ -23,6 +23,7 @@ interface AnalysisResultType {
   company_name: string
   expert_name: string
   expert_id: string
+  expert_ids?: string[]
   analysis: string
   timestamp: string
   current_price?: number
@@ -31,17 +32,37 @@ interface AnalysisResultType {
   hold_period?: number
 }
 
+type EnrichedResult = AnalysisResultType & { expertIds: string[] }
+
+const mapIdsToExperts = (allExperts: Expert[], ids: string[]): Expert[] => {
+  if (!ids.length) return []
+  const byId = new Map(allExperts.map((expert) => [expert.id, expert]))
+  return ids
+    .map((id) => byId.get(id))
+    .filter((expert): expert is Expert => Boolean(expert))
+}
+
 export function ExpertAnalysisPage() {
-  const { experts, isLoading: loadingExperts, isError, refresh } = useActiveExperts()
+  const { experts, isLoading: loadingExperts, isValidating, isError, refresh } = useActiveExperts()
+
   const [selectedExperts, setSelectedExperts] = useState<Expert[]>([])
   const [stockTicker, setStockTicker] = useState('')
+  const [holdPeriod, setHoldPeriod] = useState<HoldPeriod>(3)
   const [analyzing, setAnalyzing] = useState(false)
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResultType | null>(null)
+  const [analysisResult, setAnalysisResult] = useState<EnrichedResult | null>(null)
   const [recentAnalyses, setRecentAnalyses] = useState<AnalysisResultType[]>([])
   const [showDisclaimer, setShowDisclaimer] = useState(true)
-  const [holdPeriod, setHoldPeriod] = useState<HoldPeriod>(3)
   const [includeFedPolicy, setIncludeFedPolicy] = useState(true)
   const [includeMarketSentiment, setIncludeMarketSentiment] = useState(true)
+
+  const abortRef = useRef<AbortController | null>(null)
+
+  const selectedExpertIds = useMemo(() => selectedExperts.map((expert) => expert.id), [selectedExperts])
+
+  const analysisExperts = useMemo(() => {
+    if (!analysisResult) return []
+    return mapIdsToExperts(experts || [], analysisResult.expertIds)
+  }, [analysisResult, experts])
 
   useEffect(() => {
     loadRecentAnalyses()
@@ -58,44 +79,89 @@ export function ExpertAnalysisPage() {
     }
   }, [isError, refresh])
 
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
+
   const loadRecentAnalyses = () => {
-    // Load from localStorage for now
-    const stored = localStorage.getItem('recentAnalyses')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        // Filter out any null or invalid entries
-        const validAnalyses = Array.isArray(parsed) 
-          ? parsed.filter(item => item && item.stock_ticker && item.expert_name && item.id)
-          : []
-        setRecentAnalyses(validAnalyses)
-      } catch (error) {
-        console.error('Failed to parse recent analyses:', error)
-        setRecentAnalyses([])
-      }
+    if (typeof window === 'undefined') return
+    const stored = window.localStorage.getItem('recentAnalyses')
+    if (!stored) {
+      setRecentAnalyses([])
+      return
+    }
+
+    try {
+      const parsed = JSON.parse(stored)
+      const validAnalyses = Array.isArray(parsed)
+        ? parsed.filter(item => item && item.stock_ticker && item.expert_name && item.id)
+        : []
+      setRecentAnalyses(validAnalyses)
+    } catch (error) {
+      console.error('Failed to parse recent analyses:', error)
+      setRecentAnalyses([])
     }
   }
 
   const saveToRecent = (analysis: AnalysisResultType) => {
-    // Only save valid analysis results
     if (!analysis || !analysis.stock_ticker || !analysis.expert_name || !analysis.id) {
       console.warn('Attempted to save invalid analysis result')
       return
     }
-    const withHorizon = { ...analysis, hold_period: analysis.hold_period ?? holdPeriod }
+
+    const withHorizon: AnalysisResultType = {
+      ...analysis,
+      hold_period: analysis.hold_period ?? holdPeriod,
+      expert_ids: analysis.expert_ids ?? selectedExpertIds
+    }
+
     const updated = [withHorizon, ...recentAnalyses.slice(0, 4)]
     setRecentAnalyses(updated)
-    localStorage.setItem('recentAnalyses', JSON.stringify(updated))
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('recentAnalyses', JSON.stringify(updated))
+    }
   }
 
   const removeExpert = (expertToRemove: Expert) => {
-    setSelectedExperts(prev => prev.filter(e => e.id !== expertToRemove.id))
+    setSelectedExperts(prev => prev.filter(expert => expert.id !== expertToRemove.id))
+  }
+
+  const handleExpertsChange = (expertsList: Expert[]) => {
+    setSelectedExperts(expertsList)
   }
 
   const handleStartAgain = () => {
     setAnalysisResult(null)
     setStockTicker('')
     // Keep selected experts for convenience
+  }
+
+  const handleSelectRecentAnalysis = (analysis: AnalysisResultType | null) => {
+    if (!analysis) {
+      setAnalysisResult(null)
+      return
+    }
+
+    if (analysis.expert_ids && experts?.length) {
+      setSelectedExperts(mapIdsToExperts(experts, analysis.expert_ids))
+    }
+
+    if (analysis.hold_period && [3, 5, 10].includes(analysis.hold_period)) {
+      setHoldPeriod(analysis.hold_period as HoldPeriod)
+    }
+
+    if (analysis.stock_ticker) {
+      setStockTicker(analysis.stock_ticker)
+    }
+
+    const enriched: EnrichedResult = {
+      ...analysis,
+      expertIds: analysis.expert_ids ?? selectedExpertIds
+    }
+
+    setAnalysisResult(enriched)
   }
 
   const handleAnalyze = async () => {
@@ -117,12 +183,9 @@ export function ExpertAnalysisPage() {
     try {
       setAnalyzing(true)
       setAnalysisResult(null)
-
-      // For now, use the first expert for the API call
-      // Later this can be enhanced to combine multiple expert perspectives
-      const expertsToUse = selectedExperts.length === 1 
-        ? selectedExperts[0] 
-        : selectedExperts[0] // TODO: Implement multi-expert analysis
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
 
       const response = await fetch('/api/expert-analysis', {
         method: 'POST',
@@ -130,14 +193,14 @@ export function ExpertAnalysisPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          expert_id: expertsToUse.id,
+          expert_id: selectedExperts[0].id,
           stock_ticker: stockTicker.toUpperCase().trim(),
-          // For future: pass all expert IDs
-          expert_ids: selectedExperts.map(e => e.id),
+          expert_ids: selectedExpertIds,
           hold_period: holdPeriod,
           include_fed_policy: includeFedPolicy,
           include_market_sentiment: includeMarketSentiment
-        })
+        }),
+        signal: controller.signal
       })
 
       if (!response.ok) {
@@ -145,20 +208,30 @@ export function ExpertAnalysisPage() {
       }
 
       const result = await response.json()
-      
-      // Update expert name to show multiple if applicable
+
       if (selectedExperts.length > 1) {
         result.data.expert_name = selectedExperts.map(e => e.name).join(', ')
+        result.data.expert_id = 'multiple'
       }
-      
-      setAnalysisResult(result.data)
-      saveToRecent(result.data)
+
+      const enriched: EnrichedResult = {
+        ...result.data,
+        expert_ids: [...selectedExpertIds],
+        expertIds: [...selectedExpertIds]
+      }
+
+      setAnalysisResult(enriched)
+      saveToRecent(enriched)
       toast.success('Analysis complete!')
     } catch (error) {
+      if ((error as { name?: string }).name === 'AbortError') {
+        return
+      }
       console.error('Analysis error:', error)
       toast.error('Failed to analyze stock. Please try again.')
     } finally {
       setAnalyzing(false)
+      abortRef.current = null
     }
   }
 
@@ -302,7 +375,8 @@ export function ExpertAnalysisPage() {
               <ExpertSelector 
                 experts={experts}
                 selectedExperts={selectedExperts}
-                onSelectExperts={setSelectedExperts}
+                onSelectExperts={handleExpertsChange}
+                loading={loadingExperts || isValidating}
               />
             </div>
 
@@ -324,9 +398,9 @@ export function ExpertAnalysisPage() {
                   onHoldPeriodChange={setHoldPeriod}
                   expertCount={selectedExperts.length}
                   includeFedPolicy={includeFedPolicy}
-                  onIncludeFedPolicyChange={(checked) => setIncludeFedPolicy(checked)}
+                  onIncludeFedPolicyChange={setIncludeFedPolicy}
                   includeMarketSentiment={includeMarketSentiment}
-                  onIncludeMarketSentimentChange={(checked) => setIncludeMarketSentiment(checked)}
+                  onIncludeMarketSentimentChange={setIncludeMarketSentiment}
                 />
                 )}
               </AnimatePresence>
@@ -343,7 +417,7 @@ export function ExpertAnalysisPage() {
                   <AnalysisResult 
                     key="result"
                     result={analysisResult}
-                    selectedExpert={selectedExperts[0]} // For compatibility
+                    expertsUsed={analysisExperts}
                     onStartAgain={handleStartAgain}
                   />
                 ) : !analysisResult && (
@@ -352,7 +426,7 @@ export function ExpertAnalysisPage() {
                     selectedExperts={selectedExperts}
                     onRemoveExpert={removeExpert}
                     recentAnalyses={recentAnalyses}
-                    onSelectAnalysis={setAnalysisResult}
+                    onSelectAnalysis={handleSelectRecentAnalysis}
                   />
                 )}
               </AnimatePresence>

@@ -62,7 +62,6 @@ export function analysisParamsToQuery(params: AnalysisParams): string {
   const sp = new URLSearchParams()
   if (params.experts && params.experts.length > 0) sp.set('experts', params.experts.join(','))
   if (params.ticker && params.ticker.trim()) sp.set('ticker', params.ticker.trim().toUpperCase())
-  if (params.hold) sp.set('hold', String(params.hold))
+  if (params.hold && params.hold !== 3) sp.set('hold', String(params.hold))
   return sp.toString()
 }
-
