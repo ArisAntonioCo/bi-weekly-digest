@@ -39,7 +39,7 @@ export function LoadingState({ stockTicker, selectedExperts }: LoadingStateProps
           <div className="flex items-center gap-3">
             <Sparkles className="h-4 w-4 text-primary flex-shrink-0 animate-pulse" />
             <p className="text-sm font-medium text-foreground">
-              Analyzing with ({selectedExperts.length}/3):
+              Analyzing with ({selectedExperts.length} of 3-5):
             </p>
             <div className="flex flex-wrap gap-2">
               {selectedExperts.map(expert => (

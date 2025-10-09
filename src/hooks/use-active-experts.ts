@@ -13,8 +13,9 @@ const fetcher = async (url: string): Promise<ExpertsResponse> => {
   const response = await fetch(url)
   
   if (!response.ok) {
-    const error = new Error(`Failed to fetch experts`)
+    const error = new Error(`Failed to fetch experts`) as Error & { status?: number }
     error.cause = response.statusText
+    error.status = response.status
     throw error
   }
   

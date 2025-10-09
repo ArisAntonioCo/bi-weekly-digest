@@ -122,13 +122,14 @@ export default function FinancePage() {
   }
 
   const handlePromptClick = (promptText: string) => {
+    if (isLoading) return
     handleSend(promptText)
   }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="absolute top-0 left-0 p-6">
+      <div className="absolute top-0 left-0 z-50 p-6">
         <Button
           onClick={() => router.push('/dashboard')}
           variant="ghost"
@@ -173,7 +174,8 @@ export default function FinancePage() {
                   <div key={prompt}>
                     <button
                       onClick={() => handlePromptClick(prompt)}
-                      className="group w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-all text-sm rounded-lg flex items-center justify-between"
+                      disabled={isLoading}
+                      className="group w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-all text-sm rounded-lg flex items-center justify-between disabled:opacity-60 disabled:pointer-events-none"
                     >
                       <span>{prompt}</span>
                       <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
@@ -189,9 +191,9 @@ export default function FinancePage() {
 
           {/* Messages Area */}
           {messages.length > 0 && (
-            <div className="fixed inset-0 flex flex-col">
+            <div className="flex flex-col flex-1 pt-24">
               {/* Messages container with scroll */}
-              <div className="flex-1 overflow-y-auto pt-20 pb-4 px-6">
+              <div className="flex-1 overflow-y-auto pb-4 px-6">
                 <div className="max-w-4xl mx-auto space-y-6">
                   {messages.map((message) => (
                     <div
@@ -245,7 +247,7 @@ export default function FinancePage() {
                 </div>
               </div>
               
-              {/* Fixed bottom section */}
+              {/* Bottom section */}
               <div className="mt-auto bg-background">
                 {/* Collapsible Suggested prompts */}
                 <div className="max-w-2xl mx-auto px-6">
@@ -267,7 +269,8 @@ export default function FinancePage() {
                         <div key={prompt}>
                           <button
                             onClick={() => handlePromptClick(prompt)}
-                            className="group flex items-center justify-between w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-background/60 rounded-lg transition-all text-sm"
+                            disabled={isLoading}
+                            className="group flex items-center justify-between w-full text-left px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-background/60 rounded-lg transition-all text-sm disabled:opacity-60 disabled:pointer-events-none"
                           >
                             <span>{prompt}</span>
                             <ChevronRight className="h-4 w-4 opacity-50 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all" />
