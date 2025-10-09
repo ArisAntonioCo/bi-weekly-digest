@@ -77,20 +77,8 @@ export class ContentGenerationService {
   static cleanWebSearchContent(content: string): string {
     let cleaned = content
     
-    // Remove markdown links but keep the text: [text](url) -> text
-    cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    
-    // Remove any parenthetical URLs or domain references like (example.com) or (www.example.com)
-    cleaned = cleaned.replace(/\s*\([^)]*\.(com|org|net|io|gov|edu|co|uk|ai|app|dev|tech|info|biz)[^)]*\)/g, '')
-    
-    // Remove plain URLs
-    cleaned = cleaned.replace(/https?:\/\/[^\s\)]+/g, '')
-    
-    // Remove reference markers like [1], [2], etc.
+    // Keep markdown links intact so the UI can surface sources. Strip footnote-style reference markers only.
     cleaned = cleaned.replace(/\[\d+\]/g, '')
-    
-    // Remove any remaining domain-like patterns
-    cleaned = cleaned.replace(/\b[\w-]+\.(com|org|net|io|gov|edu|co|uk|ai|app|dev|tech|info|biz)\b/g, '')
     
     // Look for the Summary Judgment section and cut off anything after it
     const summaryJudgmentMatch = cleaned.match(/##?\s*Summary Judgment.*?\n\n.*?(?=\n\n##|\n\n[A-Z]|$)/s)

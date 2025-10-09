@@ -1,16 +1,16 @@
 "use client"
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Building2, Copy, Calendar, Expand, Minimize2, DollarSign, TrendingUp, RefreshCw } from 'lucide-react'
+import { Building2, Copy, Calendar, Expand, Minimize2, DollarSign, TrendingUp, RefreshCw, ExternalLink } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { motion, AnimatePresence } from 'motion/react'
-import { BlogList } from '@/components/ui/blog-list'
-import type { Blog } from '@/types/blog'
 import { toast } from 'sonner'
+import Link from 'next/link'
+import MarkdownRenderer from '@/components/ui/markdown-renderer'
 
 interface AnalysisResult {
   id: string
@@ -44,12 +44,42 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
     setIsExpanded(!isExpanded)
   }
 
-  const blogFromAnalysis: Blog = {
-    id: result.id,
-    title: `${result.company_name || result.stock_ticker} Analysis` ,
-    content: result.analysis,
-    created_at: result.timestamp,
-  }
+  const { markdown, sourceCards } = useMemo(() => {
+    const sections = result.analysis.split(/(?<=\n)## /)
+    const cards: { title: string; url: string; date: string; summary: string }[] = []
+    const normalSections: string[] = []
+
+    sections.forEach((section, index) => {
+      const isHeading = index === 0 ? section.startsWith('## ') : true
+      const content = index === 0 ? section : `## ${section}`
+
+      if (/^##\s+Latest Developments & Sources/i.test(content.trim())) {
+        const body = content.replace(/^##\s+Latest Developments & Sources/i, '').trim()
+        const matches = body.split(/\n\s*\n/)
+        matches.forEach((block) => {
+          const titleMatch = block.match(/Title:\s*(.+)/i)
+          const urlMatch = block.match(/URL:\s*(.+)/i)
+          const dateMatch = block.match(/Date:\s*(.+)/i)
+          const summaryMatch = block.match(/Summary:\s*(.+)/i)
+          if (titleMatch && urlMatch && dateMatch && summaryMatch) {
+            cards.push({
+              title: titleMatch[1].trim(),
+              url: urlMatch[1].trim(),
+              date: dateMatch[1].trim(),
+              summary: summaryMatch[1].trim()
+            })
+          }
+        })
+      } else {
+        normalSections.push(isHeading ? content : section)
+      }
+    })
+
+    return {
+      markdown: normalSections.join('\n').trim(),
+      sourceCards: cards
+    }
+  }, [result.analysis])
 
   return (
     <>
@@ -134,8 +164,35 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
 
               {/* Analysis Content - Full Width */}
               <div className="bg-muted/30 rounded-3xl p-4 sm:p-8">
-                <div className="prose prose-lg max-w-none">
-                  <BlogList blogs={[blogFromAnalysis]} />
+                <div className="space-y-6">
+                  <MarkdownRenderer content={markdown} className="prose prose-lg max-w-none" />
+                  {sourceCards.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-foreground">Latest Developments &amp; Sources</h3>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {sourceCards.map((card, idx) => (
+                          <Link
+                            key={`${card.title}-${idx}`}
+                            href={card.url === 'N/A' ? '#' : card.url}
+                            target={card.url === 'N/A' ? '_self' : '_blank'}
+                            rel="noopener noreferrer"
+                            className={`group relative overflow-hidden rounded-2xl border border-border/40 bg-background p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg ${card.url === 'N/A' ? 'pointer-events-none opacity-70' : ''}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-2">
+                                <p className="text-xs uppercase tracking-wide text-muted-foreground">{card.date}</p>
+                                <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{card.title}</p>
+                                <p className="text-sm text-muted-foreground leading-relaxed">{card.summary}</p>
+                              </div>
+                              {card.url !== 'N/A' && (
+                                <ExternalLink className="mt-1 h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                              )}
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -254,8 +311,35 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
           />
           <CardContent>
             <ScrollArea className="h-[400px] pr-4">
-              <div className="prose prose-lg max-w-none">
-                <BlogList blogs={[blogFromAnalysis]} />
+              <div className="space-y-6">
+                <MarkdownRenderer content={markdown} className="prose prose-base max-w-none" />
+                {sourceCards.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-base font-semibold text-foreground">Latest Developments &amp; Sources</h3>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {sourceCards.map((card, idx) => (
+                        <Link
+                          key={`${card.title}-${idx}`}
+                          href={card.url === 'N/A' ? '#' : card.url}
+                          target={card.url === 'N/A' ? '_self' : '_blank'}
+                          rel="noopener noreferrer"
+                          className={`group relative overflow-hidden rounded-2xl border border-border/40 bg-background p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg ${card.url === 'N/A' ? 'pointer-events-none opacity-70' : ''}`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="space-y-1.5">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{card.date}</p>
+                              <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{card.title}</p>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{card.summary}</p>
+                            </div>
+                            {card.url !== 'N/A' && (
+                              <ExternalLink className="mt-1 h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                            )}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </ScrollArea>
             
