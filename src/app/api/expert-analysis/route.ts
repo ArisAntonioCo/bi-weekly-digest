@@ -250,7 +250,7 @@ function adaptSystemPrompt(
 
   const macroGuidanceSection = `## Macro Backdrop\n${macroSectionLines.join('\n')}`
 
-  const sourcesSection = `## Latest Developments & Sources\n- Use web search to surface 2-3 material news items or filings from the last 30 days that affect ${ticker.toUpperCase()}\'s outlook.\n- For each item output a "LOOSELY FORMATTED" card using this template (no extra markdown symbols):\nTitle: [Headline]\nURL: https://...\nDate: YYYY-MM-DD\nSummary: One-sentence takeaway.\n- Separate cards with a blank line.\n- Prioritize primary sources (company releases, Fed statements, reputable financial press). If no fresh developments exist, output a single card with Title "No notable updates", URL "N/A", Date set to today, Summary explaining the absence.`
+  const sourcesSection = `## Latest Developments & Sources\n- Use web search to surface 2-3 material news items or filings published within the last 30 days that affect ${ticker.toUpperCase()}\'s outlook.\n- If fewer than 2 qualifying items exist, expand the search window to 45 days and clearly note that the item is older.\n- For each item output a "LOOSELY FORMATTED" card using this template (no extra markdown symbols):\nTitle: [Headline]\nURL: https://...\nDate: YYYY-MM-DD\nSummary: One-sentence takeaway.\n- Separate cards with a blank line.\n- Prioritize primary sources (company releases, Fed statements, reputable financial press). If no fresh developments exist in the last 45 days, output a single card with Title "No notable updates", URL "N/A", Date set to today, Summary explaining the absence.`
 
   return `${prompt.trim()}\n\n${macroGuidanceSection}\n\n${sourcesSection}`.trim()
 }

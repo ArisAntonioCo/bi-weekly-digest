@@ -310,7 +310,7 @@ export function AnalysisResult({ result, onStartAgain }: AnalysisResultProps) {
             }
           />
           <CardContent>
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className="h-[520px] sm:h-[580px] pr-4">
               <div className="space-y-6">
                 <MarkdownRenderer content={markdown} className="prose prose-base max-w-none" />
                 {sourceCards.length > 0 && (
