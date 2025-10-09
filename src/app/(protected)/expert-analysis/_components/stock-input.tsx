@@ -3,6 +3,8 @@
 import { DashboardCard, CardHeader, CardContent } from '@/components/dashboard-card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { Search, ChevronRight, Loader2, TrendingUp, Landmark } from 'lucide-react'
 import { motion } from 'motion/react'
 import { HoldPeriodSelector } from './hold-period-selector'
@@ -16,6 +18,10 @@ interface StockInputProps {
   holdPeriod: 3 | 5 | 10
   onHoldPeriodChange: (value: 3 | 5 | 10) => void
   expertCount: number
+  includeFedPolicy: boolean
+  onIncludeFedPolicyChange: (checked: boolean) => void
+  includeMarketSentiment: boolean
+  onIncludeMarketSentimentChange: (checked: boolean) => void
 }
 
 interface TickerOption {
@@ -47,7 +53,11 @@ export function StockInput({
   disabled,
   holdPeriod,
   onHoldPeriodChange,
-  expertCount
+  expertCount,
+  includeFedPolicy,
+  onIncludeFedPolicyChange,
+  includeMarketSentiment,
+  onIncludeMarketSentimentChange
 }: StockInputProps) {
   const handleTickerChange = (value: string) => {
     const upperCaseValue = value.toUpperCase()
@@ -133,6 +143,42 @@ export function StockInput({
               <div className="text-right text-xs text-muted-foreground">
                 <p>Experts selected: {expertCount}</p>
                 <p className={expertCount >= 3 && expertCount <= 5 ? '' : 'text-destructive'}>Choose 3–5 experts</p>
+              </div>
+            </div>
+
+            {/* Macro Preferences */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-start justify-between gap-3 rounded-2xl bg-background/60 px-4 py-3">
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium text-foreground">Federal Reserve context</p>
+                  <p className="text-xs text-muted-foreground">Include latest rate moves and liquidity stance in the analysis.</p>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <Label htmlFor="fed-policy-toggle" className="sr-only">Toggle Federal Reserve context</Label>
+                  <Switch
+                    id="fed-policy-toggle"
+                    checked={includeFedPolicy}
+                    onCheckedChange={onIncludeFedPolicyChange}
+                    disabled={analyzing}
+                    className="data-[state=checked]:bg-emerald-500 data-[state=checked]:ring-emerald-500/40"
+                  />
+                </div>
+              </div>
+              <div className="flex items-start justify-between gap-3 rounded-2xl bg-background/60 px-4 py-3">
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium text-foreground">Market sentiment</p>
+                  <p className="text-xs text-muted-foreground">Surface current risk appetite, volatility, and positioning trends.</p>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <Label htmlFor="market-sentiment-toggle" className="sr-only">Toggle market sentiment context</Label>
+                  <Switch
+                    id="market-sentiment-toggle"
+                    checked={includeMarketSentiment}
+                    onCheckedChange={onIncludeMarketSentimentChange}
+                    disabled={analyzing}
+                    className="data-[state=checked]:bg-emerald-500 data-[state=checked]:ring-emerald-500/40"
+                  />
+                </div>
               </div>
             </div>
 

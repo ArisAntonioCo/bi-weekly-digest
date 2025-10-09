@@ -14,11 +14,13 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const { expert_id, expert_ids, stock_ticker, hold_period } = body as {
+    const { expert_id, expert_ids, stock_ticker, hold_period, include_fed_policy, include_market_sentiment } = body as {
       expert_id?: string
       expert_ids?: string[]
       stock_ticker?: string
       hold_period?: number
+      include_fed_policy?: boolean
+      include_market_sentiment?: boolean
     }
 
     if (!stock_ticker) throw new ApiError(400, 'Stock or ETF ticker is required')
@@ -40,6 +42,9 @@ export async function POST(request: NextRequest) {
     const allowedHorizons = new Set([3, 5, 10])
     const horizon = allowedHorizons.has(hold_period ?? 3) ? (hold_period as 3 | 5 | 10) : 3
 
+    const includeFedPolicy = include_fed_policy ?? true
+    const includeMarketSentiment = include_market_sentiment ?? true
+
     // Fetch experts
     const { data: experts, error: expertsError } = await supabase
       .from('experts')
@@ -48,7 +53,10 @@ export async function POST(request: NextRequest) {
     if (expertsError || !experts || experts.length === 0) throw new ApiError(404, 'Selected experts not found or inactive')
 
     // Generate analysis
-    const analysis = await generateExpertAnalysis(experts, stock_ticker, horizon)
+    const analysis = await generateExpertAnalysis(experts, stock_ticker, horizon, {
+      includeFedPolicy,
+      includeMarketSentiment
+    })
 
     // Prepare response
     const result = {
@@ -80,6 +88,8 @@ export async function POST(request: NextRequest) {
           pe_ratio: analysis.pe_ratio,
           experts: experts.map(e => ({ id: e.id, name: e.name })),
           hold_period: horizon,
+          include_fed_policy: includeFedPolicy,
+          include_market_sentiment: includeMarketSentiment,
         },
       })
     }
@@ -104,14 +114,30 @@ interface ExpertRecord {
   framework_description?: string
 }
 
-async function generateExpertAnalysis(experts: ExpertRecord[], ticker: string, holdYears: 3 | 5 | 10) {
+interface MacroPreferences {
+  includeFedPolicy: boolean
+  includeMarketSentiment: boolean
+}
+
+async function generateExpertAnalysis(
+  experts: ExpertRecord[], 
+  ticker: string, 
+  holdYears: 3 | 5 | 10,
+  macroPreferences: MacroPreferences
+) {
   try {
     // Pull system prompt using service role (bypass RLS)
     const serviceSupabase = createServiceClient()
     const config = await NewsletterService.getConfiguration(serviceSupabase)
 
     // Compose prompt and request a meta JSON block (price only)
-    const composedPrompt = adaptSystemPrompt(config.system_prompt, experts, ticker, holdYears)
+    const composedPrompt = adaptSystemPrompt(
+      config.system_prompt, 
+      experts, 
+      ticker, 
+      holdYears,
+      macroPreferences
+    )
     const metaInstruction = `\n\nAt the very end of your response, add a single fenced code block with json containing exactly this object and nothing else:\n{\n  \"meta\": {\n    \"ticker\": \"${ticker.toUpperCase()}\",\n    \"price\": <number>\n  }\n}\n`
 
     let content = await ContentGenerationService.generateContent(composedPrompt + metaInstruction)
@@ -142,7 +168,13 @@ async function generateExpertAnalysis(experts: ExpertRecord[], ticker: string, h
   }
 }
 
-function adaptSystemPrompt(systemPrompt: string, experts: ExpertRecord[], ticker: string, holdYears: 3 | 5 | 10): string {
+function adaptSystemPrompt(
+  systemPrompt: string, 
+  experts: ExpertRecord[], 
+  ticker: string, 
+  holdYears: 3 | 5 | 10,
+  macroPreferences: MacroPreferences
+): string {
   let prompt = systemPrompt
 
   // Replace target company/ticker in the task line
@@ -201,7 +233,24 @@ function adaptSystemPrompt(systemPrompt: string, experts: ExpertRecord[], ticker
   ]
   for (const rx of removeBlocks) { prompt = prompt.replace(rx, '') }
 
-  return prompt.trim()
+  const { includeFedPolicy, includeMarketSentiment } = macroPreferences
+  const macroSectionLines: string[] = []
+
+  if (includeFedPolicy) {
+    macroSectionLines.push(`- Provide a concise "Federal Reserve Context" subsection. Name the last policy move, highlight current rate/quantitative tightening stance, and articulate the transmission into ${ticker.toUpperCase()}\'s ${holdYears}-year MOIC scenarios.`)
+  } else {
+    macroSectionLines.push(`- Omit a dedicated Federal Reserve discussion unless it is absolutely critical for ${ticker.toUpperCase()}; only mention the Fed in passing if it directly alters the thesis.`)
+  }
+
+  if (includeMarketSentiment) {
+    macroSectionLines.push(`- Include a "Market Sentiment Snapshot" subsection summarizing risk appetite (credit spreads, volatility index level, equity breadth) and how sentiment should inform position sizing for ${ticker.toUpperCase()}.`)
+  } else {
+    macroSectionLines.push(`- Skip a standalone market sentiment section; stay focused on company fundamentals and expert frameworks unless sentiment is a key driver.`)
+  }
+
+  const macroGuidanceSection = `## Macro Backdrop\n${macroSectionLines.join('\n')}`
+
+  return `${prompt.trim()}\n\n${macroGuidanceSection}`.trim()
 }
 
 function trimContentAfterUnwantedHeadings(content: string): string {

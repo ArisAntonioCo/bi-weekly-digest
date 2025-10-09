@@ -21,7 +21,8 @@ const suggestedPrompts = [
   "What's a 3-year Forward MOIC Projection?",
   "Calculate 3Y MOIC projection for NVDA",
   "3Y MOIC analysis for AAPL with my 5 experts",
-  "Compare 3Y MOIC: TSLA vs traditional auto"
+  "Compare 3Y MOIC: TSLA vs traditional auto",
+  "How could recent Fed policy shifts impact 3Y MOIC for NVDA?"
 ]
 
 export default function FinancePage() {

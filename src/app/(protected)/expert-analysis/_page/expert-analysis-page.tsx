@@ -40,6 +40,8 @@ export function ExpertAnalysisPage() {
   const [recentAnalyses, setRecentAnalyses] = useState<AnalysisResultType[]>([])
   const [showDisclaimer, setShowDisclaimer] = useState(true)
   const [holdPeriod, setHoldPeriod] = useState<HoldPeriod>(3)
+  const [includeFedPolicy, setIncludeFedPolicy] = useState(true)
+  const [includeMarketSentiment, setIncludeMarketSentiment] = useState(true)
 
   useEffect(() => {
     loadRecentAnalyses()
@@ -132,7 +134,9 @@ export function ExpertAnalysisPage() {
           stock_ticker: stockTicker.toUpperCase().trim(),
           // For future: pass all expert IDs
           expert_ids: selectedExperts.map(e => e.id),
-          hold_period: holdPeriod
+          hold_period: holdPeriod,
+          include_fed_policy: includeFedPolicy,
+          include_market_sentiment: includeMarketSentiment
         })
       })
 
@@ -319,6 +323,10 @@ export function ExpertAnalysisPage() {
                   holdPeriod={holdPeriod}
                   onHoldPeriodChange={setHoldPeriod}
                   expertCount={selectedExperts.length}
+                  includeFedPolicy={includeFedPolicy}
+                  onIncludeFedPolicyChange={(checked) => setIncludeFedPolicy(checked)}
+                  includeMarketSentiment={includeMarketSentiment}
+                  onIncludeMarketSentimentChange={(checked) => setIncludeMarketSentiment(checked)}
                 />
                 )}
               </AnimatePresence>
