@@ -3,12 +3,19 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AnimatedNewsletterList } from '@/components/animated-newsletter-list'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Avvvatars from 'avvvatars-react'
 
 
 export function HeroSection() {
   const [videoError, setVideoError] = useState(false)
+  const spinnerAvatar = useMemo(() => (
+    <Avvvatars 
+      value="sparkle"
+      style="shape"
+      size={40}
+    />
+  ), [])
   
   return (
     <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
@@ -37,16 +44,9 @@ export function HeroSection() {
           
           <div className="flex items-center gap-3">
             <div 
-              className="inline-block [&_div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-black"
-              style={{ 
-                animation: 'spin 8s linear infinite' 
-              }}
+              className="inline-block animate-[spin_8s_linear_infinite] [&_div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-black"
             >
-              <Avvvatars 
-                value="sparkle"
-                style="shape"
-                size={40}
-              />
+              {spinnerAvatar}
             </div>
             <p className="text-lg sm:text-xl font-semibold text-foreground max-w-full lg:max-w-md">
               Leveraging frameworks from Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker & Beth Kindig.
@@ -65,11 +65,11 @@ export function HeroSection() {
               loop
               muted
               playsInline
+              preload="metadata"
               onError={(e) => {
                 console.error('Video error:', e);
                 setVideoError(true);
               }}
-              onLoadedData={() => console.log('Video loaded successfully')}
             />
             {videoError && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-3xl">
