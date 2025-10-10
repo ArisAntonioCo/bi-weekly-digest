@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { motion, useScroll, useTransform, MotionValue } from 'motion/react'
+import { motion, useScroll, useTransform, MotionValue, useInView } from 'motion/react'
 import { ChevronDown } from 'lucide-react'
 import { useExperts } from '@/hooks/use-experts'
 import { ExpertMarqueeCard } from './expert-marquee-card'
@@ -49,6 +49,7 @@ function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress }: Animat
 export function FrameworksSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerHeight, setContainerHeight] = useState(0)
+  const isInView = useInView(containerRef, { once: true, margin: '-25% 0px' })
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -59,7 +60,7 @@ export function FrameworksSection() {
   const indicatorOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0], { clamp: true })
 
   // Fetch experts data
-  const { experts, isLoading } = useExperts({ limit: 20 })
+  const { experts, isLoading } = useExperts({ limit: 12, enabled: isInView })
 
   // Text content as one continuous flow
   const fullText = 'Leveraging Proven Expert Frameworks Combining expert lenses can reveal what one voice might miss. World-class frameworks expose blind spots, building conviction in your long-term investment strategy.'
@@ -110,7 +111,7 @@ export function FrameworksSection() {
           </div>
 
           {/* Expert Marquee */}
-          {!isLoading && experts.length > 0 && (
+          {isInView && !isLoading && experts.length > 0 ? (
             <div className="mt-16 overflow-hidden relative">
               <div className="space-y-4">
                 {/* First marquee line */}
@@ -172,6 +173,8 @@ export function FrameworksSection() {
                 </div>
               </div>
             </div>
+          ) : (
+            <div className="mt-16 h-[240px] rounded-2xl border border-white/10 bg-white/5 animate-pulse" />
           )}
         </div>
 
