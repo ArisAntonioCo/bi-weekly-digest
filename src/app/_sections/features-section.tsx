@@ -1,12 +1,12 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { FeatureCard } from '@/components/feature-card'
-import { Globe } from '@/components/magicui/globe'
 import { NumberTicker } from '@/components/magicui/number-ticker'
 import { Ripple } from '@/components/magicui/ripple'
 import { TrendingUp, TrendingDown, Zap, AlertCircle } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useState, useEffect, memo } from 'react'
+import { motion, AnimatePresence, useInView } from 'motion/react'
+import { useState, useEffect, memo, useRef } from 'react'
 
 const insights = [
   {
@@ -41,6 +41,14 @@ const insights = [
   }
 ]
 
+const Globe = dynamic(
+  () => import('@/components/magicui/globe').then(mod => mod.Globe),
+  {
+    ssr: false,
+    loading: () => <div className="w-[300px] h-[300px] rounded-full bg-muted/40" />,
+  }
+)
+
 const InsightItem = ({ icon, bgColor, text, time }: { icon: React.ReactNode, bgColor: string, text: string, time: string }) => (
   <div className="flex items-start space-x-3 p-4 rounded-xl bg-background/95 backdrop-blur-sm border border-border/50 shadow-lg">
     <div className={`${bgColor} p-2 rounded-lg flex items-center justify-center`}>
@@ -55,14 +63,18 @@ const InsightItem = ({ icon, bgColor, text, time }: { icon: React.ReactNode, bgC
 
 const StackedCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const stackRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(stackRef, { margin: '-20% 0px', amount: 0.3 })
   
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (!isInView) return
+
+    const interval = window.setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % insights.length)
-    }, 3000) // Switch every 3 seconds
+    }, 3000)
     
-    return () => clearInterval(interval)
-  }, [])
+    return () => window.clearInterval(interval)
+  }, [isInView])
   
   const getCardStyle = (position: number) => {
     switch(position) {
@@ -111,7 +123,11 @@ const StackedCards = () => {
   }
   
   return (
-    <div className="relative h-[250px] w-full overflow-visible" style={{ perspective: '1000px' }}>
+    <div
+      ref={stackRef}
+      className="relative h-[250px] w-full overflow-visible"
+      style={{ perspective: '1000px' }}
+    >
       <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] z-0 pointer-events-none">
         <Ripple 
           mainCircleSize={150}
