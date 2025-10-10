@@ -1,7 +1,7 @@
 "use client";
 
 import createGlobe, { COBEOptions } from "cobe";
-import { useMotionValue, useSpring } from "motion/react";
+import { useMotionValue, useSpring, useInView } from "motion/react";
 import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
@@ -12,12 +12,12 @@ const GLOBE_CONFIG: COBEOptions = {
   width: 800,
   height: 800,
   onRender: () => {},
-  devicePixelRatio: 2,
+  devicePixelRatio: 1.5,
   phi: 0,
   theta: 0.3,
   dark: 0,
   diffuse: 0.4,
-  mapSamples: 16000,
+  mapSamples: 8000,
   mapBrightness: 1.2,
   baseColor: [1, 1, 1],
   markerColor: [255 / 255, 100 / 255, 0 / 255], // Vibrant orange
@@ -46,8 +46,8 @@ export function Globe({
   const phi = useRef(0);
   const width = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const pointerInteracting = useRef<number | null>(null);
-  const pointerInteractionMovement = useRef(0);
   
   // Check if we're in dark mode
   const isDarkMode = typeof window !== 'undefined' && 
@@ -60,6 +60,8 @@ export function Globe({
     stiffness: 100,
   });
 
+  const isInView = useInView(containerRef, { margin: "-20% 0px", amount: 0.2 });
+
   const updatePointerInteraction = (value: number | null) => {
     pointerInteracting.current = value;
     if (canvasRef.current) {
@@ -70,12 +72,15 @@ export function Globe({
   const updateMovement = (clientX: number) => {
     if (pointerInteracting.current !== null) {
       const delta = clientX - pointerInteracting.current;
-      pointerInteractionMovement.current = delta;
       r.set(r.get() + delta / MOVEMENT_DAMPING);
     }
   };
 
   useEffect(() => {
+    if (!isInView) {
+      return;
+    }
+
     const onResize = () => {
       if (canvasRef.current) {
         width.current = canvasRef.current.offsetWidth;
@@ -85,7 +90,12 @@ export function Globe({
     window.addEventListener("resize", onResize);
     onResize();
 
-    const globe = createGlobe(canvasRef.current!, {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return () => window.removeEventListener("resize", onResize);
+    }
+
+    const globe = createGlobe(canvas, {
       ...GLOBE_CONFIG,
       ...config,
       // Override dark mode based on current theme
@@ -102,15 +112,21 @@ export function Globe({
       },
     });
 
-    setTimeout(() => (canvasRef.current!.style.opacity = "1"), 0);
+    setTimeout(() => {
+      if (canvasRef.current) {
+        canvasRef.current.style.opacity = "1";
+      }
+    }, 0);
+
     return () => {
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, [rs, config, isDarkMode]);
+  }, [rs, config, isDarkMode, isInView]);
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "relative mx-auto aspect-[1/1] w-full max-w-[600px]",
         className,
