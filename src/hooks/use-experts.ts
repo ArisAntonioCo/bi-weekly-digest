@@ -18,6 +18,14 @@ export function useExperts({
   sortOrder = 'asc',
   page = 1,
   limit = 9,
+  enabled = true,
+}: {
+  search?: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+  page?: number
+  limit?: number
+  enabled?: boolean
 } = {}) {
   const params = new URLSearchParams()
   
@@ -27,8 +35,10 @@ export function useExperts({
   params.append('page', page.toString())
   params.append('limit', limit.toString())
 
+  const key = enabled ? `/api/experts?${params}` : null
+
   const { data, error, isLoading, mutate: revalidate } = useSWR(
-    `/api/experts?${params}`,
+    key,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -40,7 +50,7 @@ export function useExperts({
     experts: data?.experts || [],
     total: data?.total || 0,
     totalPages: data?.totalPages || 1,
-    isLoading,
+    isLoading: enabled ? isLoading : false,
     error,
     revalidate,
   }
