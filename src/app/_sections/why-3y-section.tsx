@@ -1,4 +1,3 @@
-"use client"
 import { ExpertAvatarStack } from '@/components/ui/expert-avatar-stack'
 import { SectionStrip } from '@/components/ui/section-strip'
 
