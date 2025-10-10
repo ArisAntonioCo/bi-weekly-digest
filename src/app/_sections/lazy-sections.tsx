@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import dynamic from 'next/dynamic'
 import { SectionSkeleton } from '@/components/ui/section-skeleton'
 
@@ -36,7 +37,7 @@ const CTASection = dynamic(
   }
 )
 
-export function LazyLandingSections() {
+export const LazyLandingSections = memo(function LazyLandingSections() {
   return (
     <>
       <FeaturesSection />
@@ -45,4 +46,4 @@ export function LazyLandingSections() {
       <CTASection />
     </>
   )
-}
+})
