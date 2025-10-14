@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-type CTA = { label: string; href: string; variant?: 'default' | 'brand-cta' | 'secondary' | 'outline'; size?: 'sm' | 'default' | 'lg' }
+type CTA = { label: string; href: string; variant?: 'default' | 'brand-cta' | 'secondary' | 'outline'; size?: 'sm' | 'default' | 'lg'; className?: string }
 
 interface SectionStripProps {
   label: string
@@ -24,13 +24,19 @@ export function SectionStrip({ label, text, ctas = [], className, ctaAlign = 'en
       </div>
       <div className={cn('lg:col-span-4 flex', ctaAlign === 'end' ? 'lg:justify-end' : 'lg:justify-start')}>
         {ctas.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {ctas.map((cta, i) => {
               const variant: 'default' | 'brand-cta' | 'secondary' | 'outline' = cta.variant ?? 'default'
-              const size: 'sm' | 'default' | 'lg' = cta.size ?? 'default'
+              const size: 'sm' | 'default' | 'lg' = cta.size ?? 'lg'
+              const buttonClasses = cn(
+                'rounded-full',
+                !cta.size && 'text-base sm:text-lg !h-14 !px-10',
+                cta.className
+              )
+
               return (
-                <Link key={`${cta.label}-${i}`} href={cta.href}>
-                  <Button variant={variant} size={size} className="rounded-full">
+                <Link key={`${cta.label}-${i}`} href={cta.href} className="w-full sm:w-auto">
+                  <Button variant={variant} size={size} className={buttonClasses}>
                     {cta.label}
                   </Button>
                 </Link>
