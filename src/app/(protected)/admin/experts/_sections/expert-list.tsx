@@ -25,6 +25,7 @@ interface ExpertListProps {
   currentPage: number
   totalCount: number
   itemsPerPage: number
+  selectionMode: boolean
   selectedExperts: string[]
   onSearch: (query: string) => void
   onSortChange: (sortBy: 'name' | 'created_at') => void
@@ -34,6 +35,7 @@ interface ExpertListProps {
   onSelectExpert: (expertId: string, selected: boolean) => void
   onSelectAll: (selected: boolean) => void
   onBulkAction: (action: 'activate' | 'deactivate' | 'delete') => void
+  onToggleSelectionMode: () => void
 }
 
 export function ExpertList({
@@ -44,6 +46,7 @@ export function ExpertList({
   currentPage,
   totalCount,
   itemsPerPage,
+  selectionMode,
   selectedExperts,
   onSearch,
   onSortChange,
@@ -53,6 +56,7 @@ export function ExpertList({
   onSelectExpert,
   onSelectAll,
   onBulkAction,
+  onToggleSelectionMode,
 }: ExpertListProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery)
 
@@ -78,7 +82,7 @@ export function ExpertList({
   return (
     <div className="space-y-6">
       {/* Bulk Actions Bar */}
-      {hasSelection && (
+      {selectionMode && hasSelection && (
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,22 +134,29 @@ export function ExpertList({
         </form>
 
         <div className="flex flex-wrap gap-2">
-          <div className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/40 px-3 py-2">
-            <ListChecks className={`h-4 w-4 ${hasSelection ? 'text-primary' : 'text-muted-foreground'}`} />
-            <span className="text-sm font-medium">
-              {selectedExperts.length} expert{selectedExperts.length !== 1 ? 's' : ''} selected
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onSelectAll(false)}
-              className="h-8 px-2"
-              disabled={!hasSelection}
-            >
-              Unselect all
-            </Button>
-          </div>
+          {/* Selection Mode Toggle */}
+          <Button
+            variant={selectionMode ? "default" : "outline"}
+            size="default"
+            onClick={onToggleSelectionMode}
+            className="h-10"
+          >
+            <ListChecks className="h-4 w-4 mr-2" />
+            {selectionMode ? 'Exit Selection' : 'Select'}
+          </Button>
 
+          {/* Select All Checkbox when in selection mode */}
+          {selectionMode && experts.length > 0 && (
+            <div className="flex items-center gap-2 ml-2">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={(checked) => onSelectAll(!!checked)}
+                aria-label="Select all experts"
+              />
+              <label className="text-sm text-muted-foreground">Select all</label>
+            </div>
+          )}
+          
 
           <div className="flex items-center gap-1">
             <Button
@@ -217,15 +228,20 @@ export function ExpertList({
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {experts.map((expert) => (
               <div key={expert.id} className="relative">
+                {selectionMode && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <Checkbox
+                      checked={selectedExperts.includes(expert.id)}
+                      onCheckedChange={(checked) => onSelectExpert(expert.id, !!checked)}
+                      aria-label={`Select ${expert.name}`}
+                      className="bg-background border-2"
+                    />
+                  </div>
+                )}
                 <ExpertCard
                   expert={expert}
                   onUpdate={onExpertUpdate}
                   onDelete={onExpertDelete}
-                  selected={selectedExperts.includes(expert.id)}
-                  onToggleSelect={(expertId) => {
-                    const isSelected = selectedExperts.includes(expertId)
-                    onSelectExpert(expertId, !isSelected)
-                  }}
                 />
               </div>
             ))}

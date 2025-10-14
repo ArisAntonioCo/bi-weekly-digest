@@ -21,27 +21,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { MoreVertical, Edit, Trash, Check } from 'lucide-react'
+import { MoreVertical, Edit, Trash } from 'lucide-react'
 import { Expert } from '@/types/expert'
 import { ExpertForm } from './expert-form'
 import { useDeleteExpert } from '@/hooks/use-experts'
-import { cn } from '@/lib/utils'
 
 interface ExpertCardProps {
   expert: Expert
   onUpdate: (expert: Expert) => void
   onDelete: (expertId: string) => void
-  selected?: boolean
-  onToggleSelect?: (expertId: string) => void
 }
 
-export function ExpertCard({
-  expert,
-  onUpdate,
-  onDelete,
-  selected = false,
-  onToggleSelect,
-}: ExpertCardProps) {
+export function ExpertCard({ expert, onUpdate, onDelete }: ExpertCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   
@@ -57,41 +48,9 @@ export function ExpertCard({
     setIsDeleteOpen(false)
   }
 
-  const handleCardClick = () => {
-    if (!onToggleSelect) return
-    onToggleSelect(expert.id)
-  }
-
-  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!onToggleSelect) return
-
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      onToggleSelect(expert.id)
-    }
-  }
-
   return (
     <>
-      <Card
-        className={cn(
-          'relative border border-border/50 h-full flex flex-col transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          onToggleSelect && 'cursor-pointer hover:border-primary/50 hover:shadow-lg',
-          selected && 'border-primary bg-primary/5 ring-2 ring-primary/50 shadow-lg'
-        )}
-        onClick={handleCardClick}
-        onKeyDown={handleCardKeyDown}
-        role={onToggleSelect ? 'button' : undefined}
-        tabIndex={onToggleSelect ? 0 : undefined}
-        aria-pressed={onToggleSelect ? selected : undefined}
-      >
-        {selected && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-primary bg-primary text-primary-foreground shadow-sm transition-colors">
-              <Check className="h-3.5 w-3.5" aria-hidden="true" />
-            </span>
-          </div>
-        )}
+      <Card className="relative border border-border/50 h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1">
@@ -118,13 +77,7 @@ export function ExpertCard({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={(event) => event.stopPropagation()}
-                  onKeyDown={(event) => event.stopPropagation()}
-                >
+                <Button variant="ghost" size="icon" className="h-8 w-8">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
