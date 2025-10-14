@@ -24,13 +24,13 @@ export function SectionStrip({ label, text, ctas = [], className, ctaAlign = 'en
       </div>
       <div className={cn('lg:col-span-4 flex', ctaAlign === 'end' ? 'lg:justify-end' : 'lg:justify-start')}>
         {ctas.length > 0 && (
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4">
             {ctas.map((cta, i) => {
               const variant: 'default' | 'brand-cta' | 'secondary' | 'outline' = cta.variant ?? 'default'
               const size: 'sm' | 'default' | 'lg' = cta.size ?? 'lg'
               const buttonClasses = cn(
                 'rounded-full',
-                !cta.size && 'text-base sm:text-lg !h-14 !px-10',
+                !cta.size && 'text-lg sm:text-xl font-semibold !h-16 !px-12',
                 cta.className
               )
 
