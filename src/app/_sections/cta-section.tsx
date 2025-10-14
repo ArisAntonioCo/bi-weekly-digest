@@ -60,7 +60,7 @@ export function CTASection() {
               }`}>
                 Start Getting Weekly
                 <br />
-                MOIC Predictions
+                Stock Return Forecasts
               </h2>
               <p className={`text-base transition-colors ${
                 hoveredCard === 'left' ? 'text-white/90' : 'text-foreground/80'

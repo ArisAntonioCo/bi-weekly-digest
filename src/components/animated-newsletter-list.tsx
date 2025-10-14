@@ -12,7 +12,7 @@ interface NotificationItem {
 
 let notifications = [
   {
-    text: "NVDA - 3Y MOIC Projection: 2.8x",
+    text: "NVDA - 3Y Return Projection: 2.8x",
     date: "January 15, 2025",
     time: "2m ago",
   },

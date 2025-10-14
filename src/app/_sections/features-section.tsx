@@ -176,7 +176,7 @@ const StackedCards = () => {
 
 const features = [
   {
-    title: "Comprehensive 3-Year Forward MOIC",
+    title: "Comprehensive 3-Year Stock Return Outlook",
     shapeValue: "strawberry-red-500",
     bottomContent: (
       <div className="flex flex-col justify-center h-[200px] w-full space-y-4 px-4">

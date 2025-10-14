@@ -9,9 +9,9 @@ export function AnalyticsSection() {
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground leading-none max-w-5xl">
           See How World-Class Investors
           <br />
-          May Project Any Public Equity&apos;s
+          Forecast Any Public Equity&apos;s
           <br />
-          3-Year MOIC Potential
+          3-Year Return Potential
         </h2>
         <Link href="/signup">
           <Button variant="brand-cta" size="lg" className="w-full sm:w-auto">
@@ -26,9 +26,9 @@ export function AnalyticsSection() {
             <p className="text-lg sm:text-xl font-medium text-background">
               Expert frameworks from Gurley, Gerstner,
               <br />
-              Druckenmiller & more for precise MOIC
+              Druckenmiller & more for precise
               <br />
-              projections and durability analysis.
+              stock return forecasts and durability analysis.
             </p>
           </div>
           

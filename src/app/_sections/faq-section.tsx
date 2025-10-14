@@ -11,11 +11,11 @@ import { Plus, Minus } from "lucide-react"
 
 const faqs = [
   {
-    question: "What is a 3-Year Forward MOIC projection?",
-    answer: "MOIC (Multiple on Invested Capital) is a key investment metric that measures the total value of an investment relative to its initial cost. Our 3Y Mode methodology specifically leverages battle-tested frameworks from world-class investors like Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker, and Beth Kindig to estimate potential returns over a 36-month holding period, helping you make informed long-term investment decisions."
+    question: "What is a 3-Year Stock Return Forecast?",
+    answer: "Our 3-year forecasts estimate a company's total return potential, including price appreciation and dividends, over the next 36 months. We blend quantitative signals with qualitative overlays from world-class investors like Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker, and Beth Kindig to surface the most likely outcomes."
   },
   {
-    question: "Why 3 Years MOIC Projections?",
+    question: "Why focus on 3-year return projections?",
     answer: "Three years is the horizon where noise fades and earnings power speaks. It's sufficient time for fundamental value to emerge, while remaining relevant for your current investment decisions."
   },
   {
@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     question: "How often are the investment newsletters sent?",
-    answer: "We deliver comprehensive investment analysis newsletters on a weekly basis, strategically timed to capture key market movements. Each newsletter includes updated MOIC projections, market insights, and actionable investment opportunities tailored to your portfolio preferences."
+    answer: "We deliver comprehensive investment analysis newsletters on a weekly basis, strategically timed to capture key market movements. Each newsletter includes updated stock return forecasts, market insights, and actionable investment opportunities tailored to your portfolio preferences."
   },
   {
     question: "What makes your equity frameworks 'world-class'?",
@@ -43,7 +43,7 @@ const faqs = [
     answer: "Yes, our platform allows you to set your risk tolerance, investment sectors of interest, and portfolio goals. Our AI then tailors the analysis and recommendations specifically to match your investment profile and objectives."
   },
   {
-    question: "How accurate are your MOIC projections historically?",
+    question: "How accurate are your stock return forecasts historically?",
     answer: "As with all capital market investments, past performance does not guarantee future returns, and we encourage independent due diligence. Our projections have demonstrated strong correlation with actual market outcomes, with Base case scenarios achieving approximately 78% directional accuracy over the past 24 months. We maintain full transparency through regular performance tracking and published accuracy reports for our members."
   },
   {
@@ -67,7 +67,7 @@ export function FAQSection() {
             Questions
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground">
-            Everything you need to know about our investment intelligence platform and MOIC projections.
+            Everything you need to know about our investment intelligence platform and stock return forecasts.
           </p>
         </div>
 

@@ -21,10 +21,10 @@ export function HeroSection() {
     <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
       {/* Main Content */}
         <div className="mb-8 sm:mb-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-none">
-            Long‑Term MOIC Forecasts,
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 leading-none">
+            Medium & Long-Term Stock Return Forecasts,
             <br />
-            Personalized to Your Investing Style
+            Leveraging Battle-Tested Frameworks From Industry Titans
           </h1>
         </div>
 
@@ -48,7 +48,7 @@ export function HeroSection() {
             >
               {spinnerAvatar}
             </div>
-            <p className="text-lg sm:text-xl font-semibold text-foreground max-w-full lg:max-w-md">
+            <p className="text-xl sm:text-2xl font-semibold text-foreground max-w-full lg:max-w-md">
               Leveraging frameworks from Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker & Beth Kindig.
             </p>
           </div>
@@ -59,7 +59,7 @@ export function HeroSection() {
           {/* Main Hero Video */}
           <div className="rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 overflow-hidden relative">
             <video 
-              src="/videos/HeroVideo.mp4"
+              src="/videos/@hero-video.mp4"
               className="absolute inset-0 w-full h-full object-cover rounded-3xl"
               autoPlay
               loop
@@ -82,7 +82,7 @@ export function HeroSection() {
           <div className="bg-foreground rounded-3xl w-full lg:w-[500px] h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col overflow-hidden">
             <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4">
               <h3 className="text-xl sm:text-2xl font-bold text-background leading-tight">
-                Weekly 3Y MOIC Predictions According to Your Investment Preferences
+                Weekly 3Y Stock Return Forecasts Aligned to Your Investment Preferences
               </h3>
             </div>
             

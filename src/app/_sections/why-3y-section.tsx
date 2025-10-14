@@ -34,7 +34,7 @@ export function Why3YSection({
         />
         <SectionStrip 
           label="What You Can Do"
-          text="Personalize your lens stack to your investing style. Analyze any ticker with 3‑year MOIC bands (bear / base / bull). Compare, save, and refine."
+          text="Personalize your lens stack to your investing style. Analyze any ticker with 3‑year stock return scenarios (bear / base / bull). Compare, save, and refine."
           ctas={[{ label: 'Analyze a ticker', href: ctaPrimary.href }]}
         />
         <SectionStrip 
