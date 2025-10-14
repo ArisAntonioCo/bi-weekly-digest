@@ -19,7 +19,6 @@ export function ExpertsPage() {
   const [itemsPerPage] = useState(9) // 3x3 grid on desktop
   
   // Bulk selection state
-  const [selectionMode, setSelectionMode] = useState(false)
   const [selectedExperts, setSelectedExperts] = useState<string[]>([])
 
   // Use SWR hook for fetching experts
@@ -75,11 +74,16 @@ export function ExpertsPage() {
   }
 
   const handleSelectExpert = (expertId: string, selected: boolean) => {
-    if (selected) {
-      setSelectedExperts(prev => [...prev, expertId])
-    } else {
-      setSelectedExperts(prev => prev.filter(id => id !== expertId))
-    }
+    setSelectedExperts(prev => {
+      if (selected) {
+        if (prev.includes(expertId)) {
+          return prev
+        }
+        return [...prev, expertId]
+      }
+
+      return prev.filter(id => id !== expertId)
+    })
   }
 
   const handleSelectAll = (selected: boolean) => {
@@ -100,17 +104,9 @@ export function ExpertsPage() {
     
     // Clear selection after action
     setSelectedExperts([])
-    setSelectionMode(false)
     
     // Revalidate the list
     await revalidate()
-  }
-
-  const handleToggleSelectionMode = () => {
-    setSelectionMode(!selectionMode)
-    if (selectionMode) {
-      setSelectedExperts([]) // Clear selection when exiting selection mode
-    }
   }
 
   if (loading) {
@@ -163,7 +159,6 @@ export function ExpertsPage() {
           currentPage={currentPage}
           totalCount={totalCount}
           itemsPerPage={itemsPerPage}
-          selectionMode={selectionMode}
           selectedExperts={selectedExperts}
           onSearch={handleSearch}
           onSortChange={handleSortChange}
@@ -173,7 +168,6 @@ export function ExpertsPage() {
           onSelectExpert={handleSelectExpert}
           onSelectAll={handleSelectAll}
           onBulkAction={handleBulkAction}
-          onToggleSelectionMode={handleToggleSelectionMode}
         />
       </div>
     </div>
