@@ -16,7 +16,7 @@ export function InputArea({ onSend, isLoading, onStop }: InputAreaProps) {
           onSend={onSend}
           isLoading={isLoading}
           onStop={onStop}
-          placeholder="Ask me to help you create content, configure settings, or manage your newsletter..."
+          placeholder="Layer in the latest thinking & action by the Fed.\nOr rank-order all US-listed stocks by 3-year MOIC..."
         />
       </div>
     </div>
