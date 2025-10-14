@@ -17,10 +17,10 @@ export function SectionStrip({ label, text, ctas = [], className, ctaAlign = 'en
   return (
     <div className={cn('grid grid-cols-1 lg:grid-cols-12 gap-10 items-start', className)}>
       <div className="lg:col-span-3">
-        <p className="text-xs tracking-[0.22em] uppercase text-muted-foreground">{label}</p>
+        <p className="text-sm font-semibold tracking-[0.22em] uppercase text-muted-foreground">{label}</p>
       </div>
       <div className="lg:col-span-5">
-        <p className="text-sm sm:text-base text-foreground/80 max-w-prose">{text}</p>
+        <p className="text-base sm:text-lg leading-7 text-foreground/80 max-w-prose">{text}</p>
       </div>
       <div className={cn('lg:col-span-4 flex', ctaAlign === 'end' ? 'lg:justify-end' : 'lg:justify-start')}>
         {ctas.length > 0 && (
