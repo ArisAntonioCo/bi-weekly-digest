@@ -63,7 +63,7 @@ export function FrameworksSection() {
   const { experts, isLoading } = useExperts({ limit: 12, enabled: isInView })
 
   // Text content as one continuous flow
-  const fullText = 'Leveraging Proven Expert Frameworks Combining expert lenses can reveal what one voice might miss. World-class frameworks expose blind spots, building conviction in your long-term investment strategy.'
+  const fullText = 'Combining Battle-Tested Expert Frameworks help to Reveal What a Single Voice Might Miss. World-Class Investment Strategies, Taken in Combination, Often Expose Blind Spots, Build Conviction, and Provide the Most Precise Forward-Looking Estimate of Stock Returns.'
   
   // Split into individual words for animation
   const words = fullText.split(' ')
