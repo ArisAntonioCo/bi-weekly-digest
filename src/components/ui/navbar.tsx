@@ -305,8 +305,8 @@ export default function Navbar({ className }: NavbarProps) {
                 <Link href="/login">
                   <Button 
                     variant="default" 
-                    size="lg"
-                    className="rounded-full text-base sm:text-lg px-6 h-12"
+                    size="default"
+                    className="rounded-full text-sm sm:text-base px-5 h-11"
                   >
                     Sign In
                   </Button>
@@ -314,8 +314,8 @@ export default function Navbar({ className }: NavbarProps) {
                 <Link href="/signup">
                   <Button 
                     variant="brand"
-                    size="lg"
-                    className="text-base sm:text-lg px-7 h-12 rounded-full"
+                    size="default"
+                    className="text-sm sm:text-base px-6 h-11 rounded-full font-semibold"
                   >
                     Get Started
                   </Button>

@@ -57,12 +57,12 @@ export function FreemiumBanner() {
         action={
           <Link href="/signup">
             <Button
-              size="lg"
+              size="default"
               variant="secondary"
-              className="bg-white text-black hover:bg-gray-200 h-12 px-7 text-base sm:text-lg"
+              className="bg-white text-black hover:bg-gray-200 h-11 px-6 text-sm sm:text-base font-semibold"
             >
               Get Started Free
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-3.5 w-3.5" />
             </Button>
           </Link>
         }
