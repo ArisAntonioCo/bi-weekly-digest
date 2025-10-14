@@ -21,7 +21,7 @@ export function Why3YSection({
         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.06] tracking-tight text-foreground">
           A clear, analytical view of your portfolio
           <span className="text-muted-foreground">, through expert frameworks.</span>
-          <ExpertAvatarStack size={44} className="ml-3 align-middle -translate-y-[2px]" />
+          <ExpertAvatarStack size={56} className="ml-4 align-middle -translate-y-1" />
         </h2>
       </div>
 

@@ -21,8 +21,17 @@ export function ExpertAvatarStack({
     const idx = s.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % colors.length
     return `https://api.dicebear.com/9.x/notionists/svg?seed=${s}&backgroundColor=${colors[idx]}`
   }
+
+  const spacingClass = overlap
+    ? size >= 52
+      ? '-space-x-4'
+      : size >= 36
+        ? '-space-x-3'
+        : '-space-x-2'
+    : undefined
+
   return (
-    <span className={cn('inline-flex items-center align-middle', overlap && (size >= 36 ? '-space-x-3' : '-space-x-2'), className)}>
+    <span className={cn('inline-flex items-center align-middle', spacingClass, className)}>
       {values.map((v) => (
         <span
           key={v}
