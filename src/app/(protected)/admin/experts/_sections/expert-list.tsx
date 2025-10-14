@@ -10,8 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Trash2, ListChecks } from 'lucide-react'
+import { Search, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { ExpertCard } from './expert-card'
 import { Expert } from '@/types/expert'
 import { Badge } from '@/components/ui/badge'
@@ -25,7 +35,6 @@ interface ExpertListProps {
   currentPage: number
   totalCount: number
   itemsPerPage: number
-  selectionMode: boolean
   selectedExperts: string[]
   onSearch: (query: string) => void
   onSortChange: (sortBy: 'name' | 'created_at') => void
@@ -35,7 +44,6 @@ interface ExpertListProps {
   onSelectExpert: (expertId: string, selected: boolean) => void
   onSelectAll: (selected: boolean) => void
   onBulkAction: (action: 'activate' | 'deactivate' | 'delete') => void
-  onToggleSelectionMode: () => void
 }
 
 export function ExpertList({
@@ -46,7 +54,6 @@ export function ExpertList({
   currentPage,
   totalCount,
   itemsPerPage,
-  selectionMode,
   selectedExperts,
   onSearch,
   onSortChange,
@@ -56,9 +63,9 @@ export function ExpertList({
   onSelectExpert,
   onSelectAll,
   onBulkAction,
-  onToggleSelectionMode,
 }: ExpertListProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery)
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false)
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,38 +89,69 @@ export function ExpertList({
   return (
     <div className="space-y-6">
       {/* Bulk Actions Bar */}
-      {selectionMode && hasSelection && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-muted/50 rounded-lg p-4 flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <Checkbox
-              checked={allSelected}
-              onCheckedChange={(checked) => onSelectAll(!!checked)}
-              aria-label="Select all experts"
-            />
-            <span className="text-sm font-medium">
-              {selectedExperts.length} expert{selectedExperts.length !== 1 ? 's' : ''} selected
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-destructive hover:text-destructive"
-              onClick={() => {
-                if (confirm(`Are you sure you want to delete ${selectedExperts.length} expert${selectedExperts.length !== 1 ? 's' : ''}?`)) {
-                  onBulkAction('delete')
-                }
-              }}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Selected
-            </Button>
-          </div>
-        </motion.div>
+      {hasSelection && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-muted/50 rounded-lg p-4 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={(checked) => onSelectAll(!!checked)}
+                aria-label="Select all experts"
+              />
+              <span className="text-sm font-medium">
+                {selectedExperts.length} expert{selectedExperts.length !== 1 ? 's' : ''} selected
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onSelectAll(false)}
+              >
+                Unselect all
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                onClick={() => setIsBulkDeleteOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected
+              </Button>
+            </div>
+          </motion.div>
+
+          <AlertDialog open={isBulkDeleteOpen} onOpenChange={setIsBulkDeleteOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete selected experts?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently remove {selectedExperts.length} expert{selectedExperts.length !== 1 ? 's' : ''}. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={async () => {
+                    try {
+                      await onBulkAction('delete')
+                    } finally {
+                      setIsBulkDeleteOpen(false)
+                    }
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       )}
 
       {/* Filters */}
@@ -134,47 +172,9 @@ export function ExpertList({
         </form>
 
         <div className="flex flex-wrap gap-2">
-          {/* Selection Mode Toggle */}
-          <Button
-            variant={selectionMode ? "default" : "outline"}
-            size="default"
-            onClick={onToggleSelectionMode}
-            className="h-10"
-          >
-            <ListChecks className="h-4 w-4 mr-2" />
-            {selectionMode ? 'Exit Selection' : 'Select'}
-          </Button>
-
-          {/* Select All Checkbox when in selection mode */}
-          {selectionMode && experts.length > 0 && (
-            <div className="flex items-center gap-2 ml-2">
-              <Checkbox
-                checked={allSelected}
-                onCheckedChange={(checked) => onSelectAll(!!checked)}
-                aria-label="Select all experts"
-              />
-              <label className="text-sm text-muted-foreground">Select all</label>
-            </div>
-          )}
-          
-
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="default"
-              onClick={() => onSortChange(sortBy)}
-              className="h-10"
-            >
-              {sortBy === 'name' && 'Name'}
-              {sortBy === 'created_at' && 'Date'}
-              {sortOrder === 'asc' ? (
-                <ArrowUp className="h-4 w-4 ml-1" />
-              ) : (
-                <ArrowDown className="h-4 w-4 ml-1" />
-              )}
-            </Button>
+          <div>
             <Select value={sortBy} onValueChange={(value) => onSortChange(value as 'name' | 'created_at')}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[200px]">
                 <ArrowUpDown className="h-4 w-4 mr-2 flex-shrink-0" />
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -228,20 +228,15 @@ export function ExpertList({
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {experts.map((expert) => (
               <div key={expert.id} className="relative">
-                {selectionMode && (
-                  <div className="absolute top-3 left-3 z-10">
-                    <Checkbox
-                      checked={selectedExperts.includes(expert.id)}
-                      onCheckedChange={(checked) => onSelectExpert(expert.id, !!checked)}
-                      aria-label={`Select ${expert.name}`}
-                      className="bg-background border-2"
-                    />
-                  </div>
-                )}
                 <ExpertCard
                   expert={expert}
                   onUpdate={onExpertUpdate}
                   onDelete={onExpertDelete}
+                  selected={selectedExperts.includes(expert.id)}
+                  onToggleSelect={(expertId) => {
+                    const isSelected = selectedExperts.includes(expertId)
+                    onSelectExpert(expertId, !isSelected)
+                  }}
                 />
               </div>
             ))}
