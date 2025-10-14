@@ -182,8 +182,8 @@ const features = [
       <div className="flex flex-col justify-center h-[200px] w-full space-y-4 px-4">
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">Bear Case</div>
-          <div className="text-3xl font-bold text-muted-foreground">
-            <NumberTicker value={1.8} decimalPlaces={1} delay={0} />x
+          <div className="text-3xl font-bold text-red-500">
+            <NumberTicker className="text-red-500" value={1.8} decimalPlaces={1} delay={0} />x
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -194,8 +194,8 @@ const features = [
         </div>
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">Bull Case</div>
-          <div className="text-3xl font-bold" style={{ color: 'rgb(34, 197, 94)' }}>
-            <NumberTicker value={3.5} decimalPlaces={1} delay={0.4} />x
+          <div className="text-3xl font-bold text-emerald-500">
+            <NumberTicker className="text-emerald-500" value={3.5} decimalPlaces={1} delay={0.4} />x
           </div>
         </div>
       </div>
