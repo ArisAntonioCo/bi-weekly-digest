@@ -24,21 +24,21 @@ export function ExpertMarqueeCard({ expert }: ExpertMarqueeCardProps) {
   }, [expert.avatar_seed, expert.name])
 
   return (
-    <div className="flex items-center gap-4 px-6 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+    <div className="flex items-center gap-5 px-8 py-5 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
       <Image
         src={avatarUrl}
         alt={`${expert.name} avatar`}
-        width={48}
-        height={48}
+        width={64}
+        height={64}
         className="rounded-full flex-shrink-0"
         unoptimized
       />
       <div className="flex flex-col min-w-0">
-        <span className="text-white text-base font-medium truncate">
+        <span className="text-white text-lg font-semibold truncate">
           {expert.name}
         </span>
         {expert.title && (
-          <span className="text-white/60 text-sm truncate">
+          <span className="text-white/70 text-base truncate">
             {expert.title}
           </span>
         )}
