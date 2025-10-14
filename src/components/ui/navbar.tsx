@@ -301,12 +301,12 @@ export default function Navbar({ className }: NavbarProps) {
               </DropdownMenu>
             ) : (
               // Unauthenticated user navigation
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <Link href="/login">
                   <Button 
                     variant="default" 
-                    size="default"
-                    className="rounded-full text-sm sm:text-base"
+                    size="lg"
+                    className="rounded-full text-base sm:text-lg px-6 h-12"
                   >
                     Sign In
                   </Button>
@@ -314,8 +314,8 @@ export default function Navbar({ className }: NavbarProps) {
                 <Link href="/signup">
                   <Button 
                     variant="brand"
-                    size="default"
-                    className="text-sm sm:text-base"
+                    size="lg"
+                    className="text-base sm:text-lg px-7 h-12 rounded-full"
                   >
                     Get Started
                   </Button>
