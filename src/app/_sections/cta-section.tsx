@@ -30,7 +30,7 @@ export function CTASection() {
     <section className="w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         
-        {/* Left Card - Your new system of action */}
+        {/* Left Card - Free account emphasis */}
         <div 
           className="relative bg-muted overflow-hidden group cursor-pointer h-[400px] lg:h-[500px]"
           onMouseEnter={() => setHoveredCard('left')}
@@ -58,35 +58,34 @@ export function CTASection() {
               <h2 className={`text-2xl sm:text-3xl font-semibold mb-4 transition-colors ${
                 hoveredCard === 'left' ? 'text-white' : 'text-foreground'
               }`}>
-                Start Getting Weekly
+                Start Getting Free Weekly
                 <br />
                 Stock Return Forecasts
               </h2>
               <p className={`text-base transition-colors ${
                 hoveredCard === 'left' ? 'text-white/90' : 'text-foreground/80'
               }`}>
-                Join thousands analyzing stocks with
+                Join thousands analyzing stocks with elite investor frameworks.
                 <br />
-                frameworks from elite investors.
+                100% free and open-source—no credit card required.
               </p>
             </div>
-            <Link href="/signup" className="inline-block">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className={`border-0 transition-all rounded-full px-8 ${
-                  hoveredCard === 'left' 
-                    ? 'bg-white/90 hover:bg-white text-black' 
-                    : 'bg-white hover:bg-white/90 text-foreground'
-                }`}
-              >
-                Create Free Account →
-              </Button>
-            </Link>
+            <Button 
+              asChild
+              variant="outline" 
+              size="lg" 
+              className={`border-0 transition-all rounded-full px-8 whitespace-nowrap self-start ${
+                hoveredCard === 'left' 
+                  ? 'bg-white/90 hover:bg-white text-black' 
+                  : 'bg-white hover:bg-white/90 text-foreground'
+              }`}
+            >
+              <Link href="/signup">Create Free Account →</Link>
+            </Button>
           </div>
         </div>
 
-        {/* Right Card - No passengers */}
+        {/* Right Card - Open source contribution */}
         <div 
           className="relative bg-muted overflow-hidden group cursor-pointer h-[400px] lg:h-[500px]"
           onMouseEnter={() => setHoveredCard('right')}
@@ -114,34 +113,35 @@ export function CTASection() {
               <h2 className={`text-2xl sm:text-3xl font-semibold mb-2 transition-colors ${
                 hoveredCard === 'right' ? 'text-white' : 'text-foreground'
               }`}>
-                Try Expert Analysis
+                Contribute to the
                 <br />
-                On Your Portfolio
+                Open-Source Platform
               </h2>
               <p className={`text-base transition-colors ${
                 hoveredCard === 'right' ? 'text-white/90' : 'text-foreground/80'
               }`}>
-                Get instant 3-year return projections
+                Help shape 3YMode by improving research workflows,
                 <br />
-                using battle-tested frameworks.
+                fixing issues, and shipping new investment tools.
               </p>
             </div>
-            <Link href="/signup" className="inline-block">
-              <Button 
-                variant="default" 
-                size="lg" 
-                className={`border-0 transition-all rounded-full px-8 ${
-                  hoveredCard === 'right' 
-                    ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-                    : 'bg-white hover:bg-white/90 text-foreground'
-                }`}
-              >
-                Start Free Analysis →
-              </Button>
-            </Link>
+            <Button 
+              asChild
+              variant="default" 
+              size="lg" 
+              className={`border-0 transition-all rounded-full px-8 whitespace-nowrap self-start ${
+                hoveredCard === 'right' 
+                  ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+                  : 'bg-white hover:bg-white/90 text-foreground'
+              }`}
+            >
+              <Link href="https://github.com/ArisAntonioCo/bi-weekly-digest" target="_blank" rel="noopener noreferrer">
+                Contribute on GitHub →
+              </Link>
+            </Button>
           </div>
         </div>
-        
+
       </div>
     </section>
   )
