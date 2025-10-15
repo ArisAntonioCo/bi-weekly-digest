@@ -11,10 +11,16 @@ interface AnimatedWordProps {
   globalIndex: number
   totalWords: number
   scrollYProgress: MotionValue<number>
+  highlight?: boolean
 }
 
-function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress }: AnimatedWordProps) {
+function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress, highlight = false }: AnimatedWordProps) {
   const wordStart = globalIndex / totalWords
+  const brandColor = 'var(--brand)'
+  const baseMuted = 'rgba(255, 255, 255, 0.3)'
+  const baseBright = 'rgba(255, 255, 255, 1)'
+  const initialColor = baseMuted
+  const finalColor = highlight ? brandColor : baseBright
   
   // Instant transition from muted to highlighted
   const opacity = useTransform(
@@ -28,7 +34,7 @@ function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress }: Animat
   const color = useTransform(
     scrollYProgress,
     [wordStart * 0.8, wordStart * 0.8 + 0.001],
-    ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 1)'],
+    [initialColor, finalColor],
     { clamp: true }
   )
   
@@ -67,6 +73,7 @@ export function FrameworksSection() {
   
   // Split into individual words for animation
   const words = fullText.split(' ')
+  const highlightIndexes = new Set([20, 21, 22, 23, 24, 28, 29, 30, 31])
 
   const totalWords = words.length
 
@@ -104,6 +111,7 @@ export function FrameworksSection() {
                     globalIndex={index}
                     totalWords={totalWords}
                     scrollYProgress={scrollYProgress}
+                    highlight={highlightIndexes.has(index)}
                   />
                 )
               })}
