@@ -9,10 +9,11 @@ Guidelines for the follow-up question:
 - Keep it specific to the user's latest request and your answer
 - Limit it to 12 words or fewer
 - Avoid repeating the user's wording verbatim
-- Do NOT prefix it with labels or extra text
-- If no meaningful follow-up exists, use: "How else can I help you today?"`
+- The question must begin with either "Would you like me to" or "Do you want me to"
+- Do NOT include any labels or extra text before the question
+- If no meaningful follow-up exists, use: "Would you like me to help with anything else?"`
 
-const appendDefaultFollowUp = (text: string, suggestion = 'How else can I help you today?') =>
+const appendDefaultFollowUp = (text: string, suggestion = 'Would you like me to help with anything else?') =>
   `${text}\n\n${suggestion}`
 
 export async function POST(request: NextRequest) {
@@ -139,7 +140,7 @@ Please refine the system prompt based on this request.`
                 id: Date.now().toString(),
                 content: appendDefaultFollowUp(
                   'Sorry, I encountered an error updating the system prompt. Please try again or contact support.',
-                  'Should I attempt the prompt update again for you?'
+                  'Would you like me to attempt the prompt update again for you?'
                 ),
                 sender: 'assistant',
                 timestamp: new Date(),
@@ -166,7 +167,7 @@ Please refine the system prompt based on this request.`
             id: Date.now().toString(),
             content: appendDefaultFollowUp(
               'Sorry, I encountered an error while refining the system prompt. Please try again.',
-              'Should I attempt that refinement once more for you?'
+              'Would you like me to attempt that refinement once more for you?'
             ),
             sender: 'assistant',
             timestamp: new Date(),

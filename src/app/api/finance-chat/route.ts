@@ -9,10 +9,11 @@ Guidelines for the follow-up question:
 - Keep it specific to the user's latest request and your answer
 - Limit it to 12 words or fewer
 - Avoid repeating the user's wording verbatim
-- Do NOT prefix it with labels or extra text
-- If no meaningful follow-up exists, use: "How else can I help you today?"`
+- The question must begin with either "Would you like me to" or "Do you want me to"
+- Do NOT include any labels or extra text before the question
+- If no meaningful follow-up exists, use: "Would you like me to help with anything else?"`
 
-const appendDefaultFollowUp = (text: string, suggestion = 'How else can I help you today?') =>
+const appendDefaultFollowUp = (text: string, suggestion = 'Would you like me to help with anything else?') =>
   `${text}\n\n${suggestion}`
 
 // Finance-specific system prompt
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
           id: Date.now().toString(),
           content: appendDefaultFollowUp(
             "I'm specialized in finance and investment analysis. I can help you with:\n\n- Stock market analysis and valuations\n- MOIC projections and investment calculations\n- Market trends and financial news\n- Portfolio strategies and risk assessment\n- Economic indicators and market conditions\n- Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
-            'Would you like ideas for a finance topic to explore right now?'
+            'Would you like me to share a finance topic to explore right now?'
           ),
           role: 'assistant',
           timestamp: new Date(),
