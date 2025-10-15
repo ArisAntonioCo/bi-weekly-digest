@@ -15,7 +15,7 @@ export function DashboardPage() {
     setIsClient(true)
     setMessages([{
       id: '1',
-      content: 'Enter any US-listed public equity or ETF.\nChoose 3-5 experts to apply their frameworks.\nUnlock your proprietary 3-year return on invested capital.',
+      content: 'Enter any US-listed public equities (stocks) or ETFs, whether individually, or multiple, for comparison purposes.\nChoose 3-5 experts to apply their frameworks.\nUnlock your proprietary 3-year return on invested capital.',
       sender: 'assistant',
       timestamp: new Date()
     }])
