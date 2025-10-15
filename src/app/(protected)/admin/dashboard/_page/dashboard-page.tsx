@@ -76,7 +76,7 @@ export function DashboardPage() {
         console.error('Chat error:', error)
         const errorMessage: Message = {
           id: Date.now().toString(),
-          content: 'Sorry, I encountered an error processing your request. Please try again.',
+          content: 'Sorry, I encountered an error processing your request. Please try again.\n\nWant me to retry that request right now?',
           sender: 'assistant',
           timestamp: new Date()
         }

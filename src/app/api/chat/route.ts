@@ -3,6 +3,18 @@ import { openai } from '@/lib/openai'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
 
+const FOLLOW_UP_DIRECTIVE = `Always conclude your response with a single concise follow-up question that logically continues the conversation.
+
+Guidelines for the follow-up question:
+- Keep it specific to the user's latest request and your answer
+- Limit it to 12 words or fewer
+- Avoid repeating the user's wording verbatim
+- Do NOT prefix it with labels or extra text
+- If no meaningful follow-up exists, use: "How else can I help you today?"`
+
+const appendDefaultFollowUp = (text: string, suggestion = 'How else can I help you today?') =>
+  `${text}\n\n${suggestion}`
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and user permissions
@@ -112,7 +124,10 @@ Please refine the system prompt based on this request.`
             return NextResponse.json({
               message: {
                 id: Date.now().toString(),
-                content: `System prompt has been successfully refined! Here's what changed:\n\n${changeSummary}\n\nI will now use this updated prompt for all future conversations.`,
+                content: appendDefaultFollowUp(
+                  `System prompt has been successfully refined! Here's what changed:\n\n${changeSummary}\n\nI will now use this updated prompt for all future conversations.`,
+                  'Do you want me to generate a test reply with this new prompt?'
+                ),
                 sender: 'assistant',
                 timestamp: new Date(),
               }
@@ -122,7 +137,10 @@ Please refine the system prompt based on this request.`
             return NextResponse.json({
               message: {
                 id: Date.now().toString(),
-                content: 'Sorry, I encountered an error updating the system prompt. Please try again or contact support.',
+                content: appendDefaultFollowUp(
+                  'Sorry, I encountered an error updating the system prompt. Please try again or contact support.',
+                  'Should I attempt the prompt update again for you?'
+                ),
                 sender: 'assistant',
                 timestamp: new Date(),
               }
@@ -132,7 +150,10 @@ Please refine the system prompt based on this request.`
           return NextResponse.json({
             message: {
               id: Date.now().toString(),
-              content: 'I couldn\'t generate a refined prompt. Please try rephrasing your request.',
+              content: appendDefaultFollowUp(
+                "I couldn't generate a refined prompt. Please try rephrasing your request.",
+                'Would you like me to try refining it with different wording?'
+              ),
               sender: 'assistant',
               timestamp: new Date(),
             }
@@ -143,7 +164,10 @@ Please refine the system prompt based on this request.`
         return NextResponse.json({
           message: {
             id: Date.now().toString(),
-            content: 'Sorry, I encountered an error while refining the system prompt. Please try again.',
+            content: appendDefaultFollowUp(
+              'Sorry, I encountered an error while refining the system prompt. Please try again.',
+              'Should I attempt that refinement once more for you?'
+            ),
             sender: 'assistant',
             timestamp: new Date(),
           }
@@ -184,6 +208,8 @@ Please refine the system prompt based on this request.`
     // Generate response using Chat Completions
     // Note: Real-time web search is currently unavailable
     let enhancedSystemPrompt = `${systemPrompt}
+
+${FOLLOW_UP_DIRECTIVE}
 
 Additionally, you can help the user update your system prompt. If they ask to update, change, or modify the system prompt, acknowledge their request and explain that they need to provide the new prompt in quotes or after a colon.`
     

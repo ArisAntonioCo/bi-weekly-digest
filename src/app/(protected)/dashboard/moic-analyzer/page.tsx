@@ -190,7 +190,7 @@ export default function FinancePage() {
       toast.error('Something went wrong fetching the analysis. Please try again.')
       const errorMessage: Message = {
         id: createMessageId(),
-        content: 'Sorry, I encountered an error processing your request. Please try again.',
+        content: 'Sorry, I encountered an error processing your request. Please try again.\n\nWant me to rerun that analysis in a moment?',
         role: 'assistant',
         timestamp: new Date()
       }

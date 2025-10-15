@@ -3,6 +3,18 @@ import { openai } from '@/lib/openai'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
 
+const FOLLOW_UP_DIRECTIVE = `Always conclude your response with a single concise follow-up question that logically continues the conversation.
+
+Guidelines for the follow-up question:
+- Keep it specific to the user's latest request and your answer
+- Limit it to 12 words or fewer
+- Avoid repeating the user's wording verbatim
+- Do NOT prefix it with labels or extra text
+- If no meaningful follow-up exists, use: "How else can I help you today?"`
+
+const appendDefaultFollowUp = (text: string, suggestion = 'How else can I help you today?') =>
+  `${text}\n\n${suggestion}`
+
 // Finance-specific system prompt
 const FINANCE_SYSTEM_PROMPT = `You are an AI Finance Assistant specializing in investment analysis, particularly in 3-year Forward MOIC (Multiple on Invested Capital) projections. 
 
@@ -34,7 +46,9 @@ IMPORTANT - Mathematical Formatting Guidelines:
 - Use LaTeX commands with single backslash: \text{}, \frac{}, \approx
 - DO NOT escape dollar signs - write $ not \$
 
-Be analytical, precise, and data-driven in your responses. Use actual market data when available through web search.`
+Be analytical, precise, and data-driven in your responses. Use actual market data when available through web search.
+
+${FOLLOW_UP_DIRECTIVE}`
 
 export async function POST(request: NextRequest) {
   try {
@@ -118,7 +132,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: {
           id: Date.now().toString(),
-          content: "I'm specialized in finance and investment analysis. I can help you with:\n\n- Stock market analysis and valuations\n- MOIC projections and investment calculations\n- Market trends and financial news\n- Portfolio strategies and risk assessment\n- Economic indicators and market conditions\n- Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
+          content: appendDefaultFollowUp(
+            "I'm specialized in finance and investment analysis. I can help you with:\n\n- Stock market analysis and valuations\n- MOIC projections and investment calculations\n- Market trends and financial news\n- Portfolio strategies and risk assessment\n- Economic indicators and market conditions\n- Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
+            'Would you like ideas for a finance topic to explore right now?'
+          ),
           role: 'assistant',
           timestamp: new Date(),
         }
