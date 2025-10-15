@@ -5,7 +5,6 @@ import { SelectiveThemeProvider } from "@/providers/selective-theme-provider";
 import { SWRProvider } from "@/providers/swr-provider";
 import { LayoutWrapper } from "@/components/layout-wrapper";
 import { Toaster } from "@/components/ui/sonner";
-import { FreemiumBanner } from "@/components/freemium-banner";
 import { BannerProvider } from "@/contexts/banner-context";
 import "./globals.css";
 
@@ -105,7 +104,6 @@ export default function RootLayout({
         >
           <SWRProvider>
             <BannerProvider>
-              <FreemiumBanner />
               <Navbar />
               <LayoutWrapper>{children}</LayoutWrapper>
               <Toaster />

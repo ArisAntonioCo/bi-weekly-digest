@@ -35,11 +35,17 @@ export function HeroSection() {
               <h3 className="text-base sm:text-lg font-semibold text-foreground">Forecast from Industry Titans</h3>
               <p className="text-sm text-foreground">In Your Inbox</p>
             </div>
-            <Link href="/signup">
-              <Button variant="brand-cta" size="lg" className="w-full sm:w-auto text-sm sm:text-base">
-                Subscribe Now
+            <div className="flex flex-col items-start gap-2">
+              <Button
+                asChild
+                variant="brand-cta"
+                size="lg"
+                className="w-full sm:w-auto text-sm sm:text-base"
+              >
+                <Link href="/signup">Subscribe Now</Link>
               </Button>
-            </Link>
+              <p className="text-xs text-muted-foreground">We'll never ask for your credit card.</p>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">

@@ -302,24 +302,22 @@ export default function Navbar({ className }: NavbarProps) {
             ) : (
               // Unauthenticated user navigation
               <div className="flex gap-3">
-                <Link href="/login">
-                  <Button 
-                    variant="default" 
-                    size="default"
-                    className="rounded-full text-sm sm:text-base px-5 h-11"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button 
-                    variant="brand"
-                    size="default"
-                    className="text-sm sm:text-base px-6 h-11 rounded-full font-semibold"
-                  >
-                    Get Started
-                  </Button>
-                </Link>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="default"
+                  className="rounded-full text-sm sm:text-base px-5 h-11"
+                >
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="brand"
+                  size="default"
+                  className="text-sm sm:text-base px-6 h-11 rounded-full font-semibold"
+                >
+                  <Link href="/signup">Get Started for Free</Link>
+                </Button>
               </div>
             )}
           </div>
