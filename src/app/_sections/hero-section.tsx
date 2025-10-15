@@ -20,12 +20,20 @@ export function HeroSection() {
   return (
     <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
       {/* Main Content */}
-        <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 leading-none">
-            Medium & Long-Term Stock Return Forecasts,
-            <br />
-            Leveraging Battle-Tested Frameworks From Industry Titans
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+            Expert Medium-Term Stock Analysis Projections
           </h1>
+          <div className="flex items-center gap-3 mt-4">
+            <div 
+              className="inline-block animate-[spin_8s_linear_infinite] [&_div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-black"
+            >
+              {spinnerAvatar}
+            </div>
+            <p className="text-lg sm:text-xl font-semibold text-foreground max-w-2xl">
+              Leveraging frameworks from Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker & Beth Kindig.
+            </p>
+          </div>
         </div>
 
         {/* CTA Section with Subheading */}
@@ -46,17 +54,6 @@ export function HeroSection() {
               </Button>
               <p className="text-xs text-muted-foreground">We'll never ask for your credit card.</p>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div 
-              className="inline-block animate-[spin_8s_linear_infinite] [&_div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-black"
-            >
-              {spinnerAvatar}
-            </div>
-            <p className="text-xl sm:text-2xl font-semibold text-foreground max-w-full lg:max-w-md">
-              Leveraging frameworks from Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker & Beth Kindig.
-            </p>
           </div>
         </div>
 
