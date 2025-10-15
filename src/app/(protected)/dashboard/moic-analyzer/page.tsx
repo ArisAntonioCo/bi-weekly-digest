@@ -12,6 +12,31 @@ import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 
+const TICKER_REGEX = /\$[A-Za-z]{1,6}(?:\.[A-Za-z]{1,2})?/g
+
+const extractTickers = (text: string): string[] => {
+  if (!text) return []
+  const matches = text.match(TICKER_REGEX)
+  if (!matches) return []
+  return Array.from(new Set(matches.map(match => match.replace('$', '').toUpperCase())))
+}
+
+const buildTickerFollowUp = (tickers: string[], fallback: string): string => {
+  const unique = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  if (unique.length === 0) {
+    return fallback
+  }
+  if (unique.length === 1) {
+    return `Would you like me to outline next steps for $${unique[0]}?`
+  }
+  if (unique.length === 2) {
+    return `Would you like me to compare $${unique[0]} with $${unique[1]} next?`
+  }
+  const rest = unique.slice(1, 3)
+  const restText = rest.length === 1 ? `$${rest[0]}` : `$${rest[0]} and $${rest[1]}`
+  return `Would you like me to rank $${unique[0]} versus ${restText} next?`
+}
+
 interface Message {
   id: string
   role: 'user' | 'assistant'
@@ -140,6 +165,8 @@ export default function FinancePage() {
   const handleSend = async (message: string) => {
     if (!message.trim()) return
 
+    const requestTickers = extractTickers(message)
+
     const userMessage: Message = {
       id: createMessageId(),
       role: 'user',
@@ -190,7 +217,7 @@ export default function FinancePage() {
       toast.error('Something went wrong fetching the analysis. Please try again.')
       const errorMessage: Message = {
         id: createMessageId(),
-        content: 'Sorry, I encountered an error processing your request. Please try again.\n\nWant me to rerun that analysis in a moment?',
+        content: `Sorry, I encountered an error processing your request. Please try again.\n\n${buildTickerFollowUp(requestTickers, 'Would you like me to rerun that analysis now?')}`,
         role: 'assistant',
         timestamp: new Date()
       }

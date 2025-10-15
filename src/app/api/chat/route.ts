@@ -9,12 +9,44 @@ Guidelines for the follow-up question:
 - Keep it specific to the user's latest request and your answer
 - Limit it to 12 words or fewer
 - Avoid repeating the user's wording verbatim
+- Reference the primary ticker(s) or asset(s) discussed using $TICKER format when symbols are available
 - The question must begin with either "Would you like me to" or "Do you want me to"
 - Do NOT include any labels or extra text before the question
-- If no meaningful follow-up exists, use: "Would you like me to help with anything else?"`
+- If no meaningful follow-up exists, use: "Would you like me to help with anything else?"
+Example: Would you like me to compare $SFDC with $MSFT next?`
 
-const appendDefaultFollowUp = (text: string, suggestion = 'Would you like me to help with anything else?') =>
-  `${text}\n\n${suggestion}`
+const TICKER_REGEX = /\$[A-Za-z]{1,6}(?:\.[A-Za-z]{1,2})?/g
+
+const extractTickers = (text: string): string[] => {
+  if (!text) return []
+  const matches = text.match(TICKER_REGEX)
+  if (!matches) return []
+  const unique = Array.from(new Set(matches.map(match => match.replace('$', '').toUpperCase())))
+  return unique
+}
+
+const buildDefaultTickerFollowUp = (tickers: string[]): string => {
+  if (!tickers.length) {
+    return 'Would you like me to help with anything else?'
+  }
+
+  const unique = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  if (unique.length === 1) {
+    return `Would you like me to outline next steps for $${unique[0]}?`
+  }
+  if (unique.length === 2) {
+    return `Would you like me to compare $${unique[0]} with $${unique[1]} next?`
+  }
+
+  const rest = unique.slice(1, 3)
+  const restText = rest.length === 1 ? `$${rest[0]}` : `$${rest[0]} and $${rest[1]}`
+  return `Would you like me to rank $${unique[0]} versus ${restText} next?`
+}
+
+const appendDefaultFollowUp = (text: string, suggestion?: string, tickers: string[] = []) => {
+  const followUp = suggestion ?? buildDefaultTickerFollowUp(tickers)
+  return `${text}\n\n${followUp}`
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,6 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Check if the user is asking to update the system prompt
     const lastMessage = messages[messages.length - 1]
+    const requestTickers = extractTickers(lastMessage?.content ?? '')
     const isSystemPromptUpdate = lastMessage?.content && (
       lastMessage.content.toLowerCase().includes('update system prompt') ||
       lastMessage.content.toLowerCase().includes('change system prompt') ||
@@ -127,7 +160,8 @@ Please refine the system prompt based on this request.`
                 id: Date.now().toString(),
                 content: appendDefaultFollowUp(
                   `System prompt has been successfully refined! Here's what changed:\n\n${changeSummary}\n\nI will now use this updated prompt for all future conversations.`,
-                  'Do you want me to generate a test reply with this new prompt?'
+                  'Do you want me to draft a sample reply with this prompt?',
+                  requestTickers
                 ),
                 sender: 'assistant',
                 timestamp: new Date(),
@@ -140,7 +174,8 @@ Please refine the system prompt based on this request.`
                 id: Date.now().toString(),
                 content: appendDefaultFollowUp(
                   'Sorry, I encountered an error updating the system prompt. Please try again or contact support.',
-                  'Would you like me to attempt the prompt update again for you?'
+                  'Would you like me to attempt the prompt update again for you?',
+                  requestTickers
                 ),
                 sender: 'assistant',
                 timestamp: new Date(),
@@ -153,7 +188,8 @@ Please refine the system prompt based on this request.`
               id: Date.now().toString(),
               content: appendDefaultFollowUp(
                 "I couldn't generate a refined prompt. Please try rephrasing your request.",
-                'Would you like me to try refining it with different wording?'
+                'Would you like me to try refining it with different wording?',
+                requestTickers
               ),
               sender: 'assistant',
               timestamp: new Date(),
@@ -167,7 +203,8 @@ Please refine the system prompt based on this request.`
             id: Date.now().toString(),
             content: appendDefaultFollowUp(
               'Sorry, I encountered an error while refining the system prompt. Please try again.',
-              'Would you like me to attempt that refinement once more for you?'
+              'Would you like me to attempt that refinement once more for you?',
+              requestTickers
             ),
             sender: 'assistant',
             timestamp: new Date(),
@@ -193,6 +230,7 @@ Please refine the system prompt based on this request.`
     }
 
     const { mode, content } = parseInputMode(lastMessage?.content || '')
+    const tickers = extractTickers(content)
     
     // Check if the message requires real-time data or web search
     const needsWebSearch = (content && (
@@ -216,6 +254,11 @@ Additionally, you can help the user update your system prompt. If they ask to up
     
     if (needsWebSearch) {
       enhancedSystemPrompt += `\n\nNote: Real-time web search is currently unavailable. I'll provide the best information based on my training data.`
+    }
+
+    if (tickers.length > 0) {
+      const formattedTickers = tickers.map(t => `$${t}`).join(', ')
+      enhancedSystemPrompt += `\n\nPrimary tickers to reference in your follow-up question: ${formattedTickers}.`
     }
     
     if (mode === 'think') {

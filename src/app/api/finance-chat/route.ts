@@ -9,12 +9,44 @@ Guidelines for the follow-up question:
 - Keep it specific to the user's latest request and your answer
 - Limit it to 12 words or fewer
 - Avoid repeating the user's wording verbatim
+- Reference the primary ticker(s) or asset(s) discussed using $TICKER format when symbols are available
 - The question must begin with either "Would you like me to" or "Do you want me to"
 - Do NOT include any labels or extra text before the question
-- If no meaningful follow-up exists, use: "Would you like me to help with anything else?"`
+- If no meaningful follow-up exists, use: "Would you like me to help with anything else?"
+Example: Would you like me to compare $AAPL with $MSFT next?`
 
-const appendDefaultFollowUp = (text: string, suggestion = 'Would you like me to help with anything else?') =>
-  `${text}\n\n${suggestion}`
+const TICKER_REGEX = /\$[A-Za-z]{1,6}(?:\.[A-Za-z]{1,2})?/g
+
+const extractTickers = (text: string): string[] => {
+  if (!text) return []
+  const matches = text.match(TICKER_REGEX)
+  if (!matches) return []
+  const unique = Array.from(new Set(matches.map(match => match.replace('$', '').toUpperCase())))
+  return unique
+}
+
+const buildDefaultTickerFollowUp = (tickers: string[]): string => {
+  if (!tickers.length) {
+    return 'Would you like me to help with anything else?'
+  }
+
+  const unique = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  if (unique.length === 1) {
+    return `Would you like me to outline next steps for $${unique[0]}?`
+  }
+  if (unique.length === 2) {
+    return `Would you like me to compare $${unique[0]} with $${unique[1]} next?`
+  }
+
+  const rest = unique.slice(1, 3)
+  const restText = rest.length === 1 ? `$${rest[0]}` : `$${rest[0]} and $${rest[1]}`
+  return `Would you like me to rank $${unique[0]} versus ${restText} next?`
+}
+
+const appendDefaultFollowUp = (text: string, suggestion?: string, tickers: string[] = []) => {
+  const followUp = suggestion ?? buildDefaultTickerFollowUp(tickers)
+  return `${text}\n\n${followUp}`
+}
 
 // Finance-specific system prompt
 const FINANCE_SYSTEM_PROMPT = `You are an AI Finance Assistant specializing in investment analysis, particularly in 3-year Forward MOIC (Multiple on Invested Capital) projections. 
@@ -68,6 +100,7 @@ export async function POST(request: NextRequest) {
     }
 
     const lastMessage = messages[messages.length - 1]
+    const requestTickers = extractTickers(lastMessage?.content ?? '')
     
     // Check if the query is finance-related or asking for current date/time
     const isFinanceRelated = lastMessage?.content && (
@@ -135,7 +168,8 @@ export async function POST(request: NextRequest) {
           id: Date.now().toString(),
           content: appendDefaultFollowUp(
             "I'm specialized in finance and investment analysis. I can help you with:\n\n- Stock market analysis and valuations\n- MOIC projections and investment calculations\n- Market trends and financial news\n- Portfolio strategies and risk assessment\n- Economic indicators and market conditions\n- Current date and time for market context\n\nPlease ask me a finance-related question, and I'll be happy to help!",
-            'Would you like me to share a finance topic to explore right now?'
+            'Would you like me to suggest a finance topic to explore next?',
+            requestTickers
           ),
           role: 'assistant',
           timestamp: new Date(),
@@ -159,7 +193,10 @@ export async function POST(request: NextRequest) {
         }
         
         // Create instructions that include the system prompt and conversation history
-        const instructions = `${FINANCE_SYSTEM_PROMPT}
+        const tickerInstruction = requestTickers.length > 0
+          ? `\n\nPrimary tickers to reference in your follow-up question: ${requestTickers.map(t => `$${t}`).join(', ')}.`
+          : ''
+        const instructions = `${FINANCE_SYSTEM_PROMPT}${tickerInstruction}
 
 IMPORTANT: Use web search to get current information for:
 - Today's date and time
@@ -199,7 +236,11 @@ Focus ONLY on finance and investment-related topics.${conversationContext}`
     }
     
     // Fallback to Chat Completions (only if Responses API fails)
-    const systemPrompt = `${FINANCE_SYSTEM_PROMPT}\n\nNote: Web search is currently unavailable. I'll provide analysis based on my training data. For real-time information, please check current sources.`
+    let systemPrompt = `${FINANCE_SYSTEM_PROMPT}\n\nNote: Web search is currently unavailable. I'll provide analysis based on my training data. For real-time information, please check current sources.`
+
+    if (requestTickers.length > 0) {
+      systemPrompt += `\n\nPrimary tickers to reference in your follow-up question: ${requestTickers.map(t => `$${t}`).join(', ')}.`
+    }
 
     const messagesWithSystem = [
       { role: 'system' as const, content: systemPrompt },

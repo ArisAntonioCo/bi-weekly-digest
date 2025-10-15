@@ -5,6 +5,31 @@ import { ChatMessages } from '../_sections/chat-messages'
 import { InputArea } from '../_sections/input-area'
 import { Message } from '../_sections/types'
 
+const TICKER_REGEX = /\$[A-Za-z]{1,6}(?:\.[A-Za-z]{1,2})?/g
+
+const extractTickers = (text: string): string[] => {
+  if (!text) return []
+  const matches = text.match(TICKER_REGEX)
+  if (!matches) return []
+  return Array.from(new Set(matches.map(match => match.replace('$', '').toUpperCase())))
+}
+
+const buildTickerFollowUp = (tickers: string[], fallback: string): string => {
+  const unique = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  if (unique.length === 0) {
+    return fallback
+  }
+  if (unique.length === 1) {
+    return `Would you like me to outline next steps for $${unique[0]}?`
+  }
+  if (unique.length === 2) {
+    return `Would you like me to compare $${unique[0]} with $${unique[1]} next?`
+  }
+  const rest = unique.slice(1, 3)
+  const restText = rest.length === 1 ? `$${rest[0]}` : `$${rest[0]} and $${rest[1]}`
+  return `Would you like me to rank $${unique[0]} versus ${restText} next?`
+}
+
 export function DashboardPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -29,6 +54,8 @@ export function DashboardPage() {
       setIsLoading(false)
       return
     }
+
+    const requestTickers = extractTickers(content)
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -76,7 +103,7 @@ export function DashboardPage() {
         console.error('Chat error:', error)
         const errorMessage: Message = {
           id: Date.now().toString(),
-          content: 'Sorry, I encountered an error processing your request. Please try again.\n\nWant me to retry that request right now?',
+          content: `Sorry, I encountered an error processing your request. Please try again.\n\n${buildTickerFollowUp(requestTickers, 'Would you like me to retry that request now?')}`,
           sender: 'assistant',
           timestamp: new Date()
         }
