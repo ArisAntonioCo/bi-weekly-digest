@@ -52,7 +52,7 @@ export function HeroSection() {
               >
                 <Link href="/signup">Subscribe Now</Link>
               </Button>
-              <p className="text-xs text-muted-foreground">We'll never ask for your credit card.</p>
+              <p className="text-xs text-muted-foreground">We&apos;ll never ask for your credit card.</p>
             </div>
           </div>
         </div>
