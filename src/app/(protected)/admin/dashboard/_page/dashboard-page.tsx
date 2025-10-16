@@ -23,11 +23,13 @@ const buildTickerFollowUp = (tickers: string[], fallback: string): string => {
     return `Would you like me to outline next steps for $${unique[0]}?`
   }
   if (unique.length === 2) {
-    return `Would you like me to compare $${unique[0]} with $${unique[1]} next?`
+    return `Would you like me to compare the 3-year MOIC of $${unique[0]} to $${unique[1]} next?`
   }
-  const rest = unique.slice(1, 3)
-  const restText = rest.length === 1 ? `$${rest[0]}` : `$${rest[0]} and $${rest[1]}`
-  return `Would you like me to rank $${unique[0]} versus ${restText} next?`
+  const rest = unique.slice(1)
+  const formattedRest = rest.length === 1
+    ? `$${rest[0]}`
+    : `${rest.slice(0, -1).map(t => `$${t}`).join(', ')} or $${rest[rest.length - 1]}`
+  return `Would you like me to compare the 3-year MOIC of $${unique[0]} to ${formattedRest} next?`
 }
 
 export function DashboardPage() {

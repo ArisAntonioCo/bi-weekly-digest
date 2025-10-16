@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { openai } from '@/lib/openai'
 import OpenAI from 'openai'
 import { createClient } from '@/utils/supabase/server'
+import { getUserExpertRoster, DEFAULT_EXPERT_NAMES } from '@/lib/expert-roster'
 
 const FOLLOW_UP_DIRECTIVE = `Always conclude your response with a single concise follow-up question that logically continues the conversation.
 
@@ -35,12 +36,14 @@ const buildDefaultTickerFollowUp = (tickers: string[]): string => {
     return `Would you like me to outline next steps for $${unique[0]}?`
   }
   if (unique.length === 2) {
-    return `Would you like me to compare $${unique[0]} with $${unique[1]} next?`
+    return `Would you like me to compare the 3-year MOIC of $${unique[0]} to $${unique[1]} next?`
   }
 
-  const rest = unique.slice(1, 3)
-  const restText = rest.length === 1 ? `$${rest[0]}` : `$${rest[0]} and $${rest[1]}`
-  return `Would you like me to rank $${unique[0]} versus ${restText} next?`
+  const rest = unique.slice(1)
+  const formattedRest = rest.length === 1
+    ? `$${rest[0]}`
+    : `${rest.slice(0, -1).map(t => `$${t}`).join(', ')} or $${rest[rest.length - 1]}`
+  return `Would you like me to compare the 3-year MOIC of $${unique[0]} to ${formattedRest} next?`
 }
 
 const appendDefaultFollowUp = (text: string, suggestion?: string, tickers: string[] = []) => {
@@ -52,18 +55,254 @@ const isThreeYearModeRequest = (content: string): boolean => {
   if (!content) return false
   const normalized = content.toLowerCase()
   const mentionsThreeYearMode = normalized.includes('3y mode') || normalized.includes('3-year mode') || normalized.includes('3 year mode')
-  const mentionsExperts = normalized.includes('my 5 experts') || normalized.includes('my five experts') || normalized.includes('your 5 experts') || normalized.includes('your five experts') || normalized.includes('5 experts')
+  const mentionsExperts =
+    normalized.includes('my 5 experts') ||
+    normalized.includes('my five experts') ||
+    normalized.includes('your 5 experts') ||
+    normalized.includes('your five experts') ||
+    normalized.includes('5 experts') ||
+    normalized.includes('my expert') ||
+    normalized.includes('my experts') ||
+    normalized.includes('your expert') ||
+    normalized.includes('your experts') ||
+    normalized.includes('expert framework')
   const mentionsMoic = normalized.includes('moic')
-  return mentionsThreeYearMode && mentionsExperts && mentionsMoic
+  const mentionsDurability = normalized.includes('durability') || normalized.includes('pullback') || normalized.includes('correction') || normalized.includes('crash')
+  return mentionsThreeYearMode && (mentionsExperts || mentionsMoic || mentionsDurability)
 }
 
-const buildThreeYearModeGuidance = (tickers: string[]): string => {
-  if (!tickers.length) {
+const buildThreeYearModeGuidance = (tickers: string[], expertNames: string[]): string => {
+  if (!tickers.length || !expertNames.length) {
     return ''
   }
 
   const formattedTickers = tickers.map(t => `$${t}`).join(', ')
-  return `\n\nWhen the request matches 3Y Mode, respond using this exact structure:\n1. Opening line: "Got it—activating 3Y Mode (your 5 experts) for ${formattedTickers}. Each expert lists Base/Bull/Bear 3-year MOIC plus a durability score (1–10) for a correction/crash. Brief rationale included. (Context: <two short sentences summarizing the shared macro/theme drivers with one or two cited sources)."\n2. For each ticker, add a heading line: "$TICKER — <Company Name>".\n3. For every expert (Bill Gurley, Brad Gerstner, Stan Druckenmiller, Mary Meeker, Beth Kindig) provide a single line with "Expert Name — MOIC: Base <value>x / Bull <value>x / Bear <value>x · Durability <score>/10" followed by a new line starting with " Rationale:" and a concise justification. Each rationale must reference a credible source (e.g., Reuters, Goldman Sachs) using inline citations at the end.\n4. Preserve the expert order exactly as above for every ticker.\n5. After processing all tickers, add a "Quick take (relative)" section containing three succinct comparisons aligned with durability, balance/cyclicality, and upside/beta. Include citations where relevant.\n6. Avoid additional commentary, tables, or markdown beyond what is specified. Maintain blank lines between sections exactly as in the reference format.`
+  const expertList = (expertNames.length ? expertNames : DEFAULT_EXPERT_NAMES).join(', ')
+  const expertCountLabel = expertNames.length === 1
+    ? 'expert framework'
+    : `${expertNames.length} expert frameworks`
+
+  return `\n\nWhen the request matches 3Y Mode, respond using this exact structure:\n1. Opening line: "Got it—activating 3Y Mode (your ${expertCountLabel}) for ${formattedTickers}. Each expert lists Base/Bull/Bear 3-year MOIC plus a durability score (1–10) for a correction/crash. Brief rationale included. (Context: <two short sentences summarizing the shared macro/theme drivers with one or two cited sources)."\n2. For each ticker, add a heading line: "$TICKER — <Company Name>".\n3. For every expert (${expertList}) provide a single line with "Expert Name — MOIC: Base <value>x / Bull <value>x / Bear <value>x · Durability <score>/10" followed by a new line starting with " Rationale:" and a concise justification. Each rationale must reference a credible source (e.g., Reuters, Goldman Sachs) using inline citations at the end.\n4. Preserve the expert order exactly as provided above for every ticker.\n5. After processing all tickers, add a "Quick take (relative)" section containing three succinct comparisons aligned with durability, balance/cyclicality, and upside/beta. Include citations where relevant and encourage comparing positions.\n6. Avoid additional commentary, tables, or markdown beyond what is specified. Maintain blank lines between sections exactly as in the reference format.`
+}
+
+interface ThreeYearModeExpert {
+  name: string
+  base_moic: number | string
+  bull_moic: number | string
+  bear_moic: number | string
+  durability: number | string
+  rationale: string
+  source?: string
+}
+
+interface ThreeYearModeTicker {
+  ticker: string
+  company_name: string
+  experts: ThreeYearModeExpert[]
+}
+
+interface ThreeYearModePayload {
+  context_summary: string
+  tickers: ThreeYearModeTicker[]
+  quick_take: string[]
+}
+
+const createThreeYearModeSchema = (expertNames: string[]) => {
+  const roster = expertNames.length ? expertNames : [...DEFAULT_EXPERT_NAMES]
+  const expertCount = roster.length || 1
+
+  return {
+  type: 'object',
+  additionalProperties: false,
+  required: ['context_summary', 'tickers', 'quick_take'],
+  properties: {
+    context_summary: { type: 'string' },
+    tickers: {
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        required: ['ticker', 'company_name', 'experts'],
+        additionalProperties: false,
+        properties: {
+          ticker: { type: 'string' },
+          company_name: { type: 'string' },
+          experts: {
+            type: 'array',
+            minItems: expertCount,
+            maxItems: expertCount,
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['name', 'base_moic', 'bull_moic', 'bear_moic', 'durability', 'rationale', 'source'],
+              properties: {
+                name: {
+                  type: 'string',
+                  enum: roster
+                },
+                base_moic: { type: ['number', 'string'] },
+                bull_moic: { type: ['number', 'string'] },
+                bear_moic: { type: ['number', 'string'] },
+                durability: { type: ['number', 'integer', 'string'] },
+                rationale: { type: 'string' },
+                source: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    },
+    quick_take: {
+      type: 'array',
+      minItems: 3,
+      maxItems: 3,
+      items: { type: 'string' }
+    }
+  }
+} as const
+}
+
+const normalizeMoic = (value: number | string): string => {
+  const raw = typeof value === 'number' ? value.toString() : value
+  const cleaned = raw.replace(/[^\d.\-]/g, '')
+  const parsed = parseFloat(cleaned)
+  if (!Number.isFinite(parsed)) {
+    return raw.endsWith('x') ? raw : `${raw}x`
+  }
+  const rounded = Math.round(parsed * 10) / 10
+  const formatted = rounded.toFixed(1).replace(/\.0$/, '')
+  return `${formatted}x`
+}
+
+const normalizeDurability = (value: number | string): string => {
+  const numeric = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^\d.]/g, ''))
+  const safeNumber = Number.isFinite(numeric) ? numeric : 5
+  const clamped = Math.max(1, Math.min(10, Math.round(safeNumber)))
+  return `${clamped}/10`
+}
+
+const STRIP_BRANDS_REGEX = /\b(Reuters|Bloomberg|CNBC|TechCrunch|Forbes|Goldman Sachs|CNN|WSJ|Wall Street Journal)\b/gi
+
+const stripTrailingCitations = (text: string): string => {
+  let cleaned = text.trim()
+  cleaned = cleaned.replace(/(?:Source:)?\s*\(?\s*(Reuters|Bloomberg|CNBC|TechCrunch|Forbes|Goldman Sachs|CNN|WSJ|Wall Street Journal)\s*\)?\.?$/i, '').trim()
+  cleaned = cleaned.replace(/(?:Source:)\s*$/i, '').trim()
+  cleaned = cleaned.replace(/\b(as reported by|according to)\b\s*/gi, '')
+  cleaned = cleaned.replace(STRIP_BRANDS_REGEX, '').trim()
+  cleaned = cleaned.replace(/\(\s*\)/g, '').trim()
+  cleaned = cleaned.replace(/\s{2,}/g, ' ')
+  return cleaned
+}
+
+const formatRationale = (rationale: string): string => stripTrailingCitations(rationale.replace(/\s+/g, ' '))
+const scrubSyntheticSource = (source?: string): string => {
+  if (!source) return ''
+  const trimmed = source.trim()
+  if (!trimmed) return ''
+  const lower = trimmed.toLowerCase()
+  if (lower.includes('goldman sachs') || lower.includes('forbes') || lower.includes('cnn')) {
+    return ''
+  }
+  return trimmed
+}
+
+const formatThreeYearModeResponse = (payload: ThreeYearModePayload, tickers: string[], expertNames: string[]): string => {
+  const uniqueTickers = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  const tickerMap = new Map(payload.tickers.map(t => [t.ticker.toUpperCase(), t]))
+  const introTickers = uniqueTickers.filter(t => tickerMap.has(t))
+  const introList = introTickers.map(t => `$${t}`).join(', ')
+  const expertLabel = expertNames.length === 1
+    ? 'your expert framework'
+    : `your ${expertNames.length} expert frameworks`
+
+  const lines: string[] = []
+  lines.push(`Got it—activating 3Y Mode (${expertLabel}) for ${introList}. Each expert lists Base/Bull/Bear 3-year MOIC plus a durability score (1–10) for a correction/crash. Brief rationale included.`)
+  lines.push('')
+
+  introTickers.forEach(symbol => {
+    const tickerData = tickerMap.get(symbol)
+    if (!tickerData) return
+    lines.push(`**${symbol} — ${tickerData.company_name}**`)
+    lines.push('')
+
+    expertNames.forEach(name => {
+      const expert = tickerData.experts.find(e => e.name === name)
+      if (!expert) return
+      const base = normalizeMoic(expert.base_moic)
+      const bull = normalizeMoic(expert.bull_moic)
+      const bear = normalizeMoic(expert.bear_moic)
+      const durability = normalizeDurability(expert.durability)
+      const rationale = formatRationale(expert.rationale)
+      const cleanedSource = scrubSyntheticSource(expert.source)
+      const source = cleanedSource ? ` ${cleanedSource}` : ''
+
+      lines.push(`**${name}** — MOIC: Base ${base} / Bull ${bull} / Bear ${bear}<br>Durability ${durability}<br>Rationale: ${rationale}${source}`)
+      lines.push('')
+    })
+
+    if (lines[lines.length - 1] === '') {
+      lines.pop()
+    }
+
+    lines.push('')
+  })
+
+  lines.push('Quick take (relative)')
+  payload.quick_take.forEach(entry => {
+    const cleaned = stripTrailingCitations(entry)
+    if (!cleaned.trim()) return
+    lines.push(`- ${cleaned.trim()}`)
+  })
+
+  return lines.join('\n')
+}
+
+const generateThreeYearModePayload = async (
+  messages: { role: 'user' | 'assistant'; content: string }[],
+  tickers: string[],
+  expertNames: string[]
+): Promise<ThreeYearModePayload> => {
+  const uniqueTickers = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  const expertList = (expertNames.length ? expertNames : [...DEFAULT_EXPERT_NAMES]).join(', ')
+
+  const structuredSystemPrompt = `You are preparing a structured 3Y Mode investment analysis for tickers: ${uniqueTickers.map(t => `$${t}`).join(', ')}.
+Return ONLY raw JSON matching the specified schema—no markdown, no surrounding text.
+
+Requirements:
+- context_summary: Two sentences describing the shared AI/power-demand tailwinds and major risks. Do NOT reference specific media outlets, banks, or publishers by name.
+- For each requested ticker, include the official company name and an experts array containing exactly these experts: ${expertList}. Provide them all.
+- For every expert, supply numerical MOIC values as decimals (no trailing "x"), an integer durability score 1-10, and a one-to-two sentence rationale focused on metrics or catalysts WITHOUT naming specific news outlets or banks.
+- quick_take: Exactly three entries highlighting (1) highest durability, (2) balanced but cyclical profile, (3) highest upside/highest beta. Encourage the reader to compare or size positions across the tickers in at least one entry, while avoiding explicit outlet or bank names.
+- Encourage peers comparison implicitly to nudge the user toward comparing positions.
+- Do NOT include follow-up questions, markdown, or additional commentary.`
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    temperature: 0.35,
+    max_tokens: 4000,
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'three_year_mode_analysis',
+        schema: createThreeYearModeSchema(expertNames)
+      }
+    },
+    messages: [
+      { role: 'system', content: structuredSystemPrompt },
+      ...messages
+    ]
+  })
+
+  const content = completion.choices[0]?.message?.content
+  if (!content) {
+    throw new Error('No structured content returned from OpenAI')
+  }
+
+  try {
+    return JSON.parse(content) as ThreeYearModePayload
+  } catch (error) {
+    throw new Error(`Failed to parse structured 3Y Mode payload: ${(error as Error).message}`)
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -86,6 +325,15 @@ export async function POST(request: NextRequest) {
     const lastMessage = messages[messages.length - 1]
     const requestTickers = extractTickers(lastMessage?.content ?? '')
     const threeYearModeRequested = isThreeYearModeRequest(lastMessage?.content ?? '')
+    let expertNames: string[] = []
+
+    if (threeYearModeRequested) {
+      const roster = await getUserExpertRoster(supabase, user?.id)
+      expertNames = roster.map((expert) => expert.name)
+      if (!expertNames.length) {
+        expertNames = [...DEFAULT_EXPERT_NAMES]
+      }
+    }
     const isSystemPromptUpdate = lastMessage?.content && (
       lastMessage.content.toLowerCase().includes('update system prompt') ||
       lastMessage.content.toLowerCase().includes('change system prompt') ||
@@ -280,8 +528,11 @@ Additionally, you can help the user update your system prompt. If they ask to up
       enhancedSystemPrompt += `\n\nPrimary tickers to reference in your follow-up question: ${formattedTickers}.`
     }
 
+    const effectiveExpertNames = expertNames.length ? expertNames : [...DEFAULT_EXPERT_NAMES]
+
     if (threeYearModeRequested && tickers.length > 0) {
-      enhancedSystemPrompt += buildThreeYearModeGuidance(tickers)
+      const guidance = buildThreeYearModeGuidance(tickers, effectiveExpertNames)
+      enhancedSystemPrompt += guidance
     }
     
     if (mode === 'think') {
@@ -310,7 +561,29 @@ Take your time to think deeply about this request and provide a thoughtful, well
       }
       return msg
     })
-    
+
+    if (threeYearModeRequested && tickers.length > 0) {
+      try {
+        const structuredMessages = processedMessages
+          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+          .map(msg => ({ role: msg.role as 'user' | 'assistant', content: msg.content }))
+
+        const structuredPayload = await generateThreeYearModePayload(structuredMessages, tickers, effectiveExpertNames)
+        const formatted = formatThreeYearModeResponse(structuredPayload, tickers, effectiveExpertNames)
+
+        return NextResponse.json({
+          message: {
+            id: Date.now().toString(),
+            content: appendDefaultFollowUp(formatted, undefined, tickers),
+            sender: 'assistant',
+            timestamp: new Date(),
+          }
+        })
+      } catch (structuredError) {
+        console.error('Structured 3Y Mode generation failed, falling back to standard completion:', structuredError)
+      }
+    }
+
     const messagesWithSystem = [
       { role: 'system' as const, content: enhancedSystemPrompt },
       ...processedMessages
