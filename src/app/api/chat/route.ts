@@ -48,6 +48,24 @@ const appendDefaultFollowUp = (text: string, suggestion?: string, tickers: strin
   return `${text}\n\n${followUp}`
 }
 
+const isThreeYearModeRequest = (content: string): boolean => {
+  if (!content) return false
+  const normalized = content.toLowerCase()
+  const mentionsThreeYearMode = normalized.includes('3y mode') || normalized.includes('3-year mode') || normalized.includes('3 year mode')
+  const mentionsExperts = normalized.includes('my 5 experts') || normalized.includes('my five experts') || normalized.includes('your 5 experts') || normalized.includes('your five experts') || normalized.includes('5 experts')
+  const mentionsMoic = normalized.includes('moic')
+  return mentionsThreeYearMode && mentionsExperts && mentionsMoic
+}
+
+const buildThreeYearModeGuidance = (tickers: string[]): string => {
+  if (!tickers.length) {
+    return ''
+  }
+
+  const formattedTickers = tickers.map(t => `$${t}`).join(', ')
+  return `\n\nWhen the request matches 3Y Mode, respond using this exact structure:\n1. Opening line: "Got it—activating 3Y Mode (your 5 experts) for ${formattedTickers}. Each expert lists Base/Bull/Bear 3-year MOIC plus a durability score (1–10) for a correction/crash. Brief rationale included. (Context: <two short sentences summarizing the shared macro/theme drivers with one or two cited sources)."\n2. For each ticker, add a heading line: "$TICKER — <Company Name>".\n3. For every expert (Bill Gurley, Brad Gerstner, Stan Druckenmiller, Mary Meeker, Beth Kindig) provide a single line with "Expert Name — MOIC: Base <value>x / Bull <value>x / Bear <value>x · Durability <score>/10" followed by a new line starting with " Rationale:" and a concise justification. Each rationale must reference a credible source (e.g., Reuters, Goldman Sachs) using inline citations at the end.\n4. Preserve the expert order exactly as above for every ticker.\n5. After processing all tickers, add a "Quick take (relative)" section containing three succinct comparisons aligned with durability, balance/cyclicality, and upside/beta. Include citations where relevant.\n6. Avoid additional commentary, tables, or markdown beyond what is specified. Maintain blank lines between sections exactly as in the reference format.`
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and user permissions
@@ -67,6 +85,7 @@ export async function POST(request: NextRequest) {
     // Check if the user is asking to update the system prompt
     const lastMessage = messages[messages.length - 1]
     const requestTickers = extractTickers(lastMessage?.content ?? '')
+    const threeYearModeRequested = isThreeYearModeRequest(lastMessage?.content ?? '')
     const isSystemPromptUpdate = lastMessage?.content && (
       lastMessage.content.toLowerCase().includes('update system prompt') ||
       lastMessage.content.toLowerCase().includes('change system prompt') ||
@@ -259,6 +278,10 @@ Additionally, you can help the user update your system prompt. If they ask to up
     if (tickers.length > 0) {
       const formattedTickers = tickers.map(t => `$${t}`).join(', ')
       enhancedSystemPrompt += `\n\nPrimary tickers to reference in your follow-up question: ${formattedTickers}.`
+    }
+
+    if (threeYearModeRequested && tickers.length > 0) {
+      enhancedSystemPrompt += buildThreeYearModeGuidance(tickers)
     }
     
     if (mode === 'think') {
