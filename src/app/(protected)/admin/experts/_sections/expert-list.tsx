@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
+import { Search, X, ArrowUpDown, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   AlertDialog,
@@ -184,6 +184,9 @@ export function ExpertList({
               </SelectContent>
             </Select>
           </div>
+          <Badge variant="outline" className="h-10 px-3 flex items-center">
+            {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+          </Badge>
 
           {hasActiveFilters && (
             <Button
