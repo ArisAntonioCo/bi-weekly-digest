@@ -25,6 +25,8 @@ const buttonVariants = cva(
           "bg-brand text-brand-foreground shadow-lg shadow-brand/30 hover:bg-brand/90 hover:scale-105 rounded-full",
         "brand-cta":
           "bg-brand text-brand-foreground shadow-lg shadow-brand/30 hover:bg-brand/90 hover:scale-105 rounded-full",
+        promo:
+          "inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 sm:px-10 py-4 sm:py-5 text-base sm:text-lg font-semibold bg-brand text-brand-foreground hover:bg-brand/90 focus-visible:ring-ring/50 focus-visible:ring-[3px]",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

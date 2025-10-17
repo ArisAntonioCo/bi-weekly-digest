@@ -1,100 +1,52 @@
 'use client'
 
 import Link from 'next/link'
+import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { AnimatedNewsletterList } from '@/components/animated-newsletter-list'
-import { useMemo, useState } from 'react'
-import Avvvatars from 'avvvatars-react'
-
 
 export function HeroSection() {
-  const [videoError, setVideoError] = useState(false)
-  const spinnerAvatar = useMemo(() => (
-    <Avvvatars 
-      value="sparkle"
-      style="shape"
-      size={40}
-    />
-  ), [])
-  
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      {/* Main Content */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-            Expert Medium-Term Stock Analysis Projections
-          </h1>
-          <div className="flex items-center gap-3 mt-4">
-            <div 
-              className="inline-block animate-[spin_8s_linear_infinite] [&_div]:!bg-transparent [&_svg]:!bg-transparent [&_svg_rect]:!fill-transparent [&_svg_path]:!fill-black"
-            >
-              {spinnerAvatar}
-            </div>
-            <p className="text-lg sm:text-xl font-semibold text-foreground max-w-2xl">
-              Leveraging frameworks from Bill Gurley, Brad Gerstner, Stanley Druckenmiller, Mary Meeker & Beth Kindig.
-            </p>
-          </div>
+    <section id="hero" className="relative w-full p-3">
+      <div className="relative isolate flex w-full overflow-hidden rounded-2xl bg-black min-h-[min(calc(100svh-72px),880px)] lg:min-h-[min(calc(100svh-88px),1024px)]">
+        <div className="pointer-events-none absolute inset-y-0 right-[-60%] sm:right-[-40%] lg:right-[-28%] w-[180%] sm:w-[130%] lg:w-[110%]">
+          <video
+            className="absolute inset-0 z-0 h-full w-full object-cover object-right"
+            src="/videos/herovideo1.mp4"
+            preload="metadata"
+            loop
+            autoPlay
+            muted
+            playsInline
+            aria-hidden="true"
+          />
         </div>
 
-        {/* CTA Section with Subheading */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8 sm:mb-12">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">Forecast from Industry Titans</h3>
-              <p className="text-sm text-foreground">In Your Inbox</p>
-            </div>
-            <div className="flex flex-col items-start gap-2">
-              <Button
-                asChild
-                variant="brand-cta"
-                size="lg"
-                className="w-full sm:w-auto text-sm sm:text-base"
-              >
-                <Link href="/signup">Subscribe Now</Link>
-              </Button>
-              <p className="text-xs text-muted-foreground">We&apos;ll never ask for your credit card.</p>
-            </div>
+        <div className="relative z-20 flex w-full max-w-none flex-col gap-8 pl-10 sm:pl-16 md:pl-24 pr-6 sm:pr-10 md:pr-14 py-16 sm:py-20 md:py-24 lg:py-28">
+          <div className="max-w-4xl">
+            <h1 className="font-sans text-[2.5rem] font-medium leading-tight tracking-tight text-white sm:text-[3rem] lg:text-[4rem] xl:text-[4.25rem]">
+              <span className="block">Expert Medium-Term</span>
+              <span className="block whitespace-nowrap">Stock Analysis Projections</span>
+            </h1>
           </div>
-        </div>
 
-        {/* Hero Images Container */}
-        <div className="flex flex-col lg:flex-row gap-2 sm:gap-3">
-          {/* Main Hero Video */}
-          <div className="rounded-3xl h-[300px] sm:h-[400px] lg:h-[500px] flex-1 overflow-hidden relative">
-            <video 
-              src="/videos/@hero-video.mp4"
-              className="absolute inset-0 w-full h-full object-cover rounded-3xl"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              onError={(e) => {
-                console.error('Video error:', e);
-                setVideoError(true);
-              }}
-            />
-            {videoError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-3xl">
-                <p className="text-muted-foreground text-center px-4">Unable to load video</p>
-              </div>
-            )}
+          <Button
+            asChild
+            variant="promo"
+            className="w-fit"
+          >
+            <Link href="/signup">Subscribe Now</Link>
+          </Button>
+
+          <div className="flex items-center gap-2 text-sm text-white/70">
+            <Info className="h-4 w-4" aria-hidden="true" />
+            <span>We&apos;ll never ask for your credit card.</span>
           </div>
-          
-          {/* Square Newsletter Updates Card */}
-          <div className="bg-foreground rounded-3xl w-full lg:w-[500px] h-[400px] sm:h-[450px] lg:h-[500px] flex flex-col overflow-hidden">
-            <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4">
-              <h3 className="text-xl sm:text-2xl font-bold text-background leading-tight">
-                Weekly 3Y Stock Return Forecasts Aligned to Your Investment Preferences
-              </h3>
-            </div>
-            
-            <div className="flex-1 relative px-6 sm:px-8 pb-6 sm:pb-8">
-              <AnimatedNewsletterList />
-            </div>
-          </div>
+
+          <p className="max-w-2xl text-base sm:text-lg text-white/80">
+            Forecast frameworks from Gurley, Gerstner, Druckenmiller, Meeker & Kindig—delivered weekly so you can move with conviction and cut through the noise.
+          </p>
+        </div>
       </div>
-
     </section>
   )
 }

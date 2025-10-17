@@ -20,7 +20,8 @@ import {
   BookOpen,
   ChevronDown,
   TrendingUp,
-  Bookmark
+  Bookmark,
+  ArrowUpRight
 } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ThemeSwitcher } from '@/components/ui/theme-switcher'
@@ -314,9 +315,12 @@ export default function Navbar({ className }: NavbarProps) {
                   asChild
                   variant="brand"
                   size="default"
-                  className="text-sm sm:text-base px-6 h-11 rounded-full font-semibold"
+                  className="text-sm sm:text-base px-6 h-11 rounded-full font-semibold flex items-center gap-2 bg-black text-white hover:bg-black/90 shadow-none hover:scale-100"
                 >
-                  <Link href="/signup">Get Started for Free</Link>
+                  <Link href="/signup" className="flex items-center gap-2">
+                    <span>Get Started for Free</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
                 </Button>
               </div>
             )}

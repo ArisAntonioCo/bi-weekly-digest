@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-type CTA = { label: string; href: string; variant?: 'default' | 'brand-cta' | 'secondary' | 'outline'; size?: 'sm' | 'default' | 'lg'; className?: string }
+type CTA = { label: string; href: string; variant?: 'default' | 'brand-cta' | 'secondary' | 'outline' | 'promo'; size?: 'sm' | 'default' | 'lg'; className?: string }
 
 interface SectionStripProps {
   label: string
@@ -26,7 +26,7 @@ export function SectionStrip({ label, text, ctas = [], className, ctaAlign = 'en
         {ctas.length > 0 && (
           <div className="flex flex-wrap gap-3">
             {ctas.map((cta, i) => {
-              const variant: 'default' | 'brand-cta' | 'secondary' | 'outline' = cta.variant ?? 'default'
+              const variant: 'default' | 'brand-cta' | 'secondary' | 'outline' | 'promo' = cta.variant ?? 'default'
               const size: 'sm' | 'default' | 'lg' = cta.size ?? 'lg'
               const buttonClasses = cn(
                 'rounded-full',
