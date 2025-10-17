@@ -18,6 +18,8 @@ Example: Would you like me to compare $SFDC with $MSFT next?`
 
 const TICKER_REGEX = /\$[A-Za-z]{1,6}(?:\.[A-Za-z]{1,2})?/g
 
+const escapeForMarkdown = (text: string): string => text.replace(/(?<!\\)\$/g, '\\$')
+
 const extractTickers = (text: string): string[] => {
   if (!text) return []
   const matches = text.match(TICKER_REGEX)
@@ -32,23 +34,25 @@ const buildDefaultTickerFollowUp = (tickers: string[]): string => {
   }
 
   const unique = Array.from(new Set(tickers.map(t => t.toUpperCase())))
+  const formatTicker = (t: string) => escapeForMarkdown(`$${t}`)
+
   if (unique.length === 1) {
-    return `Would you like me to outline next steps for $${unique[0]}?`
+    return `Would you like me to outline next steps for ${formatTicker(unique[0])}?`
   }
   if (unique.length === 2) {
-    return `Would you like me to compare the 3-year MOIC of $${unique[0]} to $${unique[1]} next?`
+    return `Would you like me to compare the 3-year MOIC of ${formatTicker(unique[0])} to ${formatTicker(unique[1])} next?`
   }
 
   const rest = unique.slice(1)
   const formattedRest = rest.length === 1
-    ? `$${rest[0]}`
-    : `${rest.slice(0, -1).map(t => `$${t}`).join(', ')} or $${rest[rest.length - 1]}`
-  return `Would you like me to compare the 3-year MOIC of $${unique[0]} to ${formattedRest} next?`
+    ? formatTicker(rest[0])
+    : `${rest.slice(0, -1).map(t => formatTicker(t)).join(', ')} or ${formatTicker(rest[rest.length - 1])}`
+  return `Would you like me to compare the 3-year MOIC of ${formatTicker(unique[0])} to ${formattedRest} next?`
 }
 
 const appendDefaultFollowUp = (text: string, suggestion?: string, tickers: string[] = []) => {
   const followUp = suggestion ?? buildDefaultTickerFollowUp(tickers)
-  return `${text}\n\n${followUp}`
+  return `${text}\n\n${escapeForMarkdown(followUp)}`
 }
 
 const isThreeYearModeRequest = (content: string): boolean => {
@@ -210,7 +214,7 @@ const formatThreeYearModeResponse = (payload: ThreeYearModePayload, tickers: str
   const uniqueTickers = Array.from(new Set(tickers.map(t => t.toUpperCase())))
   const tickerMap = new Map(payload.tickers.map(t => [t.ticker.toUpperCase(), t]))
   const introTickers = uniqueTickers.filter(t => tickerMap.has(t))
-  const introList = introTickers.map(t => `$${t}`).join(', ')
+  const introList = introTickers.map(t => escapeForMarkdown(`$${t}`)).join(', ')
   const expertLabel = expertNames.length === 1
     ? 'your expert framework'
     : `your ${expertNames.length} expert frameworks`
@@ -236,7 +240,7 @@ const formatThreeYearModeResponse = (payload: ThreeYearModePayload, tickers: str
       const cleanedSource = scrubSyntheticSource(expert.source)
       const source = cleanedSource ? ` ${cleanedSource}` : ''
 
-      lines.push(`**${name}** — MOIC: Base ${base} / Bull ${bull} / Bear ${bear}<br>Durability ${durability}<br>Rationale: ${rationale}${source}`)
+      lines.push(`**${name}** — MOIC: Base ${base} / Bull ${bull} / Bear ${bear}<br>Durability: ${durability}<br>Rationale: ${rationale}${source}`)
       lines.push('')
     })
 
@@ -251,7 +255,7 @@ const formatThreeYearModeResponse = (payload: ThreeYearModePayload, tickers: str
   payload.quick_take.forEach(entry => {
     const cleaned = stripTrailingCitations(entry)
     if (!cleaned.trim()) return
-    lines.push(`- ${cleaned.trim()}`)
+    lines.push(`- ${escapeForMarkdown(cleaned.trim())}`)
   })
 
   return lines.join('\n')
