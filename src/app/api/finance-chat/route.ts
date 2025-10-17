@@ -368,31 +368,6 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    if (threeYearModeRequested && requestTickers.length > 0) {
-      try {
-        const structuredMessages = messages
-          .filter(msg => msg.role === 'user' || msg.role === 'assistant')
-          .map(msg => ({
-            role: msg.role as 'user' | 'assistant',
-            content: msg.content
-          }))
-
-        const payload = await generateThreeYearModePayload(structuredMessages, requestTickers)
-        const formatted = formatThreeYearModeResponse(payload, requestTickers)
-
-        return NextResponse.json({
-          message: {
-            id: Date.now().toString(),
-            content: appendDefaultFollowUp(formatted, undefined, requestTickers),
-            role: 'assistant',
-            timestamp: new Date(),
-          }
-        })
-      } catch (structuredError) {
-        console.error('Structured 3Y Mode generation failed in finance chat, falling back:', structuredError)
-      }
-    }
-
     const effectiveExpertNames = expertNames.length ? expertNames : [...DEFAULT_EXPERT_NAMES]
 
     if (threeYearModeRequested && requestTickers.length > 0) {

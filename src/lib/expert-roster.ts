@@ -5,8 +5,8 @@ export const DEFAULT_EXPERT_NAMES = ['Bill Gurley', 'Brad Gerstner', 'Stan Druck
 export interface ExpertProfile {
   id: string
   name: string
-  display_order?: number | null
-  is_default?: boolean | null
+  display_order: number | null
+  is_default: boolean | null
 }
 
 const ensureMinimumExperts = (experts: ExpertProfile[], minimum: number): ExpertProfile[] => {
