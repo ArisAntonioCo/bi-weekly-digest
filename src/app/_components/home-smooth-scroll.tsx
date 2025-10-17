@@ -18,7 +18,6 @@ export function HomeSmoothScroll() {
     const lenis = new Lenis({
       duration: 1.1,
       smoothWheel: true,
-      smoothTouch: false,
     })
 
     let animationFrame = 0
