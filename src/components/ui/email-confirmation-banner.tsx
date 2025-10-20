@@ -66,17 +66,12 @@ export function EmailConfirmationBanner({ email, onEditEmail }: EmailConfirmatio
           </div>
           {/* Actions below, full width on mobile */}
           <div className="flex flex-col sm:flex-row gap-2 w-full">
-            <a
-              href={inboxUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto"
-            >
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+            <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
+              <a href={inboxUrl} target="_blank" rel="noopener noreferrer">
                 Open inbox
                 <ExternalLink className="ml-2 size-3.5" />
-              </Button>
-            </a>
+              </a>
+            </Button>
             <Button size="sm" onClick={handleResend} disabled={sending} className="w-full sm:w-auto inline-flex items-center">
               <RefreshCw className={`mr-2 size-3.5 ${sending ? 'animate-spin' : ''}`} /> Resend
             </Button>
