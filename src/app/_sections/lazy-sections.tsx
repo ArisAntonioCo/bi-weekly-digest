@@ -4,15 +4,6 @@ import { memo } from 'react'
 import dynamic from 'next/dynamic'
 import { SectionSkeleton } from '@/components/ui/section-skeleton'
 
-// Defer hydration for client-only experiences
-const FeaturesSection = dynamic(
-  () => import('./features-section').then(mod => ({ default: mod.FeaturesSection })),
-  {
-    loading: () => <SectionSkeleton />,
-    ssr: false,
-  }
-)
-
 const FrameworksSection = dynamic(
   () => import('./frameworks-section').then(mod => ({ default: mod.FrameworksSection })),
   {
@@ -40,7 +31,6 @@ const CTASection = dynamic(
 export const LazyLandingSections = memo(function LazyLandingSections() {
   return (
     <>
-      <FeaturesSection />
       <FrameworksSection />
       <FAQSection />
       <CTASection />
