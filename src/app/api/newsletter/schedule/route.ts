@@ -170,12 +170,11 @@ function calculateNextScheduledDate(schedule: Pick<NewsletterSchedule, 'frequenc
       break
     
     case 'biweekly':
-      // Same as weekly but add 14 days instead
-      const daysUntilBiweekly = ((schedule.day_of_week ?? 1) - next.getDay() + 7) % 7 || 7
-      next.setDate(next.getDate() + daysUntilBiweekly)
-      if (daysUntilBiweekly === 0) {
-        next.setDate(next.getDate() + 14)
-      }
+      // Same as weekly but ensure at least a 14 day window when landing on the same weekday
+      const biweeklyTargetDay = schedule.day_of_week ?? 1
+      const rawDiff = (biweeklyTargetDay - next.getDay() + 7) % 7
+      const daysToAdd = rawDiff === 0 ? 14 : rawDiff
+      next.setDate(next.getDate() + daysToAdd)
       break
     
     case 'monthly':

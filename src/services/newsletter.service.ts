@@ -38,18 +38,16 @@ export class NewsletterService {
     try {
       // Check for cron authentication first
       const authHeader = request.headers.get('authorization')
-      const cronSecretFromVercel = request.headers.get('x-vercel-cron-secret')
-      const userAgent = request.headers.get('user-agent')
-      const vercelId = request.headers.get('x-vercel-id')
-      const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
-      
-      // Check if it's from Vercel cron
-      const isVercelInternal = !!cronSecretFromVercel || 
-                               (userAgent && userAgent.includes('Vercel')) ||
-                               !!vercelId
-      const isCronAuthorized = authHeader === expectedAuth || isVercelInternal
-      
-      if (isCronAuthorized) {
+      const cronSecretHeader = request.headers.get('x-vercel-cron-secret')
+      const expectedCronSecret = process.env.VERCEL_CRON_SECRET || process.env.CRON_SECRET
+      const expectedAuth = process.env.CRON_SECRET ? `Bearer ${process.env.CRON_SECRET}` : undefined
+
+      const hasValidBearer = expectedAuth ? authHeader === expectedAuth : false
+      const hasValidCronHeader = expectedCronSecret
+        ? cronSecretHeader === expectedCronSecret
+        : false
+
+      if (hasValidBearer || hasValidCronHeader) {
         return { isAuthorized: true }
       }
       
