@@ -1,3 +1,5 @@
+import { DISCLAIMER_PARAGRAPHS, DISCLAIMER_HEADING } from '@/config/disclaimer'
+
 export function TermsContent() {
   return (
     <div className="max-w-none">
@@ -11,15 +13,18 @@ export function TermsContent() {
       <section className="mb-6 border-t pt-6">
         <h2 id="service" className="text-lg md:text-xl font-semibold text-foreground mb-2">2. Service Description</h2>
         <p className="text-sm md:text-base leading-7 text-muted-foreground mb-3">
-          We provide investment insights, market analysis, and educational content to help users develop long-term investment strategies..
+          We provide investment insights, market analysis, and educational content to help users develop long-term investment strategies.
         </p>
       </section>
 
       <section className="mb-6 border-t pt-6">
         <h2 id="disclaimer" className="text-lg md:text-xl font-semibold text-foreground mb-2">3. Investment Disclaimer</h2>
-        <p className="text-sm md:text-base leading-7 text-muted-foreground mb-3">
-          Information is provided for educational purposes only and is not financial advice. We do not guarantee investment results, and all investments carry risk. You are solely responsible for your investment decisions.
-        </p>
+        <div className="text-sm md:text-base leading-7 text-muted-foreground mb-3 space-y-3">
+          <p className="font-semibold text-foreground">{DISCLAIMER_HEADING}</p>
+          {DISCLAIMER_PARAGRAPHS.map(paragraph => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
       </section>
 
       <section className="mb-6 border-t pt-6">

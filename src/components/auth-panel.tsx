@@ -1,4 +1,5 @@
 import { Logo } from "@/components/ui/logo"
+import { DISCLAIMER_HEADING, DISCLAIMER_PARAGRAPHS } from "@/config/disclaimer"
 
 interface AuthPanelProps {
   children: React.ReactNode
@@ -60,12 +61,14 @@ export function AuthPanel({ children }: AuthPanelProps) {
 
             {/* Disclaimer */}
             <div className="mt-6 text-xs text-muted-foreground leading-relaxed">
-              <p>
-                <strong>Disclaimer:</strong> This is not investment advice. Stock market
-                conditions are subject to change. Investors should perform their own due
-                diligence and consider their individual financial goals and risk tolerance
-                before making any investment decisions.
+              <p className="font-semibold uppercase tracking-wide text-foreground/80 mb-2 text-[0.7rem]">
+                {DISCLAIMER_HEADING}
               </p>
+              {DISCLAIMER_PARAGRAPHS.map(paragraph => (
+                <p key={paragraph} className="mb-2 last:mb-0">
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
         </div>

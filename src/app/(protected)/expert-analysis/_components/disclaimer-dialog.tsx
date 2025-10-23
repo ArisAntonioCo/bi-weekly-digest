@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle } from 'lucide-react'
+import { DISCLAIMER_HEADING, DISCLAIMER_PARAGRAPHS } from '@/config/disclaimer'
 
 interface DisclaimerDialogProps {
   open: boolean
@@ -23,14 +24,14 @@ export function DisclaimerDialog({ open, onAccept }: DisclaimerDialogProps) {
         <DialogHeader>
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" />
-            <DialogTitle>Legal Disclaimer</DialogTitle>
+            <DialogTitle>{DISCLAIMER_HEADING}</DialogTitle>
           </div>
-          <DialogDescription className="pt-3">
-            This is an AI tool that simulates expert investment perspectives. 
-            It is <span className="font-semibold">NOT financial advice</span>.
-            <br /><br />
-            Always do your own research and consult qualified advisors before 
-            making investment decisions. All investments carry risk.
+          <DialogDescription className="pt-3 space-y-3">
+            {DISCLAIMER_PARAGRAPHS.map(paragraph => (
+              <p key={paragraph} className="text-sm leading-relaxed text-muted-foreground">
+                {paragraph}
+              </p>
+            ))}
           </DialogDescription>
         </DialogHeader>
 

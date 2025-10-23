@@ -1,5 +1,6 @@
 import { resend } from '@/lib/resend'
 import { EmailTemplateService } from './email-template.service'
+import { DISCLAIMER_SHORT } from '@/config/disclaimer'
 
 export interface EmailOptions {
   to: string | string[]
@@ -63,6 +64,8 @@ export class EmailDeliveryService {
 **Generated:** ${new Date().toLocaleString()}
 **Model:** gpt-4o with Web Search
 **Type:** ${analysisType.type}
+
+**Disclaimer:** ${DISCLAIMER_SHORT}
 
 ## Analysis
 

@@ -9,6 +9,7 @@ import { BlogViewTracker } from './blog-view-tracker'
 import { Suspense } from 'react'
 import { BlogContent } from './blog-content'
 import { SaveToggle } from '@/components/ui/save-toggle'
+import { DISCLAIMER_SHORT } from '@/config/disclaimer'
 
 interface BlogDetailPageProps {
   params: Promise<{
@@ -109,6 +110,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
             {blog.title}
           </h1>
+          <p className="text-xs text-muted-foreground max-w-3xl">
+            {DISCLAIMER_SHORT}
+          </p>
         </div>
 
         {/* Blog Content */}

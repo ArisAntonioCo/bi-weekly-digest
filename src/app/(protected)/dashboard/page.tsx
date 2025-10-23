@@ -31,6 +31,7 @@ import { useBlogViews } from '@/hooks/use-blog-views'
 import { useSubscription } from '@/hooks/useSubscription'
 import { SubscriptionConfirmDialog, UnsubscribeConfirmDialog } from '@/components/confirmation-dialog'
 import { toast } from 'sonner'
+import { DISCLAIMER_SHORT } from '@/config/disclaimer'
 
 interface Blog {
   id: string
@@ -215,6 +216,9 @@ export default function DashboardPage() {
                 </h1>
                 <p className="text-muted-foreground mt-1">
                   {format(new Date(), 'EEEE, MMMM d, yyyy')}
+                </p>
+                <p className="text-xs text-muted-foreground mt-2 max-w-2xl">
+                  {DISCLAIMER_SHORT}
                 </p>
               </div>
               <Button 

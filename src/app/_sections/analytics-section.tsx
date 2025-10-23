@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { DISCLAIMER_HEADING, DISCLAIMER_PARAGRAPHS } from '@/config/disclaimer'
 
 export function AnalyticsSection() {
   return (
@@ -47,11 +48,16 @@ export function AnalyticsSection() {
       </div>
       
       {/* Disclaimer */}
-      <p className="mt-6 text-xs text-muted-foreground leading-relaxed">
-        All financial projections and analysis are generated using proprietary machine learning models trained on historical market data. 
-        Past performance is not indicative of future results. This is not personalized investment advice. 
-        Please consult with qualified financial advisors before making investment decisions.
-      </p>
+      <div className="mt-6 text-xs text-muted-foreground leading-relaxed max-w-3xl">
+        <p className="font-semibold uppercase tracking-wide text-foreground/80 mb-2">
+          {DISCLAIMER_HEADING}
+        </p>
+        {DISCLAIMER_PARAGRAPHS.map(paragraph => (
+          <p key={paragraph} className="mb-2 last:mb-0">
+            {paragraph}
+          </p>
+        ))}
+      </div>
     </section>
   )
 }

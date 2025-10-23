@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DISCLAIMER_HEADING, DISCLAIMER_PARAGRAPHS } from '@/config/disclaimer'
 
 export function FooterSection() {
   return (
@@ -47,7 +48,7 @@ export function FooterSection() {
         
         {/* Bottom Bar */}
         <div className="border-t border-border pt-8">
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 text-center">
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
               <span>© 2025 3YMode. All rights reserved.</span>
               <span className="hidden sm:inline">•</span>
@@ -58,6 +59,16 @@ export function FooterSection() {
               <Link href="/terms" className="hover:text-foreground transition-colors">
                 Terms of Service
               </Link>
+            </div>
+            <div className="max-w-3xl text-[11px] text-muted-foreground leading-relaxed">
+              <p className="font-semibold uppercase tracking-wide text-foreground/80 mb-2">
+                {DISCLAIMER_HEADING}
+              </p>
+              {DISCLAIMER_PARAGRAPHS.map(paragraph => (
+                <p key={paragraph} className="mb-2 last:mb-0">
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DISCLAIMER_SHORT } from '@/config/disclaimer'
 
 export function HeroSection() {
   return (
@@ -41,6 +42,9 @@ export function HeroSection() {
             <Info className="h-4 w-4" aria-hidden="true" />
             <span>We&apos;ll never ask for your credit card.</span>
           </div>
+          <p className="text-xs text-white/50 max-w-xl">
+            {DISCLAIMER_SHORT}
+          </p>
 
           <p className="max-w-2xl text-base sm:text-lg text-white/80">
             Forecast frameworks from Gurley, Gerstner, Druckenmiller, Meeker & Kindig—delivered weekly so you can move with conviction and cut through the noise.

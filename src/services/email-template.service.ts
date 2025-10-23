@@ -1,3 +1,5 @@
+import { DISCLAIMER_HEADING, DISCLAIMER_PARAGRAPHS, DISCLAIMER_SHORT } from '@/config/disclaimer'
+
 /**
  * Email Template Service
  * Handles HTML email template generation and markdown conversion
@@ -159,6 +161,11 @@ export class EmailTemplateService {
     } catch {
       logoUrl = 'https://3ymode.vercel.app/3YMode.png'
     }
+
+    const year = new Date().getFullYear()
+    const disclaimerHtml = DISCLAIMER_PARAGRAPHS.map(
+      paragraph => `<p style="margin: 8px 0 0 0; color: #6b7280;">${paragraph}</p>`
+    ).join('')
 
     return `<!DOCTYPE html>
 <html>
@@ -446,6 +453,9 @@ export class EmailTemplateService {
           </span>
         </h1>
         <p class="header-tagline">Expert-Grade MOIC Projections</p>
+        <p style="margin-top: 16px; font-size: 12px; color: #6b7280; background: #f9fafb; display: inline-block; padding: 10px 16px; border-radius: 9999px; border: 1px solid #e5e7eb;">
+          ${DISCLAIMER_SHORT}
+        </p>
         <div style="margin-top: 24px; padding: 20px 32px; border-top: 1px solid #e5e7eb;">
           <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 12px; text-align: center;">
             Leveraging Proven, Expert Frameworks
@@ -472,10 +482,9 @@ export class EmailTemplateService {
           
           
           <div class="footer-disclaimer">
-            This newsletter is for informational purposes only and does not constitute financial advice. 
-            Always conduct your own research before making investment decisions.
-            <br><br>
-            © ${new Date().getFullYear()} 3YMode. All rights reserved.
+            <strong style="display: block; color: #9ca3af; margin-bottom: 8px;">${DISCLAIMER_HEADING}</strong>
+            ${disclaimerHtml}
+            <p style="margin: 16px 0 0 0; color: #6b7280;">© ${year} 3YMode. All rights reserved.</p>
           </div>
         </div>
       </div>

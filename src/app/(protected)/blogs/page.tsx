@@ -2,6 +2,7 @@ import { BlogListWrapper } from '@/components/blog-list-wrapper'
 import { BlogSearchClient } from '@/components/blog-search-client'
 import { BlogsUrlSync } from './_providers/blogs-store'
 import { getCachedSystemPromptSummary, getCachedTotalCount } from '@/lib/blog-cache'
+import { DISCLAIMER_SHORT } from '@/config/disclaimer'
 
 interface BlogsPageProps {
   searchParams: Promise<{
@@ -30,6 +31,9 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
           <div className="mb-10">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Investment Insights</h1>
             <p className="text-muted-foreground mt-1">Drawing from Gurley, Meeker, Druckenmiller, and more</p>
+            <p className="text-xs text-muted-foreground mt-3 max-w-3xl">
+              {DISCLAIMER_SHORT}
+            </p>
           </div>
           
           {/* System Prompt Summary - Simplified */}
