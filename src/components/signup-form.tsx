@@ -27,7 +27,27 @@ export function SignupForm() {
   const [showPrivacy, setShowPrivacy] = useState(false)
   const router = useRouter()
   const supabase = createClient()
-  
+
+  const triggerPremiumWelcomeEmail = async (targetEmail: string) => {
+    try {
+      const normalizedEmail = targetEmail.trim()
+      if (!normalizedEmail) return
+      const response = await fetch('/api/notifications/premium-welcome', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: normalizedEmail }),
+      })
+      if (!response.ok) {
+        const details = await response.json().catch(() => null)
+        const reason = details?.error || `status ${response.status}`
+        throw new Error(`Request failed with ${reason}`)
+      }
+    } catch (err) {
+      console.error('Failed to trigger premium welcome email', err)
+    }
+  }
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,13 +82,17 @@ export function SignupForm() {
 
       if (error) {
         setError(error.message)
-      } else if (data?.user) {
-        // If email confirmation is required, session will be null
-        if (!data.session) {
-          setInfo('We sent a confirmation link to your email. Please verify your email, then log in.')
-        } else {
-          // If your project doesn't require email confirmation, user may be signed in immediately
-          router.push('/dashboard')
+      } else {
+        await triggerPremiumWelcomeEmail(email)
+
+        if (data?.user) {
+          // If email confirmation is required, session will be null
+          if (!data.session) {
+            setInfo('We sent a confirmation link to your email. Please verify your email, then log in.')
+          } else {
+            // If your project doesn't require email confirmation, user may be signed in immediately
+            router.push('/dashboard')
+          }
         }
       }
     } catch {

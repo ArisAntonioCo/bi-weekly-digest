@@ -2,6 +2,9 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import { EmailDeliveryService } from '@/services/email-delivery.service'
+import { buildPremiumWelcomeEmail } from '@/services/email-templates/premium-welcome-email'
+import { logger } from '@/lib/logger'
 
 export async function signup(formData: FormData) {
   const supabase = await createClient()
@@ -20,6 +23,24 @@ export async function signup(formData: FormData) {
 
   if (error) {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`)
+  }
+
+  try {
+    const { subject, markdown } = buildPremiumWelcomeEmail({
+      recipientEmail: data.email,
+    })
+
+    await EmailDeliveryService.sendEmail(
+      {
+        to: data.email,
+        subject,
+      },
+      markdown
+    )
+  } catch (sendError) {
+    logger.error('Failed to send premium welcome email', sendError, {
+      recipient: data.email,
+    })
   }
 
   // Ask user to confirm email before logging in

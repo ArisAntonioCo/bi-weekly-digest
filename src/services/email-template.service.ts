@@ -153,7 +153,19 @@ export class EmailTemplateService {
    * Creates the email HTML template
   */
   static createEmailTemplate(content: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://3ymode.vercel.app'
+    let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://3ymode.vercel.app'
+
+    try {
+      const parsed = new URL(baseUrl)
+      const hostname = parsed.hostname.toLowerCase()
+      if (hostname === 'localhost' || hostname.startsWith('127.') || hostname === '[::1]') {
+        baseUrl = 'https://3ymode.vercel.app'
+      } else {
+        baseUrl = parsed.toString()
+      }
+    } catch {
+      baseUrl = 'https://3ymode.vercel.app'
+    }
     let logoUrl: string
 
     try {
