@@ -38,8 +38,8 @@ export function Why3YSection({ className }: Why3YSectionProps) {
     <section className={cn('container mx-auto px-4 sm:px-6 py-16 sm:py-24', className)}>
       <header className="max-w-6xl space-y-4">
         <h2 className="text-4xl sm:text-5xl md:text-6xl font-medium leading-[1.06] tracking-tight text-foreground flex flex-wrap items-center gap-4">
-          <span>A clear, analytical view of your portfolio</span>
-          <span className="text-muted-foreground">, through expert frameworks.</span>
+          <span>A clear analytical view of your portfolio</span>
+          <span className="text-muted-foreground">through expert frameworks.</span>
           <ExpertAvatarStack size={56} className="hidden md:inline-flex -translate-y-1" />
         </h2>
       </header>
