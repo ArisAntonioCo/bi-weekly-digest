@@ -16,7 +16,7 @@ interface AnimatedWordProps {
 
 function AnimatedWord({ word, globalIndex, totalWords, scrollYProgress, highlight = false }: AnimatedWordProps) {
   const wordStart = globalIndex / totalWords
-  const brandColor = 'var(--brand)'
+  const brandColor = '#ccff00'
   const baseMuted = 'rgba(255, 255, 255, 0.3)'
   const baseBright = 'rgba(255, 255, 255, 1)'
   const initialColor = baseMuted
