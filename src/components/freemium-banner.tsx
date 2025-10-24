@@ -3,8 +3,6 @@
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { Banner } from '@/components/ui/banner'
-import { Button } from '@/components/ui/button'
-import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useBanner } from '@/contexts/banner-context'
 
@@ -12,27 +10,32 @@ export function FreemiumBanner() {
   const { isVisible, hideBanner, setBannerHeight } = useBanner()
   const bannerRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
-  
+
   // Only show on home page
   const isHomePage = pathname === '/'
 
   // Measure and update banner height when it changes
   useEffect(() => {
-    if (isHomePage && isVisible && bannerRef.current) {
-      const resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const height = entry.contentRect.height
-          setBannerHeight(height)
-        }
-      })
+    if (!isHomePage || !isVisible) {
+      setBannerHeight(0)
+      return
+    }
 
-      resizeObserver.observe(bannerRef.current)
+    if (!bannerRef.current) {
+      return
+    }
 
-      return () => {
-        resizeObserver.disconnect()
-        setBannerHeight(0)
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height
+        setBannerHeight(height)
       }
-    } else {
+    })
+
+    resizeObserver.observe(bannerRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
       setBannerHeight(0)
     }
   }, [isHomePage, isVisible, setBannerHeight])
@@ -53,25 +56,20 @@ export function FreemiumBanner() {
         size="sm"
         onClose={handleClose}
         isClosable
-        className="rounded-none border-0 bg-black text-white"
-        action={
-          <Link href="/signup">
-            <Button
-              size="default"
-              variant="secondary"
-              className="bg-white text-black hover:bg-gray-200 h-11 px-6 text-sm sm:text-base font-semibold"
-            >
-              Get Started Free
-              <ArrowRight className="ml-2 h-3.5 w-3.5" />
-            </Button>
-          </Link>
-        }
+        className="rounded-none border-0 bg-black text-white py-2"
       >
-        <div className="text-center sm:text-left">
-          <span className="text-sm">
-            <span className="font-semibold">Limited free offer.</span>
-            {' '}Get AI-powered investment insights with our newsletter.
+        <div className="flex w-full flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-3 sm:text-center">
+          <span className="text-xs font-medium text-white/80 sm:text-sm">
+            Contribute to 3YMode’s open-source platform — help ship new investment tools.
           </span>
+          <Link
+            href="https://github.com/ArisAntonioCo/bi-weekly-digest"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-semibold text-white underline decoration-white/60 underline-offset-4 transition-colors hover:decoration-white sm:text-sm"
+          >
+            GitHub →
+          </Link>
         </div>
       </Banner>
     </div>

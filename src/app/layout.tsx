@@ -6,6 +6,7 @@ import { SWRProvider } from "@/providers/swr-provider";
 import { LayoutWrapper } from "@/components/layout-wrapper";
 import { Toaster } from "@/components/ui/sonner";
 import { BannerProvider } from "@/contexts/banner-context";
+import { FreemiumBanner } from "@/components/freemium-banner";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -104,6 +105,7 @@ export default function RootLayout({
         >
           <SWRProvider>
             <BannerProvider>
+              <FreemiumBanner />
               <Navbar />
               <LayoutWrapper>{children}</LayoutWrapper>
               <Toaster />

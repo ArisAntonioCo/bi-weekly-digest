@@ -170,7 +170,7 @@ export default function Navbar({ className }: NavbarProps) {
         top: 0, 
         left: 0, 
         right: 0, 
-        zIndex: 50,
+        zIndex: 70,
         backgroundColor: 'hsl(var(--background))',
         borderBottom: '1px solid hsl(var(--border))'
       }}
